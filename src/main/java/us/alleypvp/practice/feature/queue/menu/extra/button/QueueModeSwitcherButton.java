@@ -32,7 +32,7 @@ public class QueueModeSwitcherButton extends Button {
                         CC.MENU_BAR,
                         ("&f " + this.kitCategory.getDescription()),
                         "",
-                        "&aClique para visualizar.",
+                        "&aClick to view.",
                         CC.MENU_BAR
                 )
                 .hideMeta()

@@ -9,10 +9,10 @@ import lombok.Getter;
  */
 @Getter
 public enum QueueType {
-    UNRANKED("Fila Solo Unranked"),
-    DUOS("Fila Duo Unranked"),
-    BOTS("Fila de Bots Unranked"),
-    FFA("Fila de FFA Unranked"),
+    UNRANKED("Unranked Queue"),
+    DUOS("Unranked Duo Queue"),
+    BOTS("Unranked Bot Queue"),
+    FFA("Unranked FFA Queue"),
 
     ;
 

@@ -21,7 +21,7 @@ import java.util.*;
 public class TournamentHostTypeMenu extends Menu {
     @Override
     public String getTitle(Player player) {
-        return "&6&lSelect Tournament Type";
+        return "&b&lSelect Tournament Type";
     }
 
     @Override
@@ -49,7 +49,7 @@ public class TournamentHostTypeMenu extends Menu {
             Material material = type.getTeamSize() == 1 ? Material.IRON_SWORD : Material.DIAMOND_SWORD;
 
             return new ItemBuilder(material)
-                    .name("&6&l" + type.getDisplayName() + " Tournament")
+                    .name("&b&l" + type.getDisplayName() + " Tournament")
                     .lore(getLore())
                     .hideMeta()
                     .build();
@@ -64,9 +64,9 @@ public class TournamentHostTypeMenu extends Menu {
                     ""
             ));
             lore.addAll(Arrays.asList(
-                    "&6│ &rTeam Size: &6" + type.getTeamSize(),
-                    "&6│ &rMax Teams: &6" + type.getMaxTeams(),
-                    "&6│ &rMin Teams: &6" + type.getMinTeams(),
+                    "&b│ &rTeam Size: &b" + type.getTeamSize(),
+                    "&b│ &rMax Teams: &b" + type.getMaxTeams(),
+                    "&b│ &rMin Teams: &b" + type.getMinTeams(),
                     ""
             ));
             lore.add("&aClick to select this type.");

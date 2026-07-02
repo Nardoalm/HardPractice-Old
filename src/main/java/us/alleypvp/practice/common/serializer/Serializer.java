@@ -20,14 +20,9 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class Serializer {
-    /**
-     * Serialize a location to a string.
-     *
-     * @param location The location to serialize.
-     * @return The serialized location.
-     */
+
     public String serializeLocation(Location location) {
-        if (location == null) {
+        if (location == null || location.getWorld() == null) {
             return "null";
         }
 
@@ -35,34 +30,34 @@ public class Serializer {
                 ":" + location.getYaw() + ":" + location.getPitch();
     }
 
-    /**
-     * Deserialize a location from a string.
-     *
-     * @param source The source to deserialize.
-     * @return The deserialized location.
-     */
     public Location deserializeLocation(String source) {
-        if (source == null || source.equalsIgnoreCase("null")) {
+        if (source == null || source.trim().isEmpty() || source.equalsIgnoreCase("null")) {
             return null;
         }
 
-        String[] split = source.split(":");
-        World world = Bukkit.getServer().getWorld(split[0]);
+        try {
+            String[] split = source.split(":");
+            if (split.length < 4) return null;
 
-        if (world == null) {
+            World world = Bukkit.getServer().getWorld(split[0]);
+            if (world == null && !Bukkit.getWorlds().isEmpty()) {
+                world = Bukkit.getWorlds().get(0);
+            }
+
+            if (world == null) return null;
+
+            double x = Double.parseDouble(split[1]);
+            double y = Double.parseDouble(split[2]);
+            double z = Double.parseDouble(split[3]);
+            float yaw = split.length >= 6 ? Float.parseFloat(split[4]) : 0.0f;
+            float pitch = split.length >= 6 ? Float.parseFloat(split[5]) : 0.0f;
+
+            return new Location(world, x, y, z, yaw, pitch);
+        } catch (Exception e) {
             return null;
         }
-
-        return new Location(world, Double.parseDouble(split[1]), Double.parseDouble(split[2]),
-                Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
     }
 
-    /**
-     * Serialize an ItemStack array to a Base64 string
-     *
-     * @param items the ItemStack array to serialize
-     * @return the serialized ItemStack array
-     */
     public String serializeItemStack(ItemStack[] items) {
         try {
             ItemStack[] safeItems = items != null ? items : new ItemStack[0];
@@ -81,12 +76,6 @@ public class Serializer {
         }
     }
 
-    /**
-     * Deserialize an ItemStack array from a Base64 string
-     *
-     * @param data the Base64 string to deserialize
-     * @return the deserialized ItemStack array
-     */
     public ItemStack[] deserializeItemStack(String data) {
         if (data == null || data.trim().isEmpty()) {
             return new ItemStack[0];
@@ -109,24 +98,12 @@ public class Serializer {
         }
     }
 
-    /**
-     * Serialize a list of potion effects.
-     *
-     * @param potionEffects The potion effects.
-     * @return The serialized potion effects.
-     */
     public List<String> serializePotionEffects(List<PotionEffect> potionEffects) {
         return potionEffects.stream()
                 .map(effect -> effect.getType().getName() + ":" + effect.getDuration() + ":" + effect.getAmplifier())
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Deserialize a list of potion effects.
-     *
-     * @param serializedEffects The serialized potion effects.
-     * @return The potion effects.
-     */
     public List<PotionEffect> deserializePotionEffects(List<String> serializedEffects) {
         return serializedEffects.stream()
                 .map(s -> {

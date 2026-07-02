@@ -11,11 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * @author Emmy
- * @project Alley
- * @since 03/05/2025
- */
 @AllArgsConstructor
 public class LayoutResetItemsButton extends Button {
     private final Kit kit;
@@ -23,13 +18,13 @@ public class LayoutResetItemsButton extends Button {
     @Override
     public ItemStack getButtonItem(Player player) {
         return new ItemBuilder(Material.WOOL)
-                .name("&b&lResetar Itens")
+                .name("&b&lReset Items")
                 .durability(4)
                 .lore(
                         CC.MENU_BAR,
-                        "&7Reseta os itens para o padrão.",
+                        "&7Resets items to default.",
                         "",
-                        "&aClique para resetar.",
+                        "&aClick to reset.",
                         CC.MENU_BAR
                 )
                 .hideMeta()
@@ -40,7 +35,7 @@ public class LayoutResetItemsButton extends Button {
     public void clicked(Player player, ClickType clickType) {
         if (clickType != ClickType.LEFT) return;
         if (this.kit == null) {
-            player.sendMessage(CC.translate("&cNao foi possivel resetar os itens deste layout."));
+            player.sendMessage(CC.translate("&cCould not reset items for this layout."));
             return;
         }
 

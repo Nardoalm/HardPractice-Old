@@ -8,7 +8,6 @@ import us.alleypvp.practice.core.locale.internal.impl.message.GlobalMessagesLoca
 import us.alleypvp.practice.core.profile.Profile;
 import us.alleypvp.practice.core.profile.ProfileService;
 import us.alleypvp.practice.core.profile.enums.WorldTime;
-import us.alleypvp.practice.core.profile.menu.music.MusicDiscSelectorMenu;
 import us.alleypvp.practice.core.profile.menu.setting.enums.PracticeSettingType;
 import us.alleypvp.practice.feature.cosmetic.menu.CosmeticsMenu;
 import us.alleypvp.practice.library.menu.Button;
@@ -84,9 +83,6 @@ public class PracticeSettingsButton extends Button {
                 break;
             case COSMETICS:
                 new CosmeticsMenu().openMenu(player);
-                break;
-            case LOBBY_MUSIC:
-                new MusicDiscSelectorMenu().openMenu(player);
                 break;
         }
 

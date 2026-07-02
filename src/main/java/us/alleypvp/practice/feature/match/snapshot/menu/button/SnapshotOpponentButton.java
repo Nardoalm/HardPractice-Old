@@ -12,11 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * @author Emmy
- * @project Alley
- * @date 07/10/2024
- */
 @AllArgsConstructor
 public class SnapshotOpponentButton extends Button {
     private final Snapshot snapshot;
@@ -26,15 +21,15 @@ public class SnapshotOpponentButton extends Button {
         Snapshot opponentSnapshot = AlleyPractice.getInstance().getService(SnapshotService.class).getSnapshot(this.snapshot.getOpponent());
         if (opponentSnapshot == null) {
             return new ItemBuilder(Material.BARRIER)
-                    .name(CC.translate("&cOponente Não Encontrado"))
-                    .lore("&7O snapshot do oponente não foi encontrado.")
+                    .name(CC.translate("&cOpponent Not Found"))
+                    .lore("&7The opponent's snapshot was not found.")
                     .hideMeta()
                     .build();
         }
 
         return new ItemBuilder(Material.PAPER)
-                .name(CC.translate("&bVer Oponente"))
-                .lore("&7Clique para ver o inventário de &b" + opponentSnapshot.getUsername() + "&7.")
+                .name(CC.translate("&bView Opponent"))
+                .lore("&7Click to view &b" + opponentSnapshot.getUsername() + "&7's inventory.")
                 .hideMeta()
                 .build();
     }

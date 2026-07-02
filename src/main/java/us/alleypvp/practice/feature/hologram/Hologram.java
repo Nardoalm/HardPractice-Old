@@ -1,5 +1,6 @@
 package us.alleypvp.practice.feature.hologram;
 
+import lombok.Getter;
 import us.alleypvp.practice.common.text.CC;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -10,6 +11,7 @@ import java.util.List;
 
 public class Hologram {
 
+    @Getter
     private final Location location;
     private final List<ArmorStand> lines;
     private static final double LINE_SPACING = 0.28;
@@ -66,9 +68,5 @@ public class Hologram {
     public void destroy() {
         lines.stream().filter(java.util.Objects::nonNull).forEach(ArmorStand::remove);
         lines.clear();
-    }
-
-    public Location getLocation() {
-        return location;
     }
 }

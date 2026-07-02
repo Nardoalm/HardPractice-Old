@@ -29,7 +29,7 @@ public class DuelRequestsMenu extends PaginatedMenu {
 
     @Override
     public String getPrePaginatedTitle(Player player) {
-        return "&b&lPedidos de Duelo";
+        return "&b&lDuel Requests";
     }
 
     @Override
@@ -68,9 +68,9 @@ public class DuelRequestsMenu extends PaginatedMenu {
                             "&fKit: &f" + this.duelRequest.getKit().getDisplayName(),
                             "&fArena: &f" + this.duelRequest.getArena().getDisplayName(),
                             "",
-                            "&fExpira em: &b" + this.duelRequest.getRemainingTimeFormatted(),
+                            "&fExpires in: &b" + this.duelRequest.getRemainingTimeFormatted(),
                             "",
-                            "&aClique para aceitar!"
+                            "&aClick to accept!"
                     )
                     .hideMeta().build();
         }
@@ -116,8 +116,8 @@ public class DuelRequestsMenu extends PaginatedMenu {
         @Override
         public ItemStack getButtonItem(Player player) {
             return new ItemBuilder(Material.EMERALD)
-                    .name("&a&lAtualizar")
-                    .lore("&aClique para atualizar os pedidos de duelo.")
+                    .name("&a&lRefresh")
+                    .lore("&aClick to refresh duel requests.")
                     .hideMeta()
                     .build();
         }

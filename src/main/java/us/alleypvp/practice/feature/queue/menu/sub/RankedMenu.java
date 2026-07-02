@@ -20,7 +20,7 @@ public class RankedMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return "&b&lFila Solo Ranked";
+        return "&bRanked Queue";
     }
 
     @Override

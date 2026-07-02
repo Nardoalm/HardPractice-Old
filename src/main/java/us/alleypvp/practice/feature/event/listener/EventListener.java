@@ -5,6 +5,8 @@ import us.alleypvp.practice.core.profile.Profile;
 import us.alleypvp.practice.core.profile.ProfileService;
 import us.alleypvp.practice.core.profile.enums.ProfileState;
 import us.alleypvp.practice.feature.event.EventService;
+import us.alleypvp.practice.feature.event.model.ActiveEvent;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,6 +27,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class EventListener implements Listener {
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
         this.getEventService().handleDisconnect(event.getPlayer());
@@ -39,8 +42,34 @@ public class EventListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (this.isInEvent(event.getPlayer())) {
-            this.getEventService().handleMove(event);
+        Player player = event.getPlayer();
+        EventService eventService = this.getEventService();
+        ActiveEvent activeEvent = eventService.getActiveEvent();
+
+        if (activeEvent != null && activeEvent.getArena() != null && player.getWorld().equals(activeEvent.getArena().getCenter().getWorld())) {
+            Material feet = player.getLocation().getBlock().getType();
+            Material below = player.getLocation().clone().subtract(0.0D, 1.0D, 0.0D).getBlock().getType();
+            boolean inWater = feet == Material.WATER || feet == Material.STATIONARY_WATER || below == Material.WATER || below == Material.STATIONARY_WATER;
+
+            if (inWater) {
+                if (activeEvent.isParticipant(player.getUniqueId()) && activeEvent.isCurrentFighter(player.getUniqueId())) {
+                    eventService.handleMove(event);
+                    return;
+                }
+
+                org.bukkit.Location waitingLoc = activeEvent.getDefinition().getLocation("waiting");
+                if (waitingLoc == null && activeEvent.getArena() != null) {
+                    waitingLoc = activeEvent.getArena().getCenter();
+                }
+                if (waitingLoc != null) {
+                    player.teleport(waitingLoc);
+                }
+                return;
+            }
+        }
+
+        if (this.isInEvent(player)) {
+            eventService.handleMove(event);
         }
     }
 

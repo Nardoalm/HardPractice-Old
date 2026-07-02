@@ -32,7 +32,7 @@ public class KaosPlaceholderExpansion extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return this.plugin.getDescription().getAuthors().isEmpty() ? "Emmy" : this.plugin.getDescription().getAuthors().get(0);
+        return this.plugin.getDescription().getAuthors().isEmpty() ? "Emmy - ysubz" : this.plugin.getDescription().getAuthors().get(0);
     }
 
     @Override

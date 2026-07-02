@@ -62,7 +62,7 @@ public class SpawnCommand extends BaseCommand {
      *
      * @param player The player to send to spawn.
      */
-    private void sendToSpawn(Player player) {
+    public void sendToSpawn(Player player) {
         PlayerUtil.reset(player, false, true);
 
         this.plugin.getService(SpawnService.class).teleportToSpawn(player);

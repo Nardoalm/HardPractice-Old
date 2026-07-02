@@ -40,7 +40,7 @@ public class TournamentStartTask implements Runnable {
         }
 
         if (countdown <= 5 || countdown % 5 == 0 || countdown >= 20) {
-            String message = CC.translate("&6Round 1 &fstarts in &6" + countdown + "&f.");
+            String message = CC.translate("&bRound 1 &fstarts in &b" + countdown + "&f.");
             tournament
                     .getAllPlayers()
                     .forEach(

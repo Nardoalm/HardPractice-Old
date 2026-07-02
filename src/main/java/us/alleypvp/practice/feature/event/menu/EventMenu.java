@@ -22,7 +22,7 @@ import java.util.Map;
 public class EventMenu extends Menu {
     @Override
     public String getTitle(Player player) {
-        return "&b&lEventos";
+        return "&bEvents";
     }
 
     @Override
@@ -41,7 +41,7 @@ public class EventMenu extends Menu {
         }
 
         if (buttons.isEmpty()) {
-            buttons.put(13, Button.placeholder(Material.BARRIER, (byte) 0, CC.translate("&cNenhum evento disponível")));
+            buttons.put(13, Button.placeholder(Material.BARRIER, (byte) 0, CC.translate("&cNo events available")));
         }
 
         this.addGlass(buttons, 15);
@@ -70,24 +70,24 @@ public class EventMenu extends Menu {
 
             if (activeEvent == null) {
                 if (player.hasPermission("kaos.command.donator.host")) {
-                    lore.add("&aClique para hospedar este evento.");
+                    lore.add("&aClick to host this event.");
                 } else {
-                    lore.add("&7Nenhum evento deste tipo está ativo.");
-                    lore.add("&cApenas jogadores com permissão podem hospedar.");
+                    lore.add("&7No event of this type is active.");
+                    lore.add("&cOnly players with permission can host.");
                 }
             } else if (activeEvent.getDefinition().getKey().equalsIgnoreCase(this.definition.getKey())) {
-                lore.add("&fStatus: " + (activeEvent.getPhase() == EventPhase.RUNNING ? "&cEm andamento" : "&aAguardando"));
-                lore.add("&fJogadores: &b" + activeEvent.getParticipants().size() + "/" + activeEvent.getDefinition().getMaximumPlayers());
+                lore.add("&fStatus: " + (activeEvent.getPhase() == EventPhase.RUNNING ? "&cIn progress" : "&aWaiting"));
+                lore.add("&fPlayers: &b" + activeEvent.getParticipants().size() + "/" + activeEvent.getDefinition().getMaximumPlayers());
 
                 if (activeEvent.isParticipant(player.getUniqueId())) {
-                    lore.add("&cClique para sair do evento.");
+                    lore.add("&cClick to leave the event.");
                 } else if (activeEvent.getPhase() == EventPhase.RUNNING) {
-                    lore.add("&cEsse evento já começou.");
+                    lore.add("&cThis event has already started.");
                 } else {
-                    lore.add("&aClique para entrar no evento.");
+                    lore.add("&aClick to join the event.");
                 }
             } else {
-                lore.add("&cJá existe outro evento ativo: " + activeEvent.getDefinition().getDisplayName());
+                lore.add("&cAnother event is already active: " + activeEvent.getDefinition().getDisplayName());
             }
 
             return new ItemBuilder(this.definition.getMaterial())
@@ -109,7 +109,7 @@ public class EventMenu extends Menu {
 
             if (activeEvent == null) {
                 if (!player.hasPermission("kaos.command.donator.host")) {
-                    player.sendMessage(CC.translate("&cNão há nenhum evento ativo no momento."));
+                    player.sendMessage(CC.translate("&cThere is no active event at the moment."));
                     this.playFail(player);
                     return;
                 }
@@ -123,7 +123,7 @@ public class EventMenu extends Menu {
             }
 
             if (!activeEvent.getDefinition().getKey().equalsIgnoreCase(this.definition.getKey())) {
-                player.sendMessage(CC.translate("&cJá existe outro evento ativo no momento."));
+                player.sendMessage(CC.translate("&cAnother event is already active at the moment."));
                 this.playFail(player);
                 return;
             }

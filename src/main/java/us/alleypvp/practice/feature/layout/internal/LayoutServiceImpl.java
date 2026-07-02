@@ -53,13 +53,13 @@ public class LayoutServiceImpl implements LayoutService {
 
         switch (menuType) {
             case "MODERN":
-                Logger.error("O menu de layout moderno ainda não foi implementado. Usando o menu clássico.");
+                Logger.error("Modern layout menu has not been implemented yet. Using classic menu.");
                 return new LayoutMenu(KitCategory.NORMAL);
             case "DEFAULT":
                 return new LayoutMenu(KitCategory.NORMAL);
         }
 
-        Logger.error("Tipo de menu de layout inválido no config.yml. Usando o menu clássico.");
+        Logger.error("Invalid layout menu type in config.yml. Using classic menu.");
         return new LayoutMenu(KitCategory.NORMAL);
     }
 
@@ -71,7 +71,7 @@ public class LayoutServiceImpl implements LayoutService {
 
         return new ItemBuilder(Material.BOOK)
                 .name(displayName)
-                .lore("&7Clique para selecionar este layout.")
+                .lore("&7Click to select this layout.")
                 .hideMeta().build();
     }
 

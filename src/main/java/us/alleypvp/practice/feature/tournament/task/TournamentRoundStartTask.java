@@ -41,7 +41,7 @@ public class TournamentRoundStartTask implements Runnable {
         }
 
         if (countdown <= 5 || countdown % 5 == 0) {
-            String message = CC.translate("&6Round " + tournament.getCurrentRound() + " &fstarts in &6" + countdown + "&f.");
+            String message = CC.translate("&bRound " + tournament.getCurrentRound() + " &fstarts in &b" + countdown + "&f.");
             tournament.getAllPlayers().forEach(player ->
             {
                 player.sendMessage(message);

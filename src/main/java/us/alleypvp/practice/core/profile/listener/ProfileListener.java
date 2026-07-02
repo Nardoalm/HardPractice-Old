@@ -8,12 +8,10 @@ import us.alleypvp.practice.common.reflect.internal.types.TitleReflectionService
 import us.alleypvp.practice.common.text.CC;
 import us.alleypvp.practice.core.locale.LocaleService;
 import us.alleypvp.practice.core.locale.internal.impl.VisualsLocaleImpl;
-import us.alleypvp.practice.core.locale.internal.impl.message.GlobalMessagesLocaleImpl;
 import us.alleypvp.practice.core.profile.Profile;
 import us.alleypvp.practice.core.profile.ProfileService;
 import us.alleypvp.practice.core.profile.enums.ProfileState;
 import us.alleypvp.practice.feature.hotbar.HotbarService;
-import us.alleypvp.practice.feature.music.MusicService;
 import us.alleypvp.practice.feature.spawn.SpawnService;
 import us.alleypvp.practice.feature.visibility.VisibilityService;
 import org.bukkit.GameMode;
@@ -30,7 +28,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.util.List;
 
 /**
  * @author Emmy
@@ -96,13 +93,10 @@ public class ProfileListener implements Listener {
     private void onPlayerQuitEvent(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
-        MusicService musicService = AlleyPractice.getInstance().getService(MusicService.class);
 
         Profile profile = profileService.getProfile(player.getUniqueId());
 
         event.setQuitMessage(null);
-
-        musicService.stopMusic(player);
 
         profile.updatePlayTime();
         profile.setOnline(false);
@@ -147,7 +141,6 @@ public class ProfileListener implements Listener {
         SpawnService spawnService = AlleyPractice.getInstance().getService(SpawnService.class);
         HotbarService hotbarService = AlleyPractice.getInstance().getService(HotbarService.class);
         VisibilityService visibilityService = AlleyPractice.getInstance().getService(VisibilityService.class);
-        MusicService musicService = AlleyPractice.getInstance().getService(MusicService.class);
 
         profile.setState(ProfileState.LOBBY);
         profile.setName(player.getName());
@@ -170,7 +163,6 @@ public class ProfileListener implements Listener {
         spawnService.teleportToSpawn(player);
         hotbarService.applyHotbarItems(player);
         visibilityService.updateVisibility(player);
-        musicService.startMusic(player);
 
         player.updateInventory();
     }

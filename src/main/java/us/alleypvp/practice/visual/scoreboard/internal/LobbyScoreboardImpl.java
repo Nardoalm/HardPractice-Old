@@ -5,13 +5,10 @@ import us.alleypvp.practice.adapter.core.CoreAdapter;
 import us.alleypvp.practice.common.PlayerDisplayUtil;
 import us.alleypvp.practice.core.config.ConfigService;
 import us.alleypvp.practice.common.text.LevelBadgeUtil;
-import us.alleypvp.practice.feature.music.MusicService;
-import us.alleypvp.practice.feature.music.MusicSession;
 import us.alleypvp.practice.core.profile.ProfileService;
 import us.alleypvp.practice.core.profile.Profile;
 import us.alleypvp.practice.core.profile.enums.ProfileState;
 import us.alleypvp.practice.visual.scoreboard.Scoreboard;
-import us.alleypvp.practice.common.time.TimeUtil;
 import us.alleypvp.practice.common.text.CC;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,7 +16,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class LobbyScoreboardImpl implements Scoreboard {
 
@@ -36,9 +32,8 @@ public class LobbyScoreboardImpl implements Scoreboard {
 
         ConfigService configService = AlleyPractice.getInstance().getService(ConfigService.class);
         ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
-        MusicService musicService = AlleyPractice.getInstance().getService(MusicService.class);
         CoreAdapter coreAdapter = AlleyPractice.getInstance().getService(CoreAdapter.class);
-        if (configService == null || configService.getScoreboardConfig() == null || profileService == null || musicService == null) {
+        if (configService == null || configService.getScoreboardConfig() == null || profileService == null) {
             return Collections.emptyList();
         }
 
@@ -46,9 +41,6 @@ public class LobbyScoreboardImpl implements Scoreboard {
         List<String> template = (profile.getParty() != null)
                 ? configService.getScoreboardConfig().getStringList("scoreboard.lines.party")
                 : configService.getScoreboardConfig().getStringList("scoreboard.lines.lobby");
-
-        Optional<MusicSession> musicStateOptional = musicService.getMusicState(profile.getUuid());
-
         int experience = profile.getProfileData().getExperience();
         String levelProgressBar = LevelBadgeUtil.getProgressBar(experience, 12);
         String levelProgressDetails = LevelBadgeUtil.getProgressDetails(experience);
@@ -61,27 +53,6 @@ public class LobbyScoreboardImpl implements Scoreboard {
         }
 
         for (String line : template) {
-            if (line.equalsIgnoreCase("{music}")) {
-                musicStateOptional.ifPresent(state -> {
-                    List<String> musicTemplate = configService.getScoreboardConfig().getStringList("scoreboard.lines.music");
-
-                    int elapsedSeconds = state.getElapsedSeconds();
-                    int totalSeconds = state.getDisc().getDuration();
-
-                    String elapsedTime = TimeUtil.formatTimeFromSeconds(elapsedSeconds);
-                    String totalTime = TimeUtil.formatTimeFromSeconds(totalSeconds);
-                    String duration = elapsedTime + " / " + totalTime;
-
-                    for (String musicLine : musicTemplate) {
-                        scoreboardLines.add(CC.translate(musicLine)
-                                .replace("{song-name}", state.getDisc().getTitle())
-                                .replace("{song-duration}", duration)
-                        );
-                    }
-                });
-                continue;
-            }
-
             String processedLine = CC.translate(line)
                     .replace("{online}", String.valueOf(Bukkit.getOnlinePlayers().size()))
                     .replace("{wins}", String.valueOf(profile.getProfileData().getTotalWins()))

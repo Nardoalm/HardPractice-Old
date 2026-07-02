@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * @author Emmy
  * @project Alley
- * @date 17/10/2024 - 20:11
+ * @date 10/17/2024 - 20:11
  */
 @AllArgsConstructor
 public class DuelRequestMenu extends Menu {
@@ -30,7 +30,7 @@ public class DuelRequestMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return "&b&lDuelo " + this.targetPlayer.getName();
+        return "&b&lDuel " + this.targetPlayer.getName();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class DuelRequestMenu extends Menu {
                     .name(this.kit.getMenuTitle())
                     .lore(
                             "",
-                            "&aClique para selecionar!"
+                            "&aClick to select!"
                     )
                     .durability(this.kit.getDurability())
                     .hideMeta()

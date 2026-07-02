@@ -5,8 +5,10 @@ import us.alleypvp.practice.core.profile.ProfileService;
 import us.alleypvp.practice.core.profile.Profile;
 import us.alleypvp.practice.core.profile.enums.ProfileState;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -15,25 +17,31 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.ItemStack;
 
-/**
- * @author Emmy
- * @project Alley
- * @date 25/05/2024 - 16:20
- */
 public class SpawnListener implements Listener {
-    @EventHandler
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
         Profile profile = profileService.getProfile(player.getUniqueId());
 
         if (profile.getState().equals(ProfileState.LOBBY) || profile.getState().equals(ProfileState.EDITING) || profile.getState().equals(ProfileState.WAITING)) {
-            if (player.getGameMode() == GameMode.CREATIVE) {
+            if (player.getGameMode() == GameMode.CREATIVE || player.hasPermission("kaoscore.admin")) {
                 return;
             }
+
+            ItemStack itemInHand = player.getItemInHand();
+            boolean isWoolBlock = event.getBlockPlaced().getType() == Material.WOOL;
+            boolean isWoolItem = itemInHand != null && itemInHand.getType() == Material.WOOL;
+
+            if ((isWoolBlock || isWoolItem) && player.hasPermission("kaoscore.pro")) {
+                event.setCancelled(false);
+                return;
+            }
+
             event.setCancelled(true);
         }
     }
@@ -71,8 +79,9 @@ public class SpawnListener implements Listener {
         Player player = event.getPlayer();
         ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
         Profile profile = profileService.getProfile(player.getUniqueId());
+
         if (profile.getState().equals(ProfileState.LOBBY) || profile.getState().equals(ProfileState.EDITING) || profile.getState().equals(ProfileState.WAITING)) {
-            if (player.getGameMode() == GameMode.CREATIVE) {
+            if (player.getGameMode() == GameMode.CREATIVE || player.hasPermission("kaoscore.admin")) {
                 return;
             }
             event.setCancelled(true);
@@ -109,25 +118,16 @@ public class SpawnListener implements Listener {
             if (player.getGameMode() == GameMode.SURVIVAL
                     && (profile.getState().equals(ProfileState.LOBBY)
                     || profile.getState().equals(ProfileState.WAITING))) {
+
                 if (event.getClickedInventory() != null && event.getClickedInventory().equals(player.getInventory())) {
                     event.setCancelled(true);
+                    return;
                 }
 
-                if (event.getSlotType() == InventoryType.SlotType.CRAFTING || event.isShiftClick() || event.getClick().isKeyboardClick()) {
+                if (event.getSlotType() == InventoryType.SlotType.CRAFTING || event.isShiftClick()) {
                     event.setCancelled(true);
                 }
             }
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerItemDamageEvent(PlayerItemDamageEvent event) {
-        Profile profile = AlleyPractice.getInstance().getService(ProfileService.class).getProfile(event.getPlayer().getUniqueId());
-
-        if (profile.getState().equals(ProfileState.LOBBY)
-                || profile.getState().equals(ProfileState.EDITING)
-                || profile.getState().equals(ProfileState.WAITING)) {
-            event.setCancelled(true);
         }
     }
 
@@ -138,7 +138,7 @@ public class SpawnListener implements Listener {
         Profile profile = profileService.getProfile(player.getUniqueId());
 
         if (profile.getState().equals(ProfileState.LOBBY) || profile.getState().equals(ProfileState.EDITING) || profile.getState().equals(ProfileState.WAITING)) {
-            if (player.getGameMode() == GameMode.CREATIVE) {
+            if (player.getGameMode() == GameMode.CREATIVE || player.hasPermission("kaoscore.admin")) {
                 return;
             }
             event.setCancelled(true);

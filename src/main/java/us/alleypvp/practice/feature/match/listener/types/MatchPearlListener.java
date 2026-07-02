@@ -25,11 +25,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Gate;
 import org.bukkit.material.Stairs;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -37,8 +36,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.Optional;
 
 public class MatchPearlListener implements Listener {
-
-    //TODO: Locale
 
     @EventHandler
     public void onPearlLaunch(ProjectileLaunchEvent event) {
@@ -75,25 +72,11 @@ public class MatchPearlListener implements Listener {
         setPearlMetadata(enderPearl, player, playerBlock, playerBlockAbove);
     }
 
-    @EventHandler
-    public void onPearlLand(ProjectileHitEvent event) {
-        if (!(event.getEntity() instanceof EnderPearl) || !(event.getEntity().getShooter() instanceof Player)) {
-            return;
-        }
+    // REMOVIDO: O onPearlLand (ProjectileHitEvent) com player.teleport().
+    // É isso que causava os kicks/disconnects de "Illegal Stance".
+    // O Spigot já faz o teleporte de forma nativa e chama o PlayerTeleportEvent logo em seguida.
 
-        EnderPearl enderPearl = (EnderPearl) event.getEntity();
-        Player player = (Player) enderPearl.getShooter();
-        Location landLocation = enderPearl.getLocation().clone();
-
-        if (enderPearl.hasMetadata("cpearl") || enderPearl.hasMetadata("tali")) {
-            Location teleportLocation = getTeleportLocation(landLocation, player);
-            if (teleportLocation != null) {
-                player.teleport(teleportLocation);
-            }
-        }
-    }
-
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
             return;
@@ -103,10 +86,14 @@ public class MatchPearlListener implements Listener {
         Location destination = event.getTo().clone();
 
         if (shouldCancelTeleport(destination, player, event)) {
+            event.setCancelled(true);
             return;
         }
 
         adjustTeleportLocation(destination, event);
+
+        // Cooldown deve ser aplicado principalmente no lançamento,
+        // mas caso a lógica do seu server exija no teleporte, ela permanece segura aqui.
         applyCooldown(player);
     }
 
@@ -148,31 +135,26 @@ public class MatchPearlListener implements Listener {
     private boolean shouldCancelPearl(Player player, Block playerBlock, Block playerBlockAbove, ProjectileLaunchEvent event) {
         String playerDirection = getPlayerDirection(player);
 
-        // Check fence gate restrictions
         if (isFenceGateRestricted(playerBlock, playerDirection)) {
             sendInvalidPearlFeedback(player, event);
             return true;
         }
 
-        // Check chest restrictions
         if (isChestRestricted(playerBlock, playerDirection)) {
             sendInvalidPearlFeedback(player, event);
             return true;
         }
 
-        // Check slab/stair restrictions with block in front
         if (isSlabStairRestricted(playerBlock, playerBlockAbove, playerDirection)) {
             sendInvalidPearlFeedback(player, event);
             return true;
         }
 
-        // Check stair facing restrictions
         if (isStairFacingRestricted(playerBlock, playerDirection)) {
             sendInvalidPearlFeedback(player, event);
             return true;
         }
 
-        // Check general block in front restrictions
         if (isGeneralBlockRestricted(playerBlock, playerBlockAbove)) {
             sendInvalidPearlFeedback(player, event);
             return true;
@@ -184,18 +166,15 @@ public class MatchPearlListener implements Listener {
     private boolean shouldCancelTeleport(Location destination, Player player, PlayerTeleportEvent event) {
         Block destinationBlock = destination.getBlock();
 
-        // Check various block type restrictions
         if (isForbiddenTeleportBlock(destinationBlock)) {
             sendInvalidPearlFeedback(player, event);
             return true;
         }
 
-        // Check fence gate restrictions
         if (isFenceGateTeleportRestricted(destinationBlock, player, event)) {
             return true;
         }
 
-        // Check disabled block types
         if (isDisabledBlockType(destinationBlock, player, event)) {
             return true;
         }
@@ -304,7 +283,6 @@ public class MatchPearlListener implements Listener {
         Block upper = block.getRelative(BlockFace.UP);
         Block lower = block.getRelative(BlockFace.DOWN);
 
-        // Case 1: Both upper and current are fence gates, upper is closed
         if (upper.getType() == Material.FENCE_GATE &&
                 block.getType() == Material.FENCE_GATE &&
                 !((Gate) upper.getState().getData()).isOpen() &&
@@ -314,7 +292,6 @@ public class MatchPearlListener implements Listener {
             return true;
         }
 
-        // Case 2: Current is fence gate (closed), lower is fence gate (closed), upper is not fence gate
         if (upper.getType() != Material.FENCE_GATE &&
                 block.getType() == Material.FENCE_GATE &&
                 !((Gate) block.getState().getData()).isOpen() &&
@@ -328,7 +305,6 @@ public class MatchPearlListener implements Listener {
     }
 
     private boolean isDisabledBlockType(Block block, Player player, PlayerTeleportEvent event) {
-        // Check chest
         if (!getConfig().getBoolean("TalibanPearl.chest") && isChest(block) &&
                 block.getRelative(BlockFace.UP).getType().isSolid() &&
                 block.getRelative(BlockFace.UP).getType() != Material.FENCE_GATE) {
@@ -336,21 +312,18 @@ public class MatchPearlListener implements Listener {
             return true;
         }
 
-        // Check end portal
         if (!getConfig().getBoolean("TalibanPearl.endportal") && isEndPortal(block) &&
                 block.getRelative(BlockFace.UP).getType().isSolid()) {
             sendInvalidPearlFeedback(player, event);
             return true;
         }
 
-        // Check bed
         if (!getConfig().getBoolean("TalibanPearl.bed") && isBed(block) &&
                 block.getRelative(BlockFace.UP).getType().isSolid()) {
             sendInvalidPearlFeedback(player, event);
             return true;
         }
 
-        // Check cobble wall
         if (!getConfig().getBoolean("TalibanPearl.cobblewall") && isCobbleWall(block)) {
             sendInvalidPearlFeedback(player, event);
             return true;
@@ -362,17 +335,14 @@ public class MatchPearlListener implements Listener {
     private void setPearlMetadata(EnderPearl pearl, Player player, Block block, Block blockAbove) {
         String direction = getPlayerDirection(player);
 
-        // Set "tali" metadata for air block pearls
         if (shouldSetTaliMetadata(block, blockAbove, direction)) {
             pearl.setMetadata("tali", new FixedMetadataValue(AlleyPractice.getInstance(), true));
         }
 
-        // Set "cpearl" metadata for various block types
         if (shouldSetCpearlMetadata(block, direction)) {
             pearl.setMetadata("cpearl", new FixedMetadataValue(AlleyPractice.getInstance(), true));
         }
 
-        // Set metadata for slabs and stairs
         if (shouldSetSlabStairMetadata(block)) {
             pearl.setMetadata("tali", new FixedMetadataValue(AlleyPractice.getInstance(), true));
         }
@@ -396,14 +366,12 @@ public class MatchPearlListener implements Listener {
     }
 
     private boolean shouldSetCpearlMetadata(Block block, String direction) {
-        // Cobble wall
         if (getConfig().getBoolean("TalibanPearl.cobblewall") &&
                 isCobbleWall(block) &&
                 block.getRelative(BlockFace.UP).getType().isSolid()) {
             return true;
         }
 
-        // Chest
         if (getConfig().getBoolean("TalibanPearl.chest") && isChest(block) &&
                 block.getRelative(BlockFace.UP).getType().isSolid() &&
                 block.getRelative(BlockFace.UP).getType() != Material.FENCE_GATE) {
@@ -411,7 +379,6 @@ public class MatchPearlListener implements Listener {
             return !block.getRelative(directionFace).getType().isSolid();
         }
 
-        // Chest below
         if (getConfig().getBoolean("TalibanPearl.chest") &&
                 isChest(block.getRelative(BlockFace.DOWN)) &&
                 !isChest(block.getRelative(BlockFace.UP)) &&
@@ -420,28 +387,24 @@ public class MatchPearlListener implements Listener {
             return true;
         }
 
-        // Trapdoor
         if (getConfig().getBoolean("TalibanPearl.trapdoor") &&
                 block.getType() == Material.TRAP_DOOR &&
                 block.getRelative(BlockFace.UP).getType().isSolid()) {
             return true;
         }
 
-        // Piston base
         if (getConfig().getBoolean("TalibanPearl.piston-base") &&
                 isPistonBase(block.getRelative(BlockFace.DOWN)) &&
                 block.getRelative(BlockFace.UP).getType().isSolid()) {
             return true;
         }
 
-        // End portal
         if (getConfig().getBoolean("TalibanPearl.endportal") &&
                 isEndPortal(block) &&
                 block.getRelative(BlockFace.UP).getType().isSolid()) {
             return true;
         }
 
-        // Bed
         if (getConfig().getBoolean("TalibanPearl.bed") &&
                 isBed(block) &&
                 block.getRelative(BlockFace.UP).getType().isSolid()) {
@@ -459,55 +422,18 @@ public class MatchPearlListener implements Listener {
     private void adjustTeleportLocation(Location destination, PlayerTeleportEvent event) {
         Block block = destination.getBlock();
 
-        // Adjust Y position for stairs
+        // Alteramos apenas o eixo Y para lajes e escadas.
+        // Remover a forçação brusca de X e Z evita que o jogador seja jogado para fora da arena
+        // ou glitcheado contra o centro de uma parede.
         if (isStair(block) && block.getRelative(BlockFace.UP).getType().isSolid()) {
             destination.setY(destination.getY() - 0.5);
             event.setTo(destination);
         }
 
-        // Adjust Y position for slabs
         if (isSlab(block) && block.getRelative(BlockFace.UP).getType().isSolid()) {
             destination.setY(destination.getY() - 0.5);
             event.setTo(destination);
         }
-
-        // Center X and Z coordinates
-        destination.setX(destination.getBlockX() + 0.5);
-        destination.setZ(destination.getBlockZ() + 0.5);
-        event.setTo(destination);
-    }
-
-    private Location getTeleportLocation(Location pearlLocation, Player player) {
-        String direction = getDirectionFromPlayer(player);
-
-        double offsetX = 0, offsetZ = 0;
-        switch (direction) {
-            case "N":
-            case "NW":
-                offsetZ = -1.5;
-                break;
-            case "W":
-            case "SW":
-                offsetX = -1.5;
-                break;
-            case "S":
-            case "SE":
-                offsetZ = 1.5;
-                break;
-            case "E":
-            case "NE":
-                offsetX = 1.5;
-                break;
-            default:
-                return null;
-        }
-
-        return new Location(player.getWorld(),
-                pearlLocation.getX() + offsetX,
-                pearlLocation.getY(),
-                pearlLocation.getZ() + offsetZ,
-                player.getLocation().getYaw(),
-                player.getLocation().getPitch());
     }
 
     private Block getBlockAtPlayerFeet(Player player) {
@@ -687,13 +613,16 @@ public class MatchPearlListener implements Listener {
     }
 
     private void sendInvalidPearlFeedback(Player player, Event event) {
-        if (getConfig().getBoolean("Invalid-Pearl-Message")) {
-            player.sendMessage(CC.translate(getConfig().getString("Message")));
+        if (getConfig().getBoolean("Invalid-Pearl-Message", true)) {
+            player.sendMessage(CC.translate(getConfig().getString("Message", "&cInvalid pearl.")));
         }
 
-        if (getConfig().getBoolean("return-pearl")) {
-            player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
+        if (getConfig().getBoolean("return-pearl", true)) {
+            InventoryUtil.giveItem(player, Material.ENDER_PEARL, 1);
             player.updateInventory();
+
+            CooldownService cooldownService = AlleyPractice.getInstance().getService(CooldownService.class);
+            cooldownService.removeCooldown(player.getUniqueId(), CooldownType.ENDER_PEARL);
         }
 
         if (event instanceof Cancellable) {

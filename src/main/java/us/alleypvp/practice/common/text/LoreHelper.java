@@ -20,7 +20,7 @@ public class LoreHelper {
      * @return A formatted string indicating whether the feature is toggled or not.
      */
     public String displayToggled(boolean value) {
-        String returnValue = value ? "&a&l✔ &bAtivado" : "&c&l✘ &cDesativado";
+        String returnValue = value ? "&a&l✔ &bEnable" : "&c&l✘ &cDisable";
         return ChatColor.translateAlternateColorCodes('&', "&f&l│ " + returnValue);
     }
     /**
@@ -29,7 +29,7 @@ public class LoreHelper {
      * @param value The boolean value to represent.
      */
     public String displayEnabled(boolean value) {
-        String returnValue = value ? "&bAtivado" : "&cDesativado";
+        String returnValue = value ? "&bEnable" : "&cDisable";
         return ChatColor.translateAlternateColorCodes('&', "&f&l│ " + returnValue);
     }
 
@@ -39,7 +39,7 @@ public class LoreHelper {
      * @param value The boolean value to represent.
      */
     public String displayShown(boolean value) {
-        String returnValue = value ? "&bExibido" : "&cOculto";
+        String returnValue = value ? "&bShow" : "&cHidden";
         return ChatColor.translateAlternateColorCodes('&', "&f&l│ " + returnValue);
     }
 
@@ -49,7 +49,7 @@ public class LoreHelper {
      * @param value The boolean value to represent.
      */
     public String displayStatus(boolean value) {
-        String returnValue = value ? "&aAtivado" : "&cDesativado";
+        String returnValue = value ? "&aEnable" : "&cDisable";
         return ChatColor.translateAlternateColorCodes('&', "&f● &bStatus: &f" + returnValue);
     }
 
@@ -73,9 +73,9 @@ public class LoreHelper {
      */
     public String selectionLoreWithPermission(Player player, String permission, boolean inUse, String clickToAction) {
         if (player.hasPermission(permission) && inUse) {
-            return "&a&lSELECIONADO";
+            return "&a&lSELECTED";
         } else if (player.hasPermission(permission) && !inUse) {
-            return "&aClique para " + clickToAction + "!";
+            return "&aClick to " + clickToAction + "!";
         } else {
             return AlleyPractice.getInstance().getService(PluginConstant.class).getPermissionLackMessage();
         }
@@ -89,9 +89,9 @@ public class LoreHelper {
      */
     public String selectionLore(boolean inUse, String clickToAction) {
         if (inUse) {
-            return "&aSelecionado.";
+            return "&aSelected.";
         } else {
-            return "&aClique para " + clickToAction + ".";
+            return "&aClick to " + clickToAction + ".";
         }
     }
 }

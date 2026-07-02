@@ -40,7 +40,6 @@ public class ProfileData {
     private ProfileSettingData settingData;
     private ProfileCosmeticData cosmeticData;
     private ProfilePlayTimeData playTimeData;
-    private ProfileMusicData musicData;
 
     private List<MatchData> previousMatches;
 
@@ -74,7 +73,6 @@ public class ProfileData {
         this.cosmeticData = new ProfileCosmeticData();
         this.playTimeData = new ProfilePlayTimeData();
         this.layoutData = new ProfileLayoutData();
-        this.musicData = new ProfileMusicData();
     }
 
     private void feedDataClasses() {

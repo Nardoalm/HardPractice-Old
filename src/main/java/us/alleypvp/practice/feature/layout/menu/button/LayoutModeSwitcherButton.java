@@ -11,11 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * @author Emmy
- * @project Alley
- * @since 03/05/2025
- */
 @AllArgsConstructor
 public class LayoutModeSwitcherButton extends Button {
     private KitCategory kitCategory;
@@ -23,12 +18,12 @@ public class LayoutModeSwitcherButton extends Button {
     @Override
     public ItemStack getButtonItem(Player player) {
         return new ItemBuilder(Material.ARROW)
-                .name("&b&lModos " + this.kitCategory.getName())
+                .name("&b&l" + this.kitCategory.getName() + " Modes")
                 .lore(
                         CC.MENU_BAR,
                         ("&f " + this.kitCategory.getDescription()),
                         "",
-                        "&aClique para visualizar!",
+                        "&aClick to view!",
                         CC.MENU_BAR
                 )
                 .hideMeta()

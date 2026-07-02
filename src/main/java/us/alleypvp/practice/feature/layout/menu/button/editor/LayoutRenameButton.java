@@ -11,11 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * @author Emmy
- * @project Alley
- * @since 03/05/2025
- */
 @AllArgsConstructor
 public class LayoutRenameButton extends Button {
     private final LayoutData layout;
@@ -23,13 +18,13 @@ public class LayoutRenameButton extends Button {
     @Override
     public ItemStack getButtonItem(Player player) {
         return new ItemBuilder(Material.NAME_TAG)
-                .name("&b&lRenomear Layout")
+                .name("&b&lRename Layout")
                 .lore(
                         CC.MENU_BAR,
-                        "&7Altera o nome",
-                        "&7de exibição do layout.",
+                        "&7Changes the display",
+                        "&7name of the layout.",
                         "",
-                        "&aClique para renomear",
+                        "&aClick to rename",
                         CC.MENU_BAR
                 )
                 .hideMeta()

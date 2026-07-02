@@ -30,6 +30,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -42,16 +43,26 @@ import org.bukkit.potion.PotionEffectType;
 
 public class MatchListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
         ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
         Profile profile = profileService.getProfile(player.getUniqueId());
+
         if (profile.getState() == ProfileState.SPECTATING || profile.getState() == ProfileState.PLAYING) {
             if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
                 if (MatchUtility.isBeyondBounds(event.getTo(), profile)) {
                     event.setCancelled(true);
                     player.sendMessage(CC.translate("&cYou cannot leave the arena."));
+
+                    // INJETADO O REEMBOLSO: Evita o jogador de perder a pérola no inventário e ficar de cooldown quando a ação é cancelada.
+                    us.alleypvp.practice.common.InventoryUtil.giveItem(player, Material.ENDER_PEARL, 1);
+                    player.updateInventory();
+
+                    us.alleypvp.practice.feature.cooldown.CooldownService cooldownService = AlleyPractice.getInstance().getService(us.alleypvp.practice.feature.cooldown.CooldownService.class);
+                    if (cooldownService != null) {
+                        cooldownService.removeCooldown(player.getUniqueId(), us.alleypvp.practice.feature.cooldown.CooldownType.ENDER_PEARL);
+                    }
                 }
             }
         }
@@ -84,6 +95,8 @@ public class MatchListener implements Listener {
                     if (player.getGameMode() == GameMode.CREATIVE) return;
                     if (match.getArena().getType() != ArenaType.STANDALONE) return;
                     if (profile.getState() != ProfileState.PLAYING) return;
+
+                    gamePlayer.setDead(true);
 
                     if (match instanceof RoundsMatch && match.getKit().isSettingEnabled(KitSettingStickFight.class)) {
                         RoundsMatch roundsMatch = (RoundsMatch) match;
@@ -137,7 +150,7 @@ public class MatchListener implements Listener {
         return Math.min(configuredVoidLevel, maxReasonableVoidLevel);
     }
 
-    @org.bukkit.event.EventHandler
+    @EventHandler
     private void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         if (player == null) return;

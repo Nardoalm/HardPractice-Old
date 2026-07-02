@@ -31,6 +31,7 @@ public class RankedCommand extends BaseCommand {
                 " ",
                 "&b&lRanked Commands Help:",
                 " &f◆ &b/ranked ban &8(&7player&8) &7| Bane um jogador das partidas ranked.",
+                " &f◆ &b/ranked menu &8(&7player&8) &7| Abre o menu de partidas ranked.",
                 " &f◆ &b/ranked unban &8(&7player&8) &7| Desbane um jogador das partidas ranked.",
                 " &f◆ &b/ranked banlist &7| Lista todos os jogadores banidos do ranked.",
                 " "

@@ -49,11 +49,6 @@ public class KnockbackAdapterImpl implements KnockbackAdapter {
 
         for (KnockbackType kbType : KnockbackType.values()) {
             if (this.plugin.getServer().getName().equalsIgnoreCase(kbType.getSpigotName())) {
-                switch (kbType) {
-                    case ZONE:
-                        selectedImplementation = new ZoneKnockbackImpl();
-                        break;
-                }
                 break;
             }
         }

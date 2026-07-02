@@ -116,20 +116,10 @@ public enum PracticeSettingType {
             )
     ),
 
-    COSMETICS(25, "&b&lCosmetics", Material.NETHER_STAR,
+    COSMETICS(22, "&b&lCosmetics", Material.NETHER_STAR,
             settings -> Arrays.asList(
                     CC.MENU_BAR,
                     "&7Customize your cosmetic rewards.",
-                    "",
-                    "&aClick to view.",
-                    CC.MENU_BAR
-            )
-    ),
-
-    LOBBY_MUSIC(34, "&b&lLobby Music", Material.JUKEBOX,
-            settings -> Arrays.asList(
-                    CC.MENU_BAR,
-                    "&7Customize your background lobby music.",
                     "",
                     "&aClick to view.",
                     CC.MENU_BAR

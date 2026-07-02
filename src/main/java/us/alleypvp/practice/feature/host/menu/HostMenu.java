@@ -2,6 +2,7 @@ package us.alleypvp.practice.feature.host.menu;
 
 import us.alleypvp.practice.common.item.ItemBuilder;
 import us.alleypvp.practice.feature.event.menu.EventMenu;
+import us.alleypvp.practice.feature.tournament.menu.TournamentHostTypeMenu;
 import us.alleypvp.practice.library.menu.Button;
 import us.alleypvp.practice.library.menu.Menu;
 import lombok.AllArgsConstructor;
@@ -72,6 +73,7 @@ public class HostMenu extends Menu {
 
             switch (this.itemStack.getType()) {
                 case BOW:
+                    new TournamentHostTypeMenu().openMenu(player);
                     break;
                 case EMPTY_MAP:
                     new EventMenu().openMenu(player);

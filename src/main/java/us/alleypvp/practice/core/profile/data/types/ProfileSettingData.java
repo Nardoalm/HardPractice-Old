@@ -30,7 +30,6 @@ public class ProfileSettingData {
      * settings.put(ProfileSetting.TABLIST, ToggleState.ENABLED);
      * settings.put(ProfileSetting.SCOREBOARD_LINES, ToggleState.ENABLED);
      * settings.put(ProfileSetting.DUEL_REQUESTS, ToggleState.ENABLED);
-     * settings.put(ProfileSetting.LOBBY_MUSIC, ToggleState.ENABLED);
      * settings.put(ProfileSetting.SERVER_TITLES, ToggleState.ENABLED);
      * }
      * <p>
@@ -89,7 +88,6 @@ public class ProfileSettingData {
     private boolean tablistEnabled;
     private boolean showScoreboardLines;
     private boolean receiveDuelRequestsEnabled;
-    private boolean lobbyMusicEnabled;
     private boolean serverTitles;
     private int pingRange;
     private String chatChannel;
@@ -105,7 +103,6 @@ public class ProfileSettingData {
         this.tablistEnabled = true;
         this.showScoreboardLines = true;
         this.receiveDuelRequestsEnabled = true;
-        this.lobbyMusicEnabled = true;
         this.serverTitles = true;
         this.pingRange = 100;
         this.chatChannel = ChatChannel.GLOBAL.toString();

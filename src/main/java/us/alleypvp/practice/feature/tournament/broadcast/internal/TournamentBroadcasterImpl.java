@@ -46,16 +46,16 @@ public class TournamentBroadcasterImpl implements TournamentBroadcaster {
     @Override
     public void broadcastResults(Tournament tournament, TournamentPlacements placements) {
         Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage(CC.translate("&6&lTournament &7(" + tournament.getDisplayName() + ")"));
+        Bukkit.broadcastMessage(CC.translate("&b&lTournament &7(" + tournament.getDisplayName() + ")"));
         Bukkit.broadcastMessage(
                 CC.translate(
-                        " &6│ &f"
+                        " &b│ &f"
                                 + tournament.getKit()
-                                + " &7(&6"
+                                + " &7(&b"
                                 + tournament.getInitialPlayerCount()
                                 + "&7)"));
 
-        String[] prefixes = {"&6&l✫1", "&7&l✫2", "&c&l✫3"};
+        String[] prefixes = {"&b&l✫1", "&7&l✫2", "&c&l✫3"};
 
         int limit = Math.min(3, placements.getOrderedPlacements().size());
         for (int i = 0; i < limit; i++) {
@@ -81,9 +81,9 @@ public class TournamentBroadcasterImpl implements TournamentBroadcaster {
         Tournament tournament = event.getTournament();
         String message =
                 CC.translate(
-                        "&6"
+                        "&b"
                                 + tournament.getHostName()
-                                + " &fhosted a &6"
+                                + " &fhosted a &b"
                                 + tournament.getDisplayName()
                                 + " "
                                 + tournament.getKit()
@@ -122,7 +122,7 @@ public class TournamentBroadcasterImpl implements TournamentBroadcaster {
      * @param event The round starting event.
      */
     private void handleRoundStarting(BroadcastEvent.RoundStarting event) {
-        String message = "&6Round " + event.getRoundNumber() + " &fhas started!";
+        String message = "&bRound " + event.getRoundNumber() + " &fhas started!";
         sendTargetedMessage(event.getTournament(), event.getTournament().getParticipants(), message);
 
         event.getTournament().getAllPlayers()
@@ -149,12 +149,12 @@ public class TournamentBroadcasterImpl implements TournamentBroadcaster {
         if (winner != null) {
             String winnerNames = TournamentMessageBuilder.getNaturalTeamNameListWithProfileColors(winner);
             message = String.format(
-                    "&c%s &f%s eliminated by %s&f. (&6%d&f/&6%d&f)",
+                    "&c%s &f%s eliminated by %s&f. (&b%d&f/&b%d&f)",
                     loserNames, verb, winnerNames, remainingPlayers, initial
             );
         } else {
             message = String.format(
-                    "&c%s &f%s eliminated. (&6%d&f/&6%d&f)",
+                    "&c%s &f%s eliminated. (&b%d&f/&b%d&f)",
                     loserNames, verb, remainingPlayers, initial
             );
         }

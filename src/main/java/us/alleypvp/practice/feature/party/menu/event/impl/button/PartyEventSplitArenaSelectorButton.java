@@ -36,7 +36,7 @@ public class PartyEventSplitArenaSelectorButton extends Button {
                 .lore(
                         " &f◆ &bKit: &f" + this.kit.getDisplayName(),
                         "",
-                        "&aClique para selecionar!"
+                        "&aClick to select!"
                 )
                 .durability(0)
                 .hideMeta()

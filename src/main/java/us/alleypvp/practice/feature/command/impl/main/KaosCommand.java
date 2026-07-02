@@ -60,7 +60,7 @@ public class KaosCommand extends BaseCommand {
     }
 
     private @NotNull TextComponent createLinkComponent() {
-        TextComponent websiteComponent = ClickableUtil.createLinkComponent("&b&l[WEBSITE]", "https://store.alleupvp.us", "&aClique para abrir o website.");
+        TextComponent websiteComponent = ClickableUtil.createLinkComponent("&b&l[WEBSITE]", "https://store.pvphard.live", "&aClique para abrir o website.");
         String spacing = "  ";
 
         TextComponent clickable = new TextComponent("     ");

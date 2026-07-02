@@ -58,15 +58,15 @@ public class TournamentBroadcastTask implements Runnable {
 
         TextComponent title =
                 new TextComponent(
-                        CC.translate("&6&lTournament &7(" + tournament.getDisplayName() + ")"));
+                        CC.translate("&b&lTournament &7(" + tournament.getDisplayName() + ")"));
 
         TextComponent typeComponent =
                 new TextComponent(
-                        CC.translate("&6│ &fKit: &6" + tournament.getKit().getDisplayName()));
+                        CC.translate("&b│ &fKit: &b" + tournament.getKit().getDisplayName()));
 
         TextComponent hostComponent =
                 new TextComponent(
-                        CC.translate("&6│ &fHosted By: &6" + tournament.getHostName()));
+                        CC.translate("&b│ &fHosted By: &b" + tournament.getHostName()));
 
         int currentPlayers =
                 (state == TournamentState.WAITING || state == TournamentState.STARTING)
@@ -80,7 +80,7 @@ public class TournamentBroadcastTask implements Runnable {
         int maxPlayers = tournament.getMaxTeams() * tournament.getTeamSize();
         TextComponent playersComponent =
                 new TextComponent(
-                        CC.translate("&6│ &fPlayers: &6" + currentPlayers + "/" + maxPlayers));
+                        CC.translate("&b│ &fPlayers: &b" + currentPlayers + "/" + maxPlayers));
 
         String status;
         switch (state) {
@@ -98,7 +98,7 @@ public class TournamentBroadcastTask implements Runnable {
         }
         TextComponent statusComponent = new TextComponent(CC.translate(status));
 
-        StringBuilder hoverText = new StringBuilder(CC.translate("&6&lJoined Players:\n"));
+        StringBuilder hoverText = new StringBuilder(CC.translate("&b&lJoined Players:\n"));
         List<String> playerNames = tournament.getWaitingPool().stream()
                 .flatMap(participant -> participant.getOnlinePlayers().stream())
                 .map(Player::getName)

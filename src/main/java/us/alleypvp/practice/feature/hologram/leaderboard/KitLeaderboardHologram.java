@@ -75,7 +75,7 @@ public class KitLeaderboardHologram {
         }
 
         lines.add("");
-        lines.add("&balleypvp.us");
+        lines.add("&bClick to update");
 
         hologram.update(lines);
     }
@@ -102,7 +102,7 @@ public class KitLeaderboardHologram {
 
     private String getRankPrefix(int rank) {
         switch (rank) {
-            case 1: return "&6&l✫1";
+            case 1: return "&b&l✫1";
             case 2: return "&b&l✫2";
             case 3: return "&d&l✫3";
             default: return "&e" + rank + ".";

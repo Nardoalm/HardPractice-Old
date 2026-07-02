@@ -81,6 +81,7 @@ public class CommandUtility {
             new RankedCommand();
             new RankedBanCommand();
             new RankedUnbanCommand();
+            new RankedUnbanCommand();
             new RankedBanListCommand();
             new QueueCommand();
             new FFACommand();

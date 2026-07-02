@@ -12,11 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * @author Emmy
- * @project Alley
- * @since 24/01/2025
- */
 @AllArgsConstructor
 public class PageButton extends Button {
     private PaginatedMenu menu;
@@ -27,24 +22,24 @@ public class PageButton extends Button {
         if (this.offset > 0) {
             if (MenuUtil.hasNext(player, offset, this.menu)) {
                 return new ItemBuilder(Material.MELON)
-                        .name("&b&lPróxima Página &7" + (this.menu.getPage() + "/" + this.menu.getPages(player)))
+                        .name("&b&lNext Page &7" + (this.menu.getPage() + "/" + this.menu.getPages(player)))
                         .lore(
                                 CC.MENU_BAR,
-                                "&7Clique direito:",
-                                " &7▶ Ver todas",
+                                "&7Right click:",
+                                " &7▶ View all",
                                 "",
-                                "&aClique para visualizar.",
+                                "&aClick to view.",
                                 CC.MENU_BAR
                         )
                         .hideMeta()
                         .build();
             } else {
                 return new ItemBuilder(Material.MELON)
-                        .name(CC.translate("&c&lPróxima Página"))
+                        .name(CC.translate("&c&lNext Page"))
                         .lore(
                                 CC.MENU_BAR,
-                                " &cNão existe",
-                                " &cpróxima página.",
+                                " &cThere is no",
+                                " &cnext page.",
                                 CC.MENU_BAR
                         )
                         .hideMeta()
@@ -53,24 +48,24 @@ public class PageButton extends Button {
         } else {
             if (MenuUtil.hasPrevious(offset, this.menu)) {
                 return new ItemBuilder(Material.SPECKLED_MELON)
-                        .name("&b&lPágina Anterior &7" + (this.menu.getPage() + "/" + this.menu.getPages(player)))
+                        .name("&b&lPrevious Page &7" + (this.menu.getPage() + "/" + this.menu.getPages(player)))
                         .lore(
                                 CC.MENU_BAR,
-                                "&7Clique direito:",
-                                " &7▶ Ver todas",
+                                "&7Right click:",
+                                " &7▶ View all",
                                 "",
-                                "&aClique para visualizar.",
+                                "&aClick to view.",
                                 CC.MENU_BAR
                         )
                         .hideMeta()
                         .build();
             } else {
                 return new ItemBuilder(Material.SPECKLED_MELON)
-                        .name(CC.translate("&c&lPágina Anterior"))
+                        .name(CC.translate("&c&lPrevious Page"))
                         .lore(
                                 CC.MENU_BAR,
-                                " &cNão existe",
-                                " &cpágina anterior.",
+                                " &cThere is no",
+                                " &cprevious page.",
                                 CC.MENU_BAR
                         )
                         .hideMeta()

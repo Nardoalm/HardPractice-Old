@@ -9,7 +9,6 @@ import us.alleypvp.practice.feature.division.DivisionService;
 import us.alleypvp.practice.feature.kit.Kit;
 import us.alleypvp.practice.feature.kit.KitService;
 import us.alleypvp.practice.feature.layout.data.LayoutData;
-import us.alleypvp.practice.feature.music.MusicService;
 import us.alleypvp.practice.core.profile.Profile;
 import us.alleypvp.practice.core.profile.data.ProfileData;
 import us.alleypvp.practice.core.profile.enums.ChatChannel;
@@ -189,7 +188,6 @@ public class MongoUtility {
                 .putSafe("settingData", profileData::getSettingData, MongoUtility::convertProfileSettingData)
                 .putSafe("cosmeticData", profileData::getCosmeticData, MongoUtility::convertProfileCosmeticData)
                 .putSafe("playTimeData", profileData::getPlayTimeData, MongoUtility::convertProfilePlayTimeData)
-                .putSafe("musicData", profileData::getMusicData, MongoUtility::convertProfileMusicData)
                 .build();
     }
 
@@ -235,8 +233,6 @@ public class MongoUtility {
                 profileData::setCosmeticData, ProfileCosmeticData::new);
         parseAndSet(profileDataDocument, "playTimeData", MongoUtility::parseProfilePlayTimeData,
                 profileData::setPlayTimeData, ProfilePlayTimeData::new);
-        parseAndSet(profileDataDocument, "musicData", MongoUtility::parseProfileMusicData,
-                profileData::setMusicData, MongoUtility::createDefaultMusicData);
 
         return profileData;
     }
@@ -370,7 +366,6 @@ public class MongoUtility {
                 .put("tablistEnabled", settingData.isTablistEnabled())
                 .put("showScoreboardLines", settingData.isShowScoreboardLines())
                 .put("receiveDuelRequestsEnabled", settingData.isReceiveDuelRequestsEnabled())
-                .put("lobbyMusicEnabled", settingData.isLobbyMusicEnabled())
                 .put("serverTitles", settingData.isServerTitles())
                 .put("pingRange", settingData.getPingRange())
                 .put("chatChannel", safeString(settingData.getChatChannel()))
@@ -420,21 +415,6 @@ public class MongoUtility {
                 .build();
     }
 
-    /**
-     * Converts ProfileMusicData to a MongoDB Document.
-     * Includes the list of selected music discs.
-     *
-     * @param musicData The ProfileMusicData object containing music preferences
-     * @return A Document representation of the music data, or empty Document if input is null
-     */
-    private static Document convertProfileMusicData(ProfileMusicData musicData) {
-        if (musicData == null) return new Document();
-
-        Set<String> selectedDiscs = musicData.getSelectedDiscs();
-        return new DocumentBuilder()
-                .put("selectedDiscs", selectedDiscs != null ? new ArrayList<>(selectedDiscs) : new ArrayList<>())
-                .build();
-    }
 
     /**
      * Parses a MongoDB Document into a map of unranked kit data.
@@ -634,33 +614,6 @@ public class MongoUtility {
         return InventoryUtil.getEditableKitItems(matchedKit);
     }
 
-    /**
-     * Parses a MongoDB Document into ProfileMusicData.
-     * Reconstructs the set of selected music discs from the stored list.
-     * Falls back to default music data if parsing fails.
-     *
-     * @param musicDocument The Document containing music data
-     * @return A ProfileMusicData object with selected discs, or default music data if parsing fails
-     */
-    private static ProfileMusicData parseProfileMusicData(Document musicDocument) {
-        if (musicDocument == null) {
-            return createDefaultMusicData();
-        }
-
-        try {
-            ProfileMusicData musicData = new ProfileMusicData();
-            List<String> selectedDiscs = musicDocument.getList("selectedDiscs", String.class);
-
-            if (selectedDiscs != null && !selectedDiscs.isEmpty()) {
-                musicData.getSelectedDiscs().addAll(selectedDiscs);
-                return musicData;
-            }
-        } catch (Exception e) {
-            Logger.logException("Falha ao interpretar os dados de musica, usando padroes", e);
-        }
-
-        return createDefaultMusicData();
-    }
 
     /**
      * Parses a MongoDB Document into ProfileSettingData.
@@ -680,7 +633,6 @@ public class MongoUtility {
         settingData.setTablistEnabled(settingDocument.getBoolean("tablistEnabled", DEFAULT_BOOLEAN_TRUE));
         settingData.setShowScoreboardLines(settingDocument.getBoolean("showScoreboardLines", DEFAULT_BOOLEAN_TRUE));
         settingData.setReceiveDuelRequestsEnabled(settingDocument.getBoolean("receiveDuelRequestsEnabled", DEFAULT_BOOLEAN_TRUE));
-        settingData.setLobbyMusicEnabled(settingDocument.getBoolean("lobbyMusicEnabled", DEFAULT_BOOLEAN_TRUE));
         settingData.setServerTitles(settingDocument.getBoolean("serverTitles", DEFAULT_BOOLEAN_TRUE));
         settingData.setPingRange(settingDocument.getInteger("pingRange", 100));
 
@@ -856,31 +808,6 @@ public class MongoUtility {
         } catch (Exception e) {
             Logger.logException(String.format("Falha ao criar o valor padrao para o campo: %s", key), e);
         }
-    }
-
-    /**
-     * Creates default music data with all available music discs selected.
-     * This method is used when music data is not present in the database document,
-     * ensuring users have access to all available music by default.
-     * Handles service lookup failures gracefully by returning empty music data.
-     *
-     * @return A ProfileMusicData object with all available music discs, or empty music data if service unavailable
-     */
-    private static ProfileMusicData createDefaultMusicData() {
-        ProfileMusicData musicData = new ProfileMusicData();
-        try {
-            MusicService musicService = AlleyPractice.getInstance().getService(MusicService.class);
-            if (musicService != null && musicService.getMusicDiscs() != null) {
-                musicService.getMusicDiscs().forEach(disc -> {
-                    if (disc != null) {
-                        musicData.addDisc(disc.name());
-                    }
-                });
-            }
-        } catch (Exception e) {
-            Logger.logException("Falha ao criar os dados padrao de musica", e);
-        }
-        return musicData;
     }
 
     /**

@@ -40,9 +40,9 @@ public class CosmeticButton extends Button {
         lore.addAll(cosmetic.getDisplayLore());
         lore.add("");
         if (hasPermission) {
-            lore.add(isSelected ? "&eSelecionado." : "&aClique para selecionar.");
+            lore.add(isSelected ? "&eSelected." : "&aClick to select.");
         } else {
-            lore.add("&cVocê não possui este cosmético.");
+            lore.add("&cYou do not own this cosmetic.");
         }
         lore.add(CC.MENU_BAR);
 

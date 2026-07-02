@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * @author Emmy
  * @project Alley
- * @since 21/04/2025
+ * @since 04/21/2025
  */
 @AllArgsConstructor
 public class DivisionViewButton extends Button {
@@ -25,9 +25,9 @@ public class DivisionViewButton extends Button {
     @Override
     public ItemStack getButtonItem(Player player) {
         return new ItemBuilder(Material.DIAMOND)
-                .name("&b&lDivisões")
+                .name("&b&lDivisions")
                 .lore(
-                        "&aClique para ver seu progresso de divisão."
+                        "&aClick to view your division progress."
                 )
                 .build();
     }

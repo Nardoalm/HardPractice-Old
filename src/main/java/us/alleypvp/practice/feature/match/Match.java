@@ -783,7 +783,7 @@ public abstract class Match {
         this.spectators.remove(player.getUniqueId());
 
         if (notify) {
-            this.notifyAll("&b" + profile.getFancyName() + " &fis no longer spectating the match.");
+            this.notifyAll("&b" + profile.getFancyName() + " &tfis no longer spectating the match.");
         }
     }
 
@@ -805,17 +805,12 @@ public abstract class Match {
             gamePlayer.setDead(false);
         }
 
-        Location hoverLocation = deathLocation.clone();
+        Location hoverLocation = deathLocation.clone().add(0, 2, 0);
         ListenerUtil.teleportAndClearSpawn(player, hoverLocation);
 
-        player.setVelocity(new Vector(0, 0.72, 0));
-
-        this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> {
-            if (player.isOnline()) {
-                player.setAllowFlight(true);
-                player.setFlying(true);
-            }
-        }, 1L);
+        player.setAllowFlight(true);
+        player.setFlying(true);
+        player.setVelocity(new Vector(0, 0.3, 0));
 
         org.bukkit.Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
             if (!onlinePlayer.getUniqueId().equals(player.getUniqueId())) {

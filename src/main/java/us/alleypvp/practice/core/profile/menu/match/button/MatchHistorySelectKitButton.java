@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * @author Emmy
  * @project Alley
- * @since 04/06/2025
+ * @since 06/04/2025
  */
 @AllArgsConstructor
 public class MatchHistorySelectKitButton extends Button {
@@ -47,7 +47,7 @@ public class MatchHistorySelectKitButton extends Button {
                         " &f● Ranked: &b" + rankedCount,
                         " &f● Unranked: &b" + unrankedCount,
                         "",
-                        "&aClique para visualizar!"
+                        "&aClick to view!"
                 )
                 .durability(this.kit.getDurability())
                 .hideMeta()

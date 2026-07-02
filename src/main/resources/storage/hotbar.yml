@@ -91,13 +91,13 @@ hotbar-items:
         enabled: false
         slot: 0
 
-  COSMETIC:
-    display-name: "&bCosmetics &7(Right-Click)"
+  RAINBOW_BLOCKS:
+    display-name: "&bRainbow Blocks &7(Place to Build)"
     lore:
-      - "&7Open the cosmetics menu."
-    material: ENDER_CHEST
+      - "&7VIP Cosmetic: Place blocks to build dynamic structures!"
+    material: WOOL
     durability: 0
-    command: "cosmetics"
+    command: ""
     menu: ""
     types:
       LOBBY:
@@ -115,7 +115,6 @@ hotbar-items:
       TOURNAMENT:
         enabled: false
         slot: 0
-
   LEADERBOARD:
     display-name: "&bLeaderboards &7(Right-Click)"
     lore:

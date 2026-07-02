@@ -6,4 +6,5 @@ description: '${project.description}'
 softDepend:
   - PlaceholderAPI
   - SlimeWorldManager
+  - KaosCore
 depend: [ FastAsyncWorldEdit, WorldEdit ]

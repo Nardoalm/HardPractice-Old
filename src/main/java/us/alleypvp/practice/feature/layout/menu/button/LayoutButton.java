@@ -24,11 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * @author Emmy
- * @project Alley
- * @since 03/05/2025
- */
 @AllArgsConstructor
 public class LayoutButton extends Button {
     private final Kit kit;
@@ -37,8 +32,8 @@ public class LayoutButton extends Button {
     public ItemStack getButtonItem(Player player) {
         if (this.kit == null) {
             return new ItemBuilder(Material.BARRIER)
-                    .name("&cKit indisponivel")
-                    .lore(CC.MENU_BAR, "&7Nao foi possivel carregar este kit.", CC.MENU_BAR)
+                    .name("&cUnavailable kit")
+                    .lore(CC.MENU_BAR, "&7Could not load this kit.", CC.MENU_BAR)
                     .hideMeta()
                     .build();
         }
@@ -48,10 +43,10 @@ public class LayoutButton extends Button {
                 .durability(this.kit.getDurability())
                 .lore(
                         CC.MENU_BAR,
-                        "&7Shift-Clique: &c(Não implementado)",
-                        " &7" + Symbol.SINGULAR_ARROW_R_2 + " Mais layouts",
+                        "&7Shift-Click: &c(Not implemented)",
+                        " &7" + Symbol.SINGULAR_ARROW_R_2 + " More layouts",
                         "",
-                        "&aClique para editar.",
+                        "&aClick to edit.",
                         CC.MENU_BAR
                 )
                 .hideMeta()
@@ -63,12 +58,12 @@ public class LayoutButton extends Button {
         ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
         Profile profile = profileService != null ? profileService.getProfile(player.getUniqueId()) : null;
         if (profile == null || this.kit == null) {
-            player.sendMessage(CC.translate("&cNao foi possivel abrir este layout agora."));
+            player.sendMessage(CC.translate("&cCould not open this layout right now."));
             return;
         }
 
         if (profile.getState() == ProfileState.WAITING) {
-            player.sendMessage(CC.translate("&cSaia da fila para editar o layout."));
+            player.sendMessage(CC.translate("&cLeave the queue to edit the layout."));
             return;
         }
 
@@ -80,7 +75,7 @@ public class LayoutButton extends Button {
 
             LayoutData layout = this.getOrCreateFirstLayout(profile, this.kit);
             if (layout == null) {
-                player.sendMessage(CC.translate("&cNenhum layout encontrado para este kit."));
+                player.sendMessage(CC.translate("&cNo layout found for this kit."));
                 return;
             }
             new LayoutEditorMenu(this.kit, layout).openMenu(player);
@@ -104,7 +99,7 @@ public class LayoutButton extends Button {
             profile.getProfileData().getLayoutData().addLayout(
                     kit.getName(),
                     "Layout1",
-                    "Modelo 1",
+                    "Template 1",
                     InventoryUtil.getEditableKitItems(kit)
             );
             layouts = profile.getProfileData().getLayoutData().getLayouts().get(kit.getName());

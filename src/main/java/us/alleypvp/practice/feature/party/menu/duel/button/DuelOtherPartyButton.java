@@ -21,11 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * @author Emmy
- * @project Alley
- * @since 16/06/2025
- */
 @AllArgsConstructor
 public class DuelOtherPartyButton extends Button {
     private final AlleyPractice plugin = AlleyPractice.getInstance();
@@ -36,7 +31,7 @@ public class DuelOtherPartyButton extends Button {
         List<String> lore = getLore();
 
         ItemStack itemStack = new ItemBuilder(new ItemStack(Material.SKULL_ITEM, 1, (short) 3))
-                .name("&b&lParty de " + party.getLeader().getName())
+                .name("&b&l" + party.getLeader().getName() + "'s Party")
                 .lore(lore)
                 .build();
         SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
@@ -49,15 +44,10 @@ public class DuelOtherPartyButton extends Button {
         return itemStack;
     }
 
-    /**
-     * Get the lore of the item.
-     *
-     * @return the lore of the item
-     */
     private @NotNull List<String> getLore() {
         List<String> lore = new ArrayList<>();
         lore.add(CC.MENU_BAR);
-        lore.add(" &bMembros: &f(" + party.getMembers().size() + ")");
+        lore.add(" &bMembers: &f(" + party.getMembers().size() + ")");
         for (UUID memberId : party.getMembers()) {
             Player member = Bukkit.getPlayer(memberId);
             if (member != null) {
@@ -65,7 +55,7 @@ public class DuelOtherPartyButton extends Button {
             }
         }
         lore.add("");
-        lore.add("&aClique para duelar com esta party.");
+        lore.add("&aClick to duel this party.");
         lore.add(CC.MENU_BAR);
         return lore;
     }
@@ -79,23 +69,23 @@ public class DuelOtherPartyButton extends Button {
         Party playerParty = profile.getParty();
 
         if (playerParty == null) {
-            player.sendMessage(CC.translate("&cVocê não está em uma party."));
+            player.sendMessage(CC.translate("&cYou are not in a party."));
             return;
         }
 
         if (!playerParty.isLeader(player)) {
-            player.sendMessage(CC.translate("&cVocê precisa ser o líder da sua party para desafiar outra party."));
+            player.sendMessage(CC.translate("&cYou need to be the leader of your party to challenge another party."));
             return;
         }
 
         if (party.getLeader().equals(player)) {
-            player.sendMessage(CC.translate("&cVocê não pode duelar com sua própria party."));
+            player.sendMessage(CC.translate("&cYou cannot duel your own party."));
             return;
         }
 
         Player targetLeader = Bukkit.getPlayer(party.getLeader().getUniqueId());
         if (targetLeader == null) {
-            player.sendMessage(CC.translate("&cO líder dessa party não está online."));
+            player.sendMessage(CC.translate("&cThe leader of that party is not online."));
             return;
         }
 

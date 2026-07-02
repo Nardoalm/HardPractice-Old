@@ -35,21 +35,15 @@ scoreboard:
       - "    &b&lPRACTICE    "
   footer-addition:
     - ""
-    - "&balleypvp.us"
+    - "&bpvphard.live"
     - "{sidebar}"
   lines:
-    music:
-      - ""
-      - "&b&lMusic"
-      - "&b&l│ &rName: &b{song-name}"
-      - "&b&l│ &rTime: &b{song-duration}"
     lobby:
       - "{sidebar}"
       - "&b&lLobby"
       - "&b&l│ &rOnline: &b{online}"
       - "&b&l│ &rPlaying: &b{playing}"
       - "&b&l│ &rIn Queue: &b{in-queue}"
-      - "{music}"
     party:
       - "{sidebar}"
       - "&b&lLobby"

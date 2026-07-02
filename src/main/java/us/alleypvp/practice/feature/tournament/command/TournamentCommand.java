@@ -38,15 +38,15 @@ public class TournamentCommand extends BaseCommand {
 
     private final String[][] pages = {
             {
-                    " &6│ &6/tournament list &7| View all active tournaments.",
-                    " &6│ &6/tournament join [id] &7| Join an available tournament.",
-                    " &6│ &6/tournament leave &7| Leave your current tournament.",
-                    " &6│ &6/tournament info &7| View info about your tournament."
+                    " &b│ &b/tournament list &7| View all active tournaments.",
+                    " &b│ &b/tournament join [id] &7| Join an available tournament.",
+                    " &b│ &b/tournament leave &7| Leave your current tournament.",
+                    " &b│ &b/tournament info &7| View info about your tournament."
             },
             {
-                    " &6│ &6/tournament start [id] &7| &c(Admin) &7Force start a tournament.",
-                    " &6│ &6/tournament host <kit> <size> <max> &7| &c(Admin) &7Host a tournament.",
-                    " &6│ &6/tournament cancel [id] <reason> &7| &c(Admin) &7Cancel a tournament."
+                    " &b│ &b/tournament start [id] &7| &c(Admin) &7Force start a tournament.",
+                    " &b│ &b/tournament host <kit> <size> <max> &7| &c(Admin) &7Host a tournament.",
+                    " &b│ &b/tournament cancel [id] <reason> &7| &c(Admin) &7Cancel a tournament."
             }
     };
 
@@ -72,7 +72,7 @@ public class TournamentCommand extends BaseCommand {
         }
 
         sender.sendMessage("");
-        sender.sendMessage(CC.translate("&6&lTournament Commands &8(&7Page &f" + page + "&7/&f" + this.pages.length + "&8)"));
+        sender.sendMessage(CC.translate("&b&lTournament Commands &8(&7Page &f" + page + "&7/&f" + this.pages.length + "&8)"));
         for (String string : this.pages[page - 1]) {
             sender.sendMessage(CC.translate(string));
         }
@@ -91,7 +91,7 @@ public class TournamentCommand extends BaseCommand {
                 .collect(Collectors.toList());
 
         player.sendMessage("");
-        player.sendMessage(CC.translate("     &6&lActive Tournaments &f(" + tournaments.size() + ")"));
+        player.sendMessage(CC.translate("     &b&lActive Tournaments &f(" + tournaments.size() + ")"));
 
         if (tournaments.isEmpty()) {
             player.sendMessage(CC.translate("      &7│ &cNo active tournaments."));
@@ -107,18 +107,18 @@ public class TournamentCommand extends BaseCommand {
                     int maxPlayers = tournament.getMaxTeams() * tournament.getTeamSize();
 
                     ComponentBuilder hover = new ComponentBuilder("")
-                            .append(CC.translate("&6&lTournament Info &7[" + tournament.getState().getDisplayName() + "]\n"))
-                            .append(CC.translate(" &6│ &fHost: &6" + tournament.getHostName() + "\n"))
-                            .append(CC.translate(" &6│ &fType: &6" + tournament.getDisplayName() + "\n"))
-                            .append(CC.translate(" &6│ &fKit: &6" + tournament.getKit().getDisplayName() + "\n"));
+                            .append(CC.translate("&b&lTournament Info &7[" + tournament.getState().getDisplayName() + "]\n"))
+                            .append(CC.translate(" &b│ &fHost: &b" + tournament.getHostName() + "\n"))
+                            .append(CC.translate(" &b│ &fType: &b" + tournament.getDisplayName() + "\n"))
+                            .append(CC.translate(" &b│ &fKit: &b" + tournament.getKit().getDisplayName() + "\n"));
 
                     if (tournament.getState() == TournamentState.WAITING || tournament.getState() == TournamentState.STARTING) {
-                        hover.append(CC.translate(" &6│ &fPlayers: &6" + currentPlayers + "/" + maxPlayers + "\n"));
+                        hover.append(CC.translate(" &b│ &fPlayers: &b" + currentPlayers + "/" + maxPlayers + "\n"));
                     } else {
-                        hover.append(CC.translate(" &6│ &fRound: &6" + tournament.getCurrentRound() + "\n"));
-                        hover.append(CC.translate(" &6│ &fTeams Left: &6" + tournament.getRoundParticipants().size() + "\n"));
+                        hover.append(CC.translate(" &b│ &fRound: &b" + tournament.getCurrentRound() + "\n"));
+                        hover.append(CC.translate(" &b│ &fTeams Left: &b" + tournament.getRoundParticipants().size() + "\n"));
                     }
-                    hover.append(CC.translate(" &6│ &fID: &7#" + numericId));
+                    hover.append(CC.translate(" &b│ &fID: &7#" + numericId));
 
                     ComponentBuilder message = new ComponentBuilder("      ");
                     message.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover.create()));
@@ -164,26 +164,26 @@ public class TournamentCommand extends BaseCommand {
         String roundLabel = getRoundLabel(tournament);
 
         player.sendMessage("");
-        player.sendMessage(CC.translate("&6&lTournament"));
+        player.sendMessage(CC.translate("&b&lTournament"));
 
         List<Match> matches = tournament.getActiveMatches();
         if (!matches.isEmpty()) {
-            player.sendMessage(CC.translate(" &6│ &fMatches &7(&6" + matches.size() + "&7):"));
+            player.sendMessage(CC.translate(" &b│ &fMatches &7(&b" + matches.size() + "&7):"));
             matches.forEach(match -> {
                 List<GameParticipant<MatchGamePlayer>> parts = match.getParticipants();
                 if (parts == null || parts.size() < 2) return;
 
                 String left = formatParticipantNames(parts.get(0));
                 String right = formatParticipantNames(parts.get(1));
-                player.sendMessage(CC.translate("   &6" + left + " &fvs. &6" + right));
+                player.sendMessage(CC.translate("   &b" + left + " &fvs. &b" + right));
             });
             player.sendMessage(CC.translate(""));
         }
 
-        player.sendMessage(CC.translate(" &6│ &fPlayers: &6" + currentPlayers + "&7/&6" + maxPlayers));
-        player.sendMessage(CC.translate(" &6│ &fHost: &6" + tournament.getHostName()));
-        player.sendMessage(CC.translate(" &6│ &fMode: &6" + modeStr));
-        player.sendMessage(CC.translate(" &6│ &fRound: &6" + roundLabel));
+        player.sendMessage(CC.translate(" &b│ &fPlayers: &b" + currentPlayers + "&7/&b" + maxPlayers));
+        player.sendMessage(CC.translate(" &b│ &fHost: &b" + tournament.getHostName()));
+        player.sendMessage(CC.translate(" &b│ &fMode: &b" + modeStr));
+        player.sendMessage(CC.translate(" &b│ &fRound: &b" + roundLabel));
         player.sendMessage("");
     }
 

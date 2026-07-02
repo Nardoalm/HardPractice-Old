@@ -27,7 +27,7 @@ public class ShopCategoryMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return "&b&lLoja - " + StringUtil.formatEnumName(cosmeticType) + "s";
+        return "&b&lShop - " + StringUtil.formatEnumName(cosmeticType) + "s";
     }
 
     @Override

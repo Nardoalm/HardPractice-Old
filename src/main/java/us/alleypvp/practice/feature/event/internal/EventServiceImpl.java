@@ -461,6 +461,16 @@ public class EventServiceImpl implements EventService {
 
         participant.setLastKnownLocation(event.getTo().clone());
 
+        if (participant.getState() == EventPlayerState.WAITING) {
+            if (this.isOnLiquid(player) || this.isBelowArena(player, active.getArena())) {
+                Location waitingLoc = this.getWaitingLocation(active);
+                if (waitingLoc != null) {
+                    player.teleport(waitingLoc);
+                }
+                return;
+            }
+        }
+
         switch (active.getDefinition().getType()) {
             case SUMO:
             case KNOCKOUT:
@@ -1034,6 +1044,7 @@ public class EventServiceImpl implements EventService {
                 if (this.countdown <= 0) {
                     participantA.setState(EventPlayerState.FIGHTING);
                     participantB.setState(EventPlayerState.FIGHTING);
+
                     playerA.sendMessage(CC.translate("&aFight!"));
                     playerB.sendMessage(CC.translate("&aFight!"));
                     event.setPreparationTask(null);
@@ -1962,9 +1973,10 @@ public class EventServiceImpl implements EventService {
     private void giveLeaveItem(Player player) {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[4]);
-        player.getInventory().setItem(8, new ItemBuilder(Material.REDSTONE)
+        player.getInventory().setItem(8, new ItemBuilder(Material.INK_SACK)
                 .name(LEAVE_ITEM_NAME)
-                .lore("&7Click to leave the event.")
+                .durability(1)
+                .lore("&cClick to leave &7(Right-Click)")
                 .hideMeta()
                 .build());
         player.updateInventory();

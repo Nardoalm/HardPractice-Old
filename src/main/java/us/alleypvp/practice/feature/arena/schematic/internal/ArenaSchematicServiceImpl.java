@@ -38,11 +38,6 @@ public class ArenaSchematicServiceImpl implements ArenaSchematicService {
     private final AlleyPractice plugin;
     private File schematicsDirectory;
 
-    /**
-     * Constructor for the ArenaSchematicServiceImpl class.
-     *
-     * @param plugin The main Alley bootstrap instance.
-     */
     public ArenaSchematicServiceImpl(AlleyPractice plugin) {
         this.plugin = plugin;
     }
@@ -77,11 +72,21 @@ public class ArenaSchematicServiceImpl implements ArenaSchematicService {
 
     @Override
     public void save(Arena arena, File schematicFile) {
-        try {
-            Location min = arena.getMinimum();
-            Location max = arena.getMaximum();
+        Location min = arena.getMinimum();
+        Location max = arena.getMaximum();
 
-            World bukkitWorld = min.getWorld();
+        if (min == null || max == null) {
+            Logger.error("Impossivel salvar schematic para arena '" + arena.getName() + "': Minimum ou Maximum location estao nulos.");
+            return;
+        }
+
+        World bukkitWorld = min.getWorld();
+        if (bukkitWorld == null) {
+            Logger.error("Impossivel salvar schematic para arena '" + arena.getName() + "': O mundo não foi carregado corretamente.");
+            return;
+        }
+
+        try {
             CuboidSelection selection = new CuboidSelection(bukkitWorld, min, max);
 
             Vector minVector = BukkitUtil.toVector(selection.getMinimumPoint());
@@ -115,20 +120,19 @@ public class ArenaSchematicServiceImpl implements ArenaSchematicService {
         this.save(arena, schematicFile);
     }
 
-    /**
-     * Pastes the schematic at the specified location.
-     *
-     * @param location      The location to paste the schematic.
-     * @param schematicFile The file containing the schematic to paste.
-     */
     public void paste(Location location, File schematicFile) {
         if (!schematicFile.exists()) {
             Logger.error("Cannot paste schematic, file does not exist: " + schematicFile.getPath());
             return;
         }
 
+        World bukkitWorld = location.getWorld();
+        if (bukkitWorld == null) {
+            Logger.error("Cannot paste schematic, target world is null.");
+            return;
+        }
+
         try {
-            World bukkitWorld = location.getWorld();
             Vector toVector = BukkitUtil.toVector(location);
             EditSession session = new EditSession(BukkitUtil.getLocalWorld(bukkitWorld), -1);
             session.setFastMode(true);
@@ -148,15 +152,15 @@ public class ArenaSchematicServiceImpl implements ArenaSchematicService {
             return;
         }
 
+        Location min = arena.getMinimum();
+        Location max = arena.getMaximum();
+
+        if (min == null || max == null || min.getWorld() == null) {
+            Logger.error("Cannot delete arena '" + arena.getName() + "': Invalid bounds.");
+            return;
+        }
+
         try {
-            Location min = arena.getMinimum();
-            Location max = arena.getMaximum();
-
-            if (min == null || max == null || min.getWorld() == null) {
-                Logger.error("Cannot delete arena '" + arena.getName() + "': Invalid bounds.");
-                return;
-            }
-
             World bukkitWorld = min.getWorld();
             BukkitWorld world = new BukkitWorld(bukkitWorld);
 

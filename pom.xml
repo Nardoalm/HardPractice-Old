@@ -6,10 +6,11 @@
 
     <groupId>us.alleypvp.practice</groupId>
     <artifactId>AlleyPractice</artifactId>
+    <version>3.1</version>
+    <packaging>jar</packaging>
 
     <name>AlleyPractice</name>
     <description>A modern practice core for alleypvp.us</description>
-    <version>3.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,8 +28,8 @@
                 <version>3.8.1</version>
                 <configuration>
                     <source>${java.version}</source>
-                    <encoding>UTF-8</encoding>
                     <target>${java.version}</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>
@@ -39,7 +40,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -78,6 +79,10 @@
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>dev.revere.kaos.shaded.org.bstats</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.mindrot.jbcrypt</pattern>
+                                    <shadedPattern>us.alleypvp.practice.shaded.jbcrypt</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -102,6 +107,25 @@
 
     <repositories>
         <repository>
+            <id>spigotmc-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>bungeecord-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/repository/public/</url>
+        </repository>
+        <repository>
             <id>revere-internal</id>
             <url>https://revereinc.github.io/maven-repo/</url>
         </repository>
@@ -119,20 +143,12 @@
             <url>https://dl.cloudsmith.io/public/arcane/archive/maven/</url>
         </repository>
         <repository>
-            <id>minebench-repo</id>
-            <url>https://repo.minebench.de</url>
-        </repository>
-        <repository>
             <id>enginehub-maven</id>
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
         <repository>
-            <id>spigotmc-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>sonatype</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
             <id>citizens-repo</id>
@@ -142,57 +158,57 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>3.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>dev.revere.spigot</groupId>
-            <artifactId>ZoneSpigot</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.boydti</groupId>
             <artifactId>FAWE</artifactId>
-            <version>7.0.0</version>
-            <scope>provided</scope>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/fawe.jar</systemPath>
         </dependency>
 
-        <!-- SlimeWorldManager (local jars) -->
         <dependency>
             <groupId>com.grinderwolf</groupId>
             <artifactId>slimeworldmanager-api</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
+            <version>1.0</version>
             <scope>system</scope>
-            <systemPath>C:/Users/LEO/Documents/SlimeSytem/SWM.jar</systemPath>
+            <systemPath>${project.basedir}/libs/swm.jar</systemPath>
         </dependency>
 
-        <!-- KaosCore (local jars) -->
         <dependency>
             <groupId>com.knowplugins</groupId>
             <artifactId>KaosCore</artifactId>
-            <version>10.5</version>
+            <version>7.2</version>
             <scope>system</scope>
-            <systemPath>C:/Users/LEO/Documents/KaosMC/KaosCore-7.2.jar</systemPath>
+            <systemPath>${project.basedir}/libs/KaosCore-7.2.jar</systemPath>
         </dependency>
 
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
             <version>4.8.165</version>
+            <scope>compile</scope>
         </dependency>
 
-        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <version>1.18.32</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Spigot API -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
@@ -200,7 +216,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Bukkit API -->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
@@ -215,29 +230,27 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- ProtocolLib -->
         <dependency>
-            <groupId>com.comphenix.protocol</groupId>
+            <groupId>net.dmulloy2</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>4.4.0-SNAPSHOT</version>
+            <version>5.3.0</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- MongoDB -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
             <version>4.11.1</version>
+            <scope>compile</scope>
         </dependency>
 
-        <!-- Reflections -->
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.10.2</version>
+            <scope>compile</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/me.clip/placeholderapi -->
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
@@ -245,7 +258,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.bukkit.craftbukkit/1.8.8 -->
         <dependency>
             <groupId>org.bukkit.craftbukkit</groupId>
             <artifactId>1.8.8</artifactId>
@@ -253,7 +265,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Citizens API -->
         <dependency>
             <groupId>net.citizensnpcs</groupId>
             <artifactId>citizensapi</artifactId>
@@ -262,7 +273,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Helium API -->
         <dependency>
             <groupId>com.github.PlasmaServices</groupId>
             <artifactId>HeliumAPI</artifactId>
@@ -270,7 +280,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Phoenix API -->
         <dependency>
             <groupId>xyz.refinedev.phoenix</groupId>
             <artifactId>pxAPI</artifactId>
@@ -278,7 +287,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- AquaCore API -->
         <dependency>
             <groupId>me.activated.core</groupId>
             <artifactId>core-api</artifactId>

@@ -24,7 +24,7 @@ public class JumpToPageButton extends Button {
         ItemStack itemStack = new ItemStack(this.current ? Material.ENCHANTED_BOOK : Material.BOOK, this.page);
         ItemMeta itemMeta = itemStack.getItemMeta();
 
-        itemMeta.setDisplayName(CC.translate("&b&lPágina " + this.page));
+        itemMeta.setDisplayName(CC.translate("&b&lPage " + this.page));
 
         List<String> lore = new ArrayList<>();
         lore.add(CC.MENU_BAR);
@@ -32,7 +32,7 @@ public class JumpToPageButton extends Button {
         if (this.current) {
             lore.add(CC.translate("&aSelected."));
         } else {
-            lore.add(CC.translate("&aClique para abrir."));
+            lore.add(CC.translate("&aClick to open."));
         }
         lore.add(CC.MENU_BAR);
 

@@ -9,11 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * @author Emmy
- * @project Alley
- * @since 03/05/2025
- */
 @AllArgsConstructor
 public class LayoutDeleteButton extends Button {
     private final LayoutData layout;
@@ -21,13 +16,13 @@ public class LayoutDeleteButton extends Button {
     @Override
     public ItemStack getButtonItem(Player player) {
         return new ItemBuilder(Material.INK_SACK)
-                .name("&c&lExcluir Layout")
+                .name("&c&lDelete Layout")
                 .durability(1)
                 .lore(
                         CC.MENU_BAR,
-                        "&7Aviso: permanente!",
+                        "&7Warning: permanent!",
                         "",
-                        "&aClique para excluir.",
+                        "&aClick to delete.",
                         CC.MENU_BAR
                 )
                 .hideMeta()

@@ -80,7 +80,7 @@ public class KaosCoreBridgeImpl implements KaosCoreBridge {
         }
     }
 
-    // fazer o para pegar o rank
+    //  todo: pegar o rank
 
     @Override
     public void removeVanish(Player player) {

@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * @author Emmy
  * @project Alley
- * @date 17/10/2024 - 22:13
+ * @date 10/17/2024 - 22:13
  */
 @AllArgsConstructor
 public class DuelArenaSelectorMenu extends PaginatedMenu {
@@ -29,7 +29,7 @@ public class DuelArenaSelectorMenu extends PaginatedMenu {
 
     @Override
     public String getPrePaginatedTitle(Player player) {
-        return "&b&lSelecione uma arena";
+        return "&b&lSelect an arena";
     }
 
     @Override
@@ -72,10 +72,10 @@ public class DuelArenaSelectorMenu extends PaginatedMenu {
             return new ItemBuilder(Material.PAPER)
                     .name("&b&l" + this.arena.getDisplayName())
                     .lore(
-                            " &f◆ &bAlvo: &f" + this.targetPlayer.getName(),
+                            " &f◆ &bTarget: &f" + this.targetPlayer.getName(),
                             " &f◆ &bKit: &f" + this.kit.getDisplayName(),
                             "",
-                            "&aClique para enviar o pedido!"
+                            "&aClick to send the request!"
                     )
                     .durability(0)
                     .hideMeta()

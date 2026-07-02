@@ -67,19 +67,6 @@ public class BedMatch extends DefaultMatch {
     }
 
     @Override
-    public void handleDeathItemDrop(Player player, PlayerDeathEvent event) {
-        GameParticipant<MatchGamePlayer> participant = this.participantA.containsPlayer(player.getUniqueId())
-                ? this.participantA
-                : this.participantB;
-
-        if (participant.isBedBroken()) {
-            ListenerUtil.clearDroppedItemsOnDeath(event, player);
-            return;
-        }
-        super.handleDeathItemDrop(player, event);
-    }
-
-    @Override
     protected boolean shouldHandleRegularRespawn(Player player) {
         return false;
     }
@@ -151,7 +138,7 @@ public class BedMatch extends DefaultMatch {
             case YELLOW: return "&e[Y] &fYellow Bed";
             case AQUA: return "&3[A] &fAqua Bed";
             case LIGHT_PURPLE: return "&d[P] &fPink Bed";
-            case GOLD: return "&6[O] &fOrange Bed";
+            case GOLD: return "&b[O] &fOrange Bed";
             case WHITE: return "&f[W] &fWhite Bed";
             case GRAY: return "&7[G] &fGray Bed";
             case DARK_PURPLE: return "&5[P] &fPurple Bed";
@@ -160,12 +147,16 @@ public class BedMatch extends DefaultMatch {
     }
 
     public boolean isNearBed(Block block) {
-        Location center = block.getLocation();
-        for (int x = -8; x <= 1; x++) {
-            for (int y = -8; y <= 1; y++) {
-                for (int z = -8; z <= 1; z++) {
-                    Block relativeBlock = new Location(block.getWorld(), center.getX() + x, center.getY() + y, center.getZ() + z).getBlock();
-                    if (relativeBlock.getType() == Material.BED_BLOCK) {
+        Location loc = block.getLocation();
+        org.bukkit.World world = loc.getWorld();
+        int centerX = loc.getBlockX();
+        int centerY = loc.getBlockY();
+        int centerZ = loc.getBlockZ();
+
+        for (int x = -4; x <= 4; x++) {
+            for (int y = -4; y <= 4; y++) {
+                for (int z = -4; z <= 4; z++) {
+                    if (world.getBlockAt(centerX + x, centerY + y, centerZ + z).getType() == Material.BED_BLOCK) {
                         return true;
                     }
                 }

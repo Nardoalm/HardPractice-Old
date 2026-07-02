@@ -27,7 +27,7 @@ public class TournamentHostKitMenu extends PaginatedMenu {
 
     @Override
     public String getPrePaginatedTitle(Player player) {
-        return "&6Select a Kit";
+        return "&bSelect a Kit";
     }
 
     @Override
@@ -86,8 +86,8 @@ public class TournamentHostKitMenu extends PaginatedMenu {
                 ));
             }
             lore.addAll(Arrays.asList(
-                    "&6│ &rClick to host a " + type.getDisplayName() + " tournament",
-                    "&6│ &rwith the " + kit.getDisplayName() + " kit.",
+                    "&b│ &rClick to host a " + type.getDisplayName() + " tournament",
+                    "&b│ &rwith the " + kit.getDisplayName() + " kit.",
                     ""
             ));
             lore.add("&aClick to host tournament.");

@@ -187,6 +187,10 @@ public class StandAloneArena extends Arena {
         Location originalMin = this.getMinimum();
         Location originalMax = this.getMaximum();
 
+        if (originalMin == null || originalMax == null) {
+            return null;
+        }
+
         int actualMinX = Math.min(originalMin.getBlockX(), originalMax.getBlockX());
         int actualMaxX = Math.max(originalMin.getBlockX(), originalMax.getBlockX());
 

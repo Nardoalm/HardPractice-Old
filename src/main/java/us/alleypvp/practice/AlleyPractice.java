@@ -7,6 +7,7 @@ import us.alleypvp.practice.bootstrap.lifecycle.Service;
 import us.alleypvp.practice.common.logger.Logger;
 import us.alleypvp.practice.common.logger.PluginLogger;
 import us.alleypvp.practice.core.database.task.RepositoryCleanupTask;
+import us.alleypvp.practice.feature.cosmetic.CosmeticListener;
 import us.alleypvp.practice.feature.cosmetic.task.CosmeticTask;
 import us.alleypvp.practice.feature.hologram.manager.HologramManager;
 import us.alleypvp.practice.feature.match.task.other.ArrowRemovalTask;
@@ -88,6 +89,8 @@ public class AlleyPractice extends JavaPlugin {
     @Override
     public void onDisable() {
         this.unregisterPublicApi();
+
+        CosmeticListener.purgeAllBlocks();
 
         if (this.context != null) {
             this.context.shutdown();

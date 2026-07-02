@@ -26,6 +26,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -88,39 +89,21 @@ public final class ArenaServiceImpl implements ArenaService {
     @Override
     public void shutdown(KaosContext context) {
         cleanupTemporaryArenas();
-
         this.arenaCopyManager.shutdown();
 
         if (temporaryWorld != null) {
             String worldName = temporaryWorld.getName();
-
-            temporaryWorld.getPlayers().forEach(player ->
-                    player.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation())
-            );
+            temporaryWorld.getPlayers().forEach(player -> player.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation()));
 
             if (Bukkit.unloadWorld(temporaryWorld, false)) {
-                Logger.info("Mundo temporário descarregado com sucesso: " + worldName);
                 File worldFolder = new File(Bukkit.getWorldContainer(), worldName);
-                if (worldFolder.exists()) {
-                    FileUtil.deleteWorldFolder(worldFolder);
-                    Logger.info("Deleted temporary world folder: " + worldName);
-                }
-            } else {
-                Logger.error("Falha ao descarregar o mundo temporário: " + worldName);
+                if (worldFolder.exists()) FileUtil.deleteWorldFolder(worldFolder);
             }
             temporaryWorld = null;
         }
 
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdown();
-            try {
-                if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
-                    executorService.shutdownNow();
-                }
-            } catch (InterruptedException e) {
-                executorService.shutdownNow();
-                Thread.currentThread().interrupt();
-            }
         }
     }
 
@@ -147,9 +130,17 @@ public final class ArenaServiceImpl implements ArenaService {
         cleanupExistingWorld(worldName);
 
         WorldCreator creator = new WorldCreator(worldName);
-        creator.generateStructures(false).generator(new VoidChunkGenerator());
+        creator.environment(World.Environment.NORMAL);
+        creator.generateStructures(false);
+        creator.type(WorldType.FLAT);
+        creator.generatorSettings("2;0;1");
 
         this.temporaryWorld = creator.createWorld();
+        this.temporaryWorld.setGameRuleValue("doMobSpawning", "false");
+        this.temporaryWorld.setGameRuleValue("doDaylightCycle", "false");
+        this.temporaryWorld.setGameRuleValue("doTileDrops", "false");
+        this.temporaryWorld.setGameRuleValue("doFireTick", "false");
+
         this.nextCopyLocation = new Location(temporaryWorld, 0, 100, 0);
     }
 
@@ -157,352 +148,150 @@ public final class ArenaServiceImpl implements ArenaService {
         FileConfiguration config = configService.getArenasConfig();
         ConfigurationSection arenasConfig = config.getConfigurationSection("arenas");
 
-        if (arenasConfig == null) {
-            return;
-        }
+        if (arenasConfig == null) return;
 
-        Set<String> arenaNames = arenasConfig.getKeys(false);
-
-        if (arenaNames.size() <= 5) {
-            for (String arenaName : arenaNames) {
-                Arena arena = loadSingleArena(config, arenaName);
-                if (arena != null) {
-                    this.arenas.add(arena);
-                }
-            }
-            return;
-        }
-
-        List<CompletableFuture<Arena>> futures = new ArrayList<>();
-
-        for (String arenaName : arenaNames) {
-            CompletableFuture<Arena> future = CompletableFuture.supplyAsync(() -> loadSingleArena(config, arenaName), executorService);
-            futures.add(future);
-        }
-
-        for (CompletableFuture<Arena> future : futures) {
-            try {
-                Arena arena = future.get(5, TimeUnit.SECONDS);
-                if (arena != null) {
-                    this.arenas.add(arena);
-                }
-            } catch (TimeoutException e) {
-                Logger.error("O carregamento da arena excedeu o tempo limite após 5 segundos");
-                future.cancel(true);
-            } catch (Exception e) {
-                Logger.error("Falha ao carregar a arena: " + e.getMessage());
-            }
+        for (String arenaName : arenasConfig.getKeys(false)) {
+            Arena arena = loadSingleArena(config, arenaName);
+            if (arena != null) this.arenas.add(arena);
         }
     }
 
     private Arena loadSingleArena(FileConfiguration config, String arenaName) {
         try {
             String name = "arenas." + arenaName;
-
             ArenaType arenaType = ArenaType.valueOf(config.getString(name + ".type"));
             Location minimum = Serializer.deserializeLocation(config.getString(name + ".minimum"));
             Location maximum = Serializer.deserializeLocation(config.getString(name + ".maximum"));
 
             Arena arena = createArenaByType(arenaType, arenaName, minimum, maximum, config, name);
             configureArena(arena, config, name);
-
             return arena;
         } catch (Exception e) {
-            Logger.error("Error loading arena " + arenaName + ": " + e.getMessage());
             return null;
         }
     }
 
-    private Arena createArenaByType(ArenaType arenaType, String arenaName,
-                                    Location minimum, Location maximum,
-                                    FileConfiguration config, String name) {
+    private Arena createArenaByType(ArenaType arenaType, String arenaName, Location minimum, Location maximum, FileConfiguration config, String name) {
         switch (arenaType) {
-            case SHARED:
-                return new SharedArena(arenaName, minimum, maximum);
-
+            case SHARED: return new SharedArena(arenaName, minimum, maximum);
             case STANDALONE:
-                int heightLimit = config.getInt(name + ".height-limit", 7);
-                int voidLevel = config.getInt(name + ".void-level", 0);
-                return new StandAloneArena(
-                        arenaName, minimum, maximum,
+                return new StandAloneArena(arenaName, minimum, maximum,
                         Serializer.deserializeLocation(config.getString(name + ".team-one-portal")),
                         Serializer.deserializeLocation(config.getString(name + ".team-two-portal")),
-                        heightLimit, voidLevel
-                );
-
+                        config.getInt(name + ".height-limit", 7),
+                        config.getInt(name + ".void-level", 0));
             case FFA:
-                return new FreeForAllArena(
-                        arenaName,
+                return new FreeForAllArena(arenaName,
                         Serializer.deserializeLocation(config.getString(name + ".safe-zone.pos1")),
-                        Serializer.deserializeLocation(config.getString(name + ".safe-zone.pos2"))
-                );
-            case EVENT:
-                return new EventArena(arenaName, minimum, maximum);
-
-            default:
-                throw new IllegalStateException("Tipo de arena inesperado: " + arenaType);
+                        Serializer.deserializeLocation(config.getString(name + ".safe-zone.pos2")));
+            case EVENT: return new EventArena(arenaName, minimum, maximum);
+            default: throw new IllegalStateException();
         }
     }
 
     private void configureArena(Arena arena, FileConfiguration config, String name) {
         if (config.contains(name + ".kits")) {
-            Set<String> validKits = new HashSet<>();
-            for (String kitName : config.getStringList(name + ".kits")) {
-                if (kitService.getKit(kitName) != null) {
-                    validKits.add(kitName);
-                }
-            }
-            arena.getKits().addAll(validKits);
+            arena.getKits().addAll(config.getStringList(name + ".kits").stream().filter(k -> kitService.getKit(k) != null).collect(Collectors.toSet()));
         }
-
         if (config.contains(name + ".events")) {
-            Set<String> validEvents = config.getStringList(name + ".events").stream()
-                    .filter(Objects::nonNull)
-                    .map(String::toLowerCase)
-                    .collect(Collectors.toSet());
-            arena.getEvents().addAll(validEvents);
+            arena.getEvents().addAll(config.getStringList(name + ".events").stream().filter(Objects::nonNull).map(String::toLowerCase).collect(Collectors.toSet()));
         }
-
-        if (config.contains(name + ".pos1")) {
-            arena.setPos1(Serializer.deserializeLocation(config.getString(name + ".pos1")));
-        }
-        if (config.contains(name + ".pos2")) {
-            arena.setPos2(Serializer.deserializeLocation(config.getString(name + ".pos2")));
-        }
-        if (config.contains(name + ".center")) {
-            arena.setCenter(Serializer.deserializeLocation(config.getString(name + ".center")));
-        }
-        if (config.contains(name + ".display-name")) {
-            arena.setDisplayName(config.getString(name + ".display-name"));
-        }
-        if (config.contains(name + ".enabled")) {
-            arena.setEnabled(config.getBoolean(name + ".enabled"));
-        }
+        if (config.contains(name + ".pos1")) arena.setPos1(Serializer.deserializeLocation(config.getString(name + ".pos1")));
+        if (config.contains(name + ".pos2")) arena.setPos2(Serializer.deserializeLocation(config.getString(name + ".pos2")));
+        if (config.contains(name + ".center")) arena.setCenter(Serializer.deserializeLocation(config.getString(name + ".center")));
+        if (config.contains(name + ".display-name")) arena.setDisplayName(config.getString(name + ".display-name"));
+        if (config.contains(name + ".enabled")) arena.setEnabled(config.getBoolean(name + ".enabled"));
     }
 
     @Override
     public StandAloneArena createTemporaryArenaCopy(StandAloneArena originalArena) {
-        if (originalArena.isTemporaryCopy()) {
-            throw new IllegalArgumentException("Cannot create a temporary copy of a temporary arena.");
-        }
-
-        int copyId = copyIdCounter.incrementAndGet();
+        if (originalArena.isTemporaryCopy()) throw new IllegalArgumentException();
 
         if (this.arenaCopyManager.isEnabled()) {
-            StandAloneArena copiedArena = this.arenaCopyManager.createTemporaryArenaCopy(originalArena, copyId);
-            if (copiedArena != null) {
-                this.temporaryArenas.add(copiedArena);
-
-                if (copiedArena.getPos1() != null) {
-                    copiedArena.getPos1().getChunk().load(true);
-                }
-                if (copiedArena.getPos2() != null) {
-                    copiedArena.getPos2().getChunk().load(true);
-                }
-
-                return copiedArena;
-            }
-
-            Logger.error("Falha ao criar cópia temporária SWM para '" + originalArena.getName() + "'. Voltando para colagem por schematic.");
-
-            if (this.temporaryWorld == null) {
-                this.initializeTemporaryWorld();
+            StandAloneArena copied = this.arenaCopyManager.createTemporaryArenaCopy(originalArena, copyIdCounter.incrementAndGet());
+            if (copied != null) {
+                this.temporaryArenas.add(copied);
+                return copied;
             }
         }
+
+        if (originalArena.getMinimum() == null || originalArena.getMaximum() == null) return null;
 
         Location copyLocation = getNextCopyLocationForArena(originalArena);
-
-        Location originalPos1 = originalArena.getPos1();
-        Location originalMin = originalArena.getMinimum();
-        Location originalMax = originalArena.getMaximum();
-
-        if (originalPos1 != null && originalMin != null && originalMax != null) {
-            int actualMinY = Math.min(originalMin.getBlockY(), originalMax.getBlockY());
-            int pos1OffsetFromActualMin = originalPos1.getBlockY() - actualMinY;
-            int targetMinY = 100 - pos1OffsetFromActualMin;
-            copyLocation.setY(targetMinY);
+        if (originalArena.getPos1() != null) {
+            copyLocation.setY(100 - (originalArena.getPos1().getBlockY() - Math.min(originalArena.getMinimum().getBlockY(), originalArena.getMaximum().getBlockY())));
         }
 
-        StandAloneArena copiedArena = originalArena.createCopy(temporaryWorld, copyLocation, copyId);
-        if (copiedArena.getPos1() != null) {
-            copiedArena.setHeightLimit(copiedArena.getPos1().getBlockY() + copiedArena.getHeightLimit());
-        }
+        StandAloneArena copiedArena = originalArena.createCopy(temporaryWorld, copyLocation, copyIdCounter.incrementAndGet());
+        if (copiedArena == null) return null;
 
+        if (copiedArena.getPos1() != null) copiedArena.setHeightLimit(copiedArena.getPos1().getBlockY() + copiedArena.getHeightLimit());
+
+        this.forceLoadChunks(copiedArena);
         this.arenaSchematicService.paste(copyLocation, this.arenaSchematicService.getSchematicFile(originalArena.getName()));
-
-        if (copiedArena.getPos1() != null) {
-            copiedArena.getPos1().getChunk().load(true);
-        }
-        if (copiedArena.getPos2() != null) {
-            copiedArena.getPos2().getChunk().load(true);
-        }
 
         this.temporaryArenas.add(copiedArena);
         return copiedArena;
     }
 
-    public Location getNextCopyLocationForArena(StandAloneArena originalArena) {
-        Location location = this.nextCopyLocation.clone();
-
-        Location originalPos1 = originalArena.getPos1();
-        Location originalMin = originalArena.getMinimum();
-
-        if (originalPos1 != null && originalMin != null) {
-            int pos1OffsetFromMin = originalPos1.getBlockY() - originalMin.getBlockY();
-            location.setY(100 - pos1OffsetFromMin);
+    private void forceLoadChunks(StandAloneArena arena) {
+        Location min = arena.getMinimum();
+        Location max = arena.getMaximum();
+        if (min == null || max == null || min.getWorld() == null) return;
+        World world = min.getWorld();
+        for (int x = (Math.min(min.getBlockX(), max.getBlockX()) >> 4); x <= (Math.max(min.getBlockX(), max.getBlockX()) >> 4); x++) {
+            for (int z = (Math.min(min.getBlockZ(), max.getBlockZ()) >> 4); z <= (Math.max(min.getBlockZ(), max.getBlockZ()) >> 4); z++) {
+                if (!world.isChunkLoaded(x, z)) world.loadChunk(x, z, true);
+            }
         }
+    }
 
+    public Location getNextCopyLocationForArena(StandAloneArena originalArena) {
+        Location loc = this.nextCopyLocation.clone();
+        if (originalArena.getPos1() != null && originalArena.getMinimum() != null) {
+            loc.setY(100 - (originalArena.getPos1().getBlockY() - originalArena.getMinimum().getBlockY()));
+        }
         nextCopyLocation.add(arenaSpacing, 0, 0);
         if (nextCopyLocation.getX() > arenaSpacing * 10) {
             nextCopyLocation.setX(0);
             nextCopyLocation.add(0, 0, arenaSpacing);
         }
-
-        return location;
+        return loc;
     }
 
     public void cleanupTemporaryArenas() {
         for (StandAloneArena arena : new ArrayList<>(temporaryArenas)) {
-            if (!this.arenaCopyManager.deleteTemporaryArena(arena)) {
-                arena.deleteCopiedArena();
-            }
+            if (!this.arenaCopyManager.deleteTemporaryArena(arena)) arena.deleteCopiedArena();
         }
         this.temporaryArenas.clear();
     }
 
     private void cleanupExistingWorld(String worldName) {
-        World existingWorld = this.plugin.getServer().getWorld(worldName);
-        if (existingWorld != null) {
-            existingWorld.getPlayers().forEach(player ->
-                    player.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation())
-            );
-
-            boolean unloaded = this.plugin.getServer().unloadWorld(existingWorld, false);
-            if (!unloaded) {
-                Logger.error("Falha ao descarregar o mundo: " + worldName);
-            }
+        World world = this.plugin.getServer().getWorld(worldName);
+        if (world != null) {
+            world.getPlayers().forEach(p -> p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation()));
+            this.plugin.getServer().unloadWorld(world, false);
         }
-
-        File worldFolder = new File(Bukkit.getWorldContainer(), worldName);
-        if (worldFolder.exists()) {
-            FileUtil.deleteWorldFolder(worldFolder);
-        }
+        File folder = new File(Bukkit.getWorldContainer(), worldName);
+        if (folder.exists()) FileUtil.deleteWorldFolder(folder);
     }
 
-    @Override
-    public List<Arena> getArenas() {
-        return Collections.unmodifiableList(arenas);
-    }
-
-    @Override
-    public List<StandAloneArena> getTemporaryArenas() {
-        return Collections.unmodifiableList(temporaryArenas);
-    }
-
-    @Override
-    public void saveArena(Arena arena) {
-        if (arena == null) {
-            return;
-        }
-
-        arena.saveArena();
-        buildCaches();
-    }
-
-    @Override
-    public void deleteArena(Arena arena) {
-        if (arena == null) {
-            return;
-        }
-
-        arena.deleteArena();
-        arenas.remove(arena);
-        buildCaches();
-    }
-
-    @Override
-    public void deleteTemporaryArena(StandAloneArena arena) {
-        if (arena == null || !temporaryArenas.contains(arena)) {
-            return;
-        }
-
-        if (!this.arenaCopyManager.deleteTemporaryArena(arena)) {
-            arena.deleteCopiedArena();
-        }
-
-        this.temporaryArenas.remove(arena);
-    }
-
-    @Override
-    public Arena getRandomArena(Kit kit) {
-        List<Arena> availableArenas = arenasByKit.get(kit.getName());
-        if (availableArenas == null || availableArenas.isEmpty()) {
-            return null;
-        }
-
-        Arena selectedArena = availableArenas.get(random.nextInt(availableArenas.size()));
-        if (selectedArena instanceof StandAloneArena) {
-            return createTemporaryArenaCopy((StandAloneArena) selectedArena);
-        }
-        return selectedArena;
-    }
-
-    @Override
-    public Arena getArenaByName(String name) {
-        return arenasByName.get(name.toLowerCase());
-    }
-
-    @Override
-    public Arena selectArenaWithPotentialTemporaryCopy(Arena arena) {
-        if (arena instanceof StandAloneArena) {
-            return createTemporaryArenaCopy((StandAloneArena) arena);
-        }
-        return arena;
-    }
-
-    @Override
-    public void registerNewArena(Arena arena) {
-        if (arena != null && !arenasByName.containsKey(arena.getName().toLowerCase())) {
-            this.arenas.add(arena);
-            this.buildCaches();
-        }
-    }
-
-    public void refreshCaches() {
-        CompletableFuture.runAsync(this::buildCaches, executorService);
-    }
+    @Override public List<Arena> getArenas() { return Collections.unmodifiableList(arenas); }
+    @Override public List<StandAloneArena> getTemporaryArenas() { return Collections.unmodifiableList(temporaryArenas); }
+    @Override public void saveArena(Arena arena) { if (arena != null) { arena.saveArena(); buildCaches(); } }
+    @Override public void deleteArena(Arena arena) { if (arena != null) { arena.deleteArena(); arenas.remove(arena); buildCaches(); } }
+    @Override public void deleteTemporaryArena(StandAloneArena arena) { if (arena != null && temporaryArenas.contains(arena)) { if (!this.arenaCopyManager.deleteTemporaryArena(arena)) arena.deleteCopiedArena(); temporaryArenas.remove(arena); } }
+    @Override public Arena getRandomArena(Kit kit) { List<Arena> a = arenasByKit.get(kit.getName()); return (a == null || a.isEmpty()) ? null : selectArenaWithPotentialTemporaryCopy(a.get(random.nextInt(a.size()))); }
+    @Override public Arena getArenaByName(String name) { return arenasByName.get(name.toLowerCase()); }
+    @Override public Arena selectArenaWithPotentialTemporaryCopy(Arena arena) { return (arena instanceof StandAloneArena) ? createTemporaryArenaCopy((StandAloneArena) arena) : arena; }
+    @Override public void registerNewArena(Arena arena) { if (arena != null && !arenasByName.containsKey(arena.getName().toLowerCase())) { this.arenas.add(arena); buildCaches(); } }
 
     private ArenaCopyManager createArenaCopyManager() {
         FileConfiguration settings = this.configService.getSettingsConfig();
-        if (settings == null || !settings.getBoolean("arena-management.swm.enabled", false)) {
-            return new NoOpArenaCopyManager();
-        }
-
-        Plugin swmPlugin = Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
-        if (swmPlugin == null) {
-            Logger.error("SWM está ativado no settings.yml, mas o plugin SlimeWorldManager não está carregado. Usando fallback por schematic.");
-            return new NoOpArenaCopyManager();
-        }
-
+        if (settings == null || !settings.getBoolean("arena-management.swm.enabled", false)) return new NoOpArenaCopyManager();
+        if (Bukkit.getPluginManager().getPlugin("SlimeWorldManager") == null) return new NoOpArenaCopyManager();
         try {
-            Class<?> swmManagerClass = Class.forName("us.alleypvp.practice.feature.arena.internal.swm.SwmArenaManager");
-            Class<?> swmManagerClassDef = Class.forName("us.alleypvp.practice.feature.arena.internal.swm.SwmArenaManager");
-            Constructor<?> constructor = swmManagerClassDef.getConstructor(AlleyPractice.class, ConfigService.class, ArenaSchematicService.class);
-            Object managerInstance = constructor.newInstance(this.plugin, this.configService, this.arenaSchematicService);
-
-            if (managerInstance instanceof ArenaCopyManager) {
-                return (ArenaCopyManager) managerInstance;
-            }
-
-            Logger.error("SwmArenaManager não implementa ArenaCopyManager. Usando fallback por schematic.");
-        } catch (Throwable throwable) {
-            Exception exceptionToLog = (throwable instanceof Exception)
-                    ? (Exception) throwable
-                    : new Exception(throwable);
-
-            Logger.logException("Falha ao carregar SwmArenaManager. Usando fallback por schematic.", exceptionToLog);
-        }
-
-        return new NoOpArenaCopyManager();
+            return (ArenaCopyManager) Class.forName("us.alleypvp.practice.feature.arena.internal.swm.SwmArenaManager").getConstructor(AlleyPractice.class, ConfigService.class, ArenaSchematicService.class).newInstance(this.plugin, this.configService, this.arenaSchematicService);
+        } catch (Throwable t) { return new NoOpArenaCopyManager(); }
     }
 }

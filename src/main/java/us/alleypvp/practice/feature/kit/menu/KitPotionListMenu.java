@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * @author Emmy
  * @project Alley
- * @since 25/06/2025
+ * @since 06/25/2025
  */
 @AllArgsConstructor
 public class KitPotionListMenu extends PaginatedMenu {
@@ -31,7 +31,7 @@ public class KitPotionListMenu extends PaginatedMenu {
 
     @Override
     public String getPrePaginatedTitle(Player player) {
-        return "&b&lPoções de " + this.kit.getDisplayName();
+        return "&b&lPotions of " + this.kit.getDisplayName();
     }
 
     @Override
@@ -67,10 +67,10 @@ public class KitPotionListMenu extends PaginatedMenu {
             return new ItemBuilder(Material.POTION)
                     .name("&b" + this.potionEffect.getType().getName())
                     .lore(
-                            "&7Duração: &b" + this.potionEffect.getDuration() / 20 + " segundos",
-                            "&7Amplificador: &b" + this.potionEffect.getAmplifier(),
+                            "&7Duration: &b" + this.potionEffect.getDuration() / 20 + " seconds",
+                            "&7Amplifier: &b" + this.potionEffect.getAmplifier(),
                             "",
-                            "&7Clique para remover este efeito de poção."
+                            "&7Click to remove this potion effect."
                     )
                     .hideMeta()
                     .build();

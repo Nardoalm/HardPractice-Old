@@ -51,7 +51,7 @@ public class FFAToggleCommand extends BaseCommand {
         ffaService.reloadFFAKits();
         player.sendMessage(this.getString(GlobalMessagesLocaleImpl.FFA_TOGGLED)
                 .replace("{kit-name}", kit.getName())
-                .replace("{status}", ffaEnabled ? "ativado" : "desativado")
+                .replace("{status}", ffaEnabled ? "enable" : "disable")
         );
         player.sendMessage(this.getString(GlobalMessagesLocaleImpl.FFA_KITS_RELOADED));
     }

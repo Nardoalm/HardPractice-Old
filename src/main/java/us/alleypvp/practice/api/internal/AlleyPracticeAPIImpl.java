@@ -23,7 +23,7 @@ import java.util.UUID;
 
 public final class AlleyPracticeAPIImpl implements AlleyPracticeAPI {
     private static final String[] SAFE_TEAM_COLORS = {
-            "&c", "&9", "&a", "&e", "&5", "&b", "&6", "&d", "&4", "&3", "&2", "&1", "&f", "&0"
+            "&c", "&9", "&a", "&e", "&5", "&b", "&b", "&d", "&4", "&3", "&2", "&1", "&f", "&0"
     };
 
     private final AlleyPractice plugin;

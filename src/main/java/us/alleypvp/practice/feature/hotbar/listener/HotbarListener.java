@@ -8,7 +8,6 @@ import us.alleypvp.practice.feature.hotbar.HotbarAction;
 import us.alleypvp.practice.feature.hotbar.HotbarType;
 import us.alleypvp.practice.core.profile.ProfileService;
 import us.alleypvp.practice.core.profile.Profile;
-import us.alleypvp.practice.common.logger.Logger;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,12 +22,9 @@ public class HotbarListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Action action = event.getAction();
-        if ((action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK)) {
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
-
-        ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
-        HotbarService hotbarService = AlleyPractice.getInstance().getService(HotbarService.class);
 
         Player player = event.getPlayer();
         ItemStack clickedItem = player.getItemInHand();
@@ -36,6 +32,9 @@ public class HotbarListener implements Listener {
         if (clickedItem == null || !clickedItem.hasItemMeta() || !clickedItem.getItemMeta().hasDisplayName()) {
             return;
         }
+
+        ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
+        HotbarService hotbarService = AlleyPractice.getInstance().getService(HotbarService.class);
 
         Profile profile = profileService.getProfile(player.getUniqueId());
         HotbarType currentHotbarType = hotbarService.getCorrespondingType(profile);
@@ -48,17 +47,24 @@ public class HotbarListener implements Listener {
 
         HotbarAction actionType = hotbarItem.getActionData().getAction();
         if (actionType == null) {
-            Logger.error("Hotbar item action type is null for item: " + hotbarItem.getName());
             return;
         }
 
         switch (actionType) {
             case RUN_COMMAND:
-                player.performCommand(hotbarItem.getActionData().getCommand());
+                String cmd = hotbarItem.getActionData().getCommand();
+                if (cmd != null && !cmd.isEmpty()) {
+                    player.performCommand(cmd);
+                }
                 break;
             case OPEN_MENU:
-                Menu menu = hotbarService.getMenuInstanceFromName(hotbarItem.getActionData().getMenuName(), player);
-                menu.openMenu(player);
+                String menuName = hotbarItem.getActionData().getMenuName();
+                if (menuName != null && !menuName.isEmpty()) {
+                    Menu menu = hotbarService.getMenuInstanceFromName(menuName, player);
+                    if (menu != null) {
+                        menu.openMenu(player);
+                    }
+                }
                 break;
         }
 

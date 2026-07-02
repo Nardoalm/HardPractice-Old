@@ -10,8 +10,6 @@ import lombok.Getter;
 @Getter
 public enum KnockbackType {
     DEFAULT("Default", "ysubz"),
-    ZONE("ZoneSpigot", "Revere Incorporate"),
-
     ;
 
     private final String spigotName;

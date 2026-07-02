@@ -314,6 +314,10 @@ public class HotbarServiceImpl implements HotbarService {
 
     @Override
     public Menu getMenuInstanceFromName(String name, Player player) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+
         Profile profile = this.profileService.getProfile(player.getUniqueId());
         switch (name) {
             case "UNRANKED_MENU":

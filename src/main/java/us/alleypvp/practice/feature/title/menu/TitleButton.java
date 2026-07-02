@@ -47,7 +47,7 @@ public class TitleButton extends Button {
                         CC.MENU_BAR,
                         " &a&lDESBLOQUEADO",
                         "",
-                        "&aClique para selecionar!",
+                        "&aClick to select!",
                         CC.MENU_BAR
                 )
                 .durability(this.title.getKit().getDurability())

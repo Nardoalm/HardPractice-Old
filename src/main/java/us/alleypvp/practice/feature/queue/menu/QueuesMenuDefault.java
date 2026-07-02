@@ -40,7 +40,7 @@ public class QueuesMenuDefault extends Menu {
      */
     @Override
     public String getTitle(Player player) {
-        return "&b&lFilas Solo Unranked";
+        return "&b&lUnranked Solo Queue";
     }
 
     /**
@@ -61,7 +61,7 @@ public class QueuesMenuDefault extends Menu {
                 "",
                 "&bJogadores: &f" + queueService.getPlayerCountOfGameType("Unranked"),
                 "",
-                "&aClique para jogar!"
+                "&aClick to play!"
         )));
 
         buttons.put(13, new QueuesButtonDefault("&b&lBots", Material.GOLD_SWORD, 0, Arrays.asList(
@@ -70,7 +70,7 @@ public class QueuesMenuDefault extends Menu {
                 "",
                 "&bJogadores: &f" + queueService.getPlayerCountOfGameType("Bots"),
                 "",
-                "&aClique para jogar!"
+                "&aClick to play!"
         )));
 
         buttons.put(15, new QueuesButtonDefault("&b&lFFA", Material.GOLD_AXE, 0, Arrays.asList(
@@ -79,7 +79,7 @@ public class QueuesMenuDefault extends Menu {
                 "",
                 "&bJogadores: &f" + queueService.getPlayerCountOfGameType("FFA"),
                 "",
-                "&aClique para jogar!"
+                "&aClick to play!"
         )));
 
         this.addGlass(buttons, 15);

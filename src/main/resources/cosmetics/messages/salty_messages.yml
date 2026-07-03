@@ -1,10 +1,10 @@
 ENTITY_ATTACK:
-  - "Foi lag, {victim}, ou só falta de habilidade?"
+  - "Was it lag, {victim}, or just a skill issue?"
 FALL:
-  - "{killer} ensinou a {victim} uma valiosa lição sobre gravidade."
+  - "{killer} taught {victim} a valuable lesson about gravity."
 VOID:
-  - "{killer} acabou de apertar delete em {victim}."
+  - "{killer} just hit delete on {victim}."
 LAVA:
-  - "{killer} sugeriu um mergulho rápido para {victim}. Na lava."
+  - "{killer} suggested a quick dive for {victim}. Into lava."
 GENERIC:
-  - "{victim} simplesmente não foi bom o bastante para vencer {killer}."
+  - "{victim} simply wasn't good enough to beat {killer}."

@@ -28,11 +28,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
 
-/**
- * @author Remi
- * @project kaos-practice
- * @since 02/07/2025
- */
 @Service(provides = ArenaSchematicService.class, priority = 120)
 public class ArenaSchematicServiceImpl implements ArenaSchematicService {
     private final AlleyPractice plugin;
@@ -141,6 +136,14 @@ public class ArenaSchematicServiceImpl implements ArenaSchematicService {
             schema.paste(session, toVector, false);
 
             session.flushQueue();
+
+            com.boydti.fawe.util.TaskManager.IMP.task(new Runnable() {
+                @Override
+                public void run() {
+                    session.flushQueue();
+                }
+            });
+
         } catch (Exception exception) {
             Logger.logException("Falha ao colar a schematic em " + location, exception);
         }
@@ -148,17 +151,12 @@ public class ArenaSchematicServiceImpl implements ArenaSchematicService {
 
     @Override
     public void delete(StandAloneArena arena) {
-        if (!arena.isTemporaryCopy()) {
-            return;
-        }
+        if (!arena.isTemporaryCopy()) return;
 
         Location min = arena.getMinimum();
         Location max = arena.getMaximum();
 
-        if (min == null || max == null || min.getWorld() == null) {
-            Logger.error("Cannot delete arena '" + arena.getName() + "': Invalid bounds.");
-            return;
-        }
+        if (min == null || max == null || min.getWorld() == null) return;
 
         try {
             World bukkitWorld = min.getWorld();

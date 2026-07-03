@@ -28,12 +28,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-
-/**
- * @author Emmy
- * @project Alley
- * @since 19/04/2024
- */
 public class ProfileListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -93,8 +87,15 @@ public class ProfileListener implements Listener {
     private void onPlayerQuitEvent(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
-
         Profile profile = profileService.getProfile(player.getUniqueId());
+
+        org.bukkit.scoreboard.Scoreboard scoreboard = player.getScoreboard();
+        if (scoreboard != null) {
+            org.bukkit.scoreboard.Objective objective = scoreboard.getObjective("showhealth");
+            if (objective != null) {
+                objective.unregister();
+            }
+        }
 
         event.setQuitMessage(null);
 
@@ -127,15 +128,6 @@ public class ProfileListener implements Listener {
         }
     }
 
-    /**
-     * Handles the player joining the server.
-     * This method sets the player's profile state to LOBBY, updates their name
-     * and online status, including other profile-related data.
-     * Also teleports the player to the spawn and applies the lobby hotbar items.
-     *
-     * @param profile The profile of the player.
-     * @param player  The player who joined.
-     */
     private void handlePlayerJoin(Profile profile, Player player) {
         CoreAdapter coreAdapter = AlleyPractice.getInstance().getService(CoreAdapter.class);
         SpawnService spawnService = AlleyPractice.getInstance().getService(SpawnService.class);
@@ -149,7 +141,6 @@ public class ProfileListener implements Listener {
         profile.setParty(null);
         profile.setFfaMatch(null);
 
-        profile.setNameColor(coreAdapter.getCore().getPlayerColor(player));
         profile.getProfileData().getSettingData().setTimeBasedOnProfileSetting(player);
         profile.getProfileData().getPlayTimeData().setLastLogin(System.currentTimeMillis());
         profile.getProfileData().determineLevel();
@@ -181,5 +172,4 @@ public class ProfileListener implements Listener {
 
         titleService.sendTitle(player, header, subHeader, fadeIn, stay, fadeOut);
     }
-
 }

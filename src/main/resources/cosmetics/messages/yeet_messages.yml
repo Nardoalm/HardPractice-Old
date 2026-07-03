@@ -1,10 +1,10 @@
 ENTITY_ATTACK:
-  - "{killer} arremessou {victim} direto para a tela de morte."
+  - "{killer} threw {victim} straight to the death screen."
 FALL:
-  - "{killer} arremessou {victim} de um lugar alto."
+  - "{killer} threw {victim} off a high place."
 VOID:
-  - "{killer} arremessou {victim} direto para o abismo."
+  - "{killer} threw {victim} straight into the abyss."
 LAVA:
-  - "{killer} arremessou {victim} para a banheira mais quente do mundo."
+  - "{killer} threw {victim} into the world's hottest bathtub."
 GENERIC:
-  - "{victim} foi completamente arremessado por {killer}."
+  - "{victim} was completely thrown around by {killer}."

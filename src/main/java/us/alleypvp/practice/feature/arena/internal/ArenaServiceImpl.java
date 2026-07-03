@@ -239,8 +239,14 @@ public final class ArenaServiceImpl implements ArenaService {
         Location max = arena.getMaximum();
         if (min == null || max == null || min.getWorld() == null) return;
         World world = min.getWorld();
-        for (int x = (Math.min(min.getBlockX(), max.getBlockX()) >> 4); x <= (Math.max(min.getBlockX(), max.getBlockX()) >> 4); x++) {
-            for (int z = (Math.min(min.getBlockZ(), max.getBlockZ()) >> 4); z <= (Math.max(min.getBlockZ(), max.getBlockZ()) >> 4); z++) {
+
+        int minX = (Math.min(min.getBlockX(), max.getBlockX()) >> 4) - 2;
+        int maxX = (Math.max(min.getBlockX(), max.getBlockX()) >> 4) + 2;
+        int minZ = (Math.min(min.getBlockZ(), max.getBlockZ()) >> 4) - 2;
+        int maxZ = (Math.max(min.getBlockZ(), max.getBlockZ()) >> 4) + 2;
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
                 if (!world.isChunkLoaded(x, z)) world.loadChunk(x, z, true);
             }
         }

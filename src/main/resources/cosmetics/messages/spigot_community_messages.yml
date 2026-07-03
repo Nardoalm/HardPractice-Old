@@ -1,10 +1,10 @@
 ENTITY_ATTACK:
-  - "{victim} foi pego no ato de escorregar por {killer}."
+  - "{victim} was caught in the act of slipping by {killer}."
 FALL:
-  - "{killer} realizou a contagem regressiva de meteoro em {victim}."
+  - "{killer} performed the meteor countdown on {victim}."
 VOID:
-  - "{victim} desistiu de lutar contra {killer}."
+  - "{victim} gave up fighting {killer}."
 LAVA:
-  - "{victim} provou o bolo de lava de {killer}."
+  - "{victim} tasted {killer}'s lava cake."
 GENERIC:
-  - "{killer} usou CTRL + X para apagar {victim} da existência."
+  - "{killer} used CTRL + X to delete {victim} from existence."

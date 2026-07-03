@@ -149,7 +149,6 @@ public class CommandUtility {
             new UnrankedCommand();
             new MatchSettingsCommand();
 
-            new ShopCommand();
             new ChallengesCommand();
             new MatchHistoryCommand();
             new TipCommand();

@@ -75,7 +75,7 @@ public class CosmeticListener implements Listener {
         Block block = event.getBlockPlaced();
 
         if (block.getType() == Material.WOOL) {
-            if (!player.hasPermission("kaoscore.pro")) {
+            if (!player.hasPermission("kaoscore.lobbyblock")) {
                 event.setCancelled(true);
                 player.sendMessage(CC.translate("&cYou need &d&lPRO&c rank to use this. Purchase in &bstore.pvphard.live&c."));
                 return;

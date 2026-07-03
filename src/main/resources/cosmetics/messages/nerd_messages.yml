@@ -1,10 +1,10 @@
 ENTITY_ATTACK:
-  - "{killer} executou `taskkill /IM {victim}.exe /F`."
+  - "{killer} executed `taskkill /IM {victim}.exe /F`."
 FALL:
-  - "{victim} encontrou um erro fatal na engine de física, induzido por {killer}."
+  - "{victim} encountered a fatal error in the physics engine, induced by {killer}."
 VOID:
-  - "{victim} foi lançado ao void por {killer} e coletado pelo garbage collector."
+  - "{victim} was thrown into the void by {killer} and collected by the garbage collector."
 LAVA:
-  - "{killer} decidiu que a CPU de {victim} precisava de um teste de estresse térmico."
+  - "{killer} decided {victim}'s CPU needed a thermal stress test."
 GENERIC:
-  - "Exceção não tratada: {victim} não conseguiu lidar com {killer}."
+  - "Unhandled exception: {victim} failed to handle {killer}."

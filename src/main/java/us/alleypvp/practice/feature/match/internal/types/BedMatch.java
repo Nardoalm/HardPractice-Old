@@ -20,9 +20,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.PlayerDeathEvent;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -129,20 +127,20 @@ public class BedMatch extends DefaultMatch {
         }
     }
 
-    private String getFormattedBedName(GameParticipant<MatchGamePlayer> participant) {
+    public String getFormattedBedName(GameParticipant<MatchGamePlayer> participant) {
         org.bukkit.ChatColor color = this.getTeamColor(participant);
         switch (color) {
-            case RED: return "&c[R] &fRed Bed";
-            case BLUE: return "&b[B] &fBlue Bed";
-            case GREEN: return "&a[G] &fGreen Bed";
-            case YELLOW: return "&e[Y] &fYellow Bed";
-            case AQUA: return "&3[A] &fAqua Bed";
-            case LIGHT_PURPLE: return "&d[P] &fPink Bed";
-            case GOLD: return "&b[O] &fOrange Bed";
-            case WHITE: return "&f[W] &fWhite Bed";
-            case GRAY: return "&7[G] &fGray Bed";
-            case DARK_PURPLE: return "&5[P] &fPurple Bed";
-            default: return color + "[" + color.name().substring(0, 1) + "] &f" + color.name() + " Bed";
+            case RED: return "&cRed Bed";
+            case BLUE: return "&9Blue Bed";
+            case GREEN: return "&aGreen Bed";
+            case YELLOW: return "&eYellow Bed";
+            case AQUA: return "&3Aqua Bed";
+            case LIGHT_PURPLE: return "&dPink Bed";
+            case GOLD: return "&6Orange Bed";
+            case WHITE: return "&fWhite Bed";
+            case GRAY: return "&7Gray Bed";
+            case DARK_PURPLE: return "&5Purple Bed";
+            default: return color + color.name() + " Bed";
         }
     }
 

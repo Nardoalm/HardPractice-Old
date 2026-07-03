@@ -14,12 +14,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-/**
- * @author Emmy
- * @project Alley
- * @since 08/02/2025
- */
 public class MatchDisconnectListener implements Listener {
+
     @EventHandler(priority = EventPriority.LOWEST)
     private void onPlayerQuit(PlayerQuitEvent event) {
         this.handleDisconnect(event.getPlayer());
@@ -33,6 +29,14 @@ public class MatchDisconnectListener implements Listener {
     private void handleDisconnect(Player player) {
         if (player == null) {
             return;
+        }
+
+        org.bukkit.scoreboard.Scoreboard scoreboard = player.getScoreboard();
+        if (scoreboard != null) {
+            org.bukkit.scoreboard.Objective objective = scoreboard.getObjective("showhealth");
+            if (objective != null) {
+                objective.unregister();
+            }
         }
 
         ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);

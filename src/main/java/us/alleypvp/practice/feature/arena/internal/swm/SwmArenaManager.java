@@ -50,18 +50,22 @@ public class SwmArenaManager implements ArenaCopyManager {
         } catch (Throwable t) { this.enabled = false; }
     }
 
-    @Override public boolean isEnabled() { return enabled; }
+    @Override
+    public boolean isEnabled() { return enabled; }
 
     @Override
     public StandAloneArena createTemporaryArenaCopy(StandAloneArena originalArena, int copyId) {
         if (!enabled) return null;
         String templateName = "kaos_template_" + sanitizeName(originalArena.getName());
-        String copyName = "kaos_copy_" + sanitizeName(originalArena.getName()) + "_" + copyId + "_" + System.nanoTime();
+        String copyName = "kaos_copy_" + sanitizeName(originalArena.getName()) + "_" + copyId;
+
         try {
             SlimeWorld template = getOrCreateTemplateWorld(originalArena, templateName);
             if (template == null) return null;
+
             SlimeWorld copy = template.clone(copyName, this.slimeLoader);
             this.slimePlugin.generateWorld(copy);
+
             World bukkitWorld = Bukkit.getWorld(copyName);
             if (bukkitWorld == null) return null;
 
@@ -72,7 +76,10 @@ public class SwmArenaManager implements ArenaCopyManager {
                 arena.setManagedBySlimeWorldManager(true);
             }
             return arena;
-        } catch (Exception e) { return null; }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private void forceLoadChunks(StandAloneArena arena) {
@@ -80,8 +87,15 @@ public class SwmArenaManager implements ArenaCopyManager {
         Location max = arena.getMaximum();
         if (min == null || max == null || min.getWorld() == null) return;
         World w = min.getWorld();
-        for (int x = (Math.min(min.getBlockX(), max.getBlockX()) >> 4); x <= (Math.max(min.getBlockX(), max.getBlockX()) >> 4); x++) {
-            for (int z = (Math.min(min.getBlockZ(), max.getBlockZ()) >> 4); z <= (Math.max(min.getBlockZ(), max.getBlockZ()) >> 4); z++) {
+
+        // MARGEM DE SEGURANÇA: +2 Chunks para cada lado para as pérolas não explodirem o Netty (Disconnect Fix)
+        int minX = (Math.min(min.getBlockX(), max.getBlockX()) >> 4) - 2;
+        int maxX = (Math.max(min.getBlockX(), max.getBlockX()) >> 4) + 2;
+        int minZ = (Math.min(min.getBlockZ(), max.getBlockZ()) >> 4) - 2;
+        int maxZ = (Math.max(min.getBlockZ(), max.getBlockZ()) >> 4) + 2;
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
                 if (!w.isChunkLoaded(x, z)) w.loadChunk(x, z, true);
             }
         }
@@ -92,16 +106,24 @@ public class SwmArenaManager implements ArenaCopyManager {
         if (!enabled || !arena.isManagedBySlimeWorldManager() || arena.getMinimum() == null) return false;
         World w = arena.getMinimum().getWorld();
         if (w == null) return true;
+
         String name = w.getName();
         w.getPlayers().forEach(p -> p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation()));
         Bukkit.unloadWorld(w, false);
-        try { if (this.slimeLoader.worldExists(name)) this.slimeLoader.deleteWorld(name); } catch (Exception e) {}
+
+        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+            try {
+                if (this.slimeLoader.worldExists(name)) this.slimeLoader.deleteWorld(name);
+            } catch (Exception ignored) {}
+        });
+
         File folder = new File(Bukkit.getWorldContainer(), name);
         if (folder.exists()) FileUtil.deleteWorldFolder(folder);
         return true;
     }
 
-    @Override public void shutdown() { this.templateWorldCache.clear(); }
+    @Override
+    public void shutdown() { this.templateWorldCache.clear(); }
 
     private SlimeWorld getOrCreateTemplateWorld(StandAloneArena arena, String name) throws Exception {
         if (templateWorldCache.containsKey(name)) return templateWorldCache.get(name);
@@ -111,7 +133,8 @@ public class SwmArenaManager implements ArenaCopyManager {
             return sw;
         } catch (Exception e) {
             importTemplateWorld(arena, name);
-            return getOrCreateTemplateWorld(arena, name);
+            // Agora sim tenta ler, sabendo que a geração terminou.
+            return this.slimePlugin.loadWorld(this.slimeLoader, name, true, createTemplatePropertyMap());
         }
     }
 
@@ -128,8 +151,18 @@ public class SwmArenaManager implements ArenaCopyManager {
 
         World w = wc.createWorld();
         this.arenaSchematicService.paste(new Location(w, 0, 100, 0), schem);
+
+        w.save(); // Salva a schematic injetada NO DISCO com segurança
         Bukkit.unloadWorld(w, true);
-        try { this.slimePlugin.importWorld(new File(Bukkit.getWorldContainer(), importName), name, this.slimeLoader); } catch (Exception e) {}
+
+        try {
+            this.slimePlugin.importWorld(new File(Bukkit.getWorldContainer(), importName), name, this.slimeLoader);
+            // Coloca no cache imediato para evitar refazer a leitura atoa
+            templateWorldCache.put(name, this.slimePlugin.loadWorld(this.slimeLoader, name, true, createTemplatePropertyMap()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         FileUtil.deleteWorldFolder(new File(Bukkit.getWorldContainer(), importName));
     }
 

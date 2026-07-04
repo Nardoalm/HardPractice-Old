@@ -1,11 +1,6 @@
 package live.pvphard.practice.feature.match.listener;
 
 import live.pvphard.practice.HardPractice;
-import live.pvphard.practice.common.InventoryUtil;
-import live.pvphard.practice.feature.cooldown.CooldownService;
-import live.pvphard.practice.feature.cooldown.CooldownType;
-import live.pvphard.practice.feature.kit.setting.types.mode.*;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import live.pvphard.practice.common.ListenerUtil;
 import live.pvphard.practice.common.PlayerDisplayUtil;
 import live.pvphard.practice.common.text.CC;
@@ -21,12 +16,12 @@ import live.pvphard.practice.feature.kit.setting.types.mechanic.KitSettingDenyMo
 import live.pvphard.practice.feature.kit.setting.types.mechanic.KitSettingNoHungerImpl;
 import live.pvphard.practice.feature.kit.setting.types.mechanic.KitSettingSoup;
 import live.pvphard.practice.feature.kit.setting.types.mechanic.KitSettingVoidDeathImpl;
+import live.pvphard.practice.feature.kit.setting.types.mode.*;
 import live.pvphard.practice.feature.match.Match;
 import live.pvphard.practice.feature.match.MatchState;
 import live.pvphard.practice.feature.match.internal.types.RoundsMatch;
 import live.pvphard.practice.feature.match.model.GameParticipant;
 import live.pvphard.practice.feature.match.model.internal.MatchGamePlayer;
-import live.pvphard.practice.feature.match.utility.MatchUtility;
 import live.pvphard.practice.library.menu.Menu;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -35,11 +30,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.block.Action;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -48,27 +44,6 @@ public class MatchListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onTeleport(PlayerTeleportEvent event) {
-        Player player = event.getPlayer();
-        ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
-        Profile profile = profileService.getProfile(player.getUniqueId());
-
-        if (profile.getState() == ProfileState.SPECTATING || profile.getState() == ProfileState.PLAYING) {
-            if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
-                if (MatchUtility.isBeyondBounds(event.getTo(), profile)) {
-                    event.setCancelled(true);
-                    player.sendMessage(CC.translate("&cYou cannot leave the arena."));
-
-                    // INJETADO O REEMBOLSO: Evita o jogador de perder a pérola no inventário e ficar de cooldown quando a ação é cancelada.
-                    InventoryUtil.giveItem(player, Material.ENDER_PEARL, 1);
-                    player.updateInventory();
-
-                    CooldownService cooldownService = HardPractice.getInstance().getService(CooldownService.class);
-                    if (cooldownService != null) {
-                        cooldownService.removeCooldown(player.getUniqueId(), CooldownType.ENDER_PEARL);
-                    }
-                }
-            }
-        }
     }
 
     @EventHandler
@@ -178,17 +153,16 @@ public class MatchListener implements Listener {
 
         event.setDeathMessage(null);
 
-        HardPractice.getInstance().getServer().getScheduler().runTask(HardPractice.getInstance(), () -> {
+        profile.getMatch().handleDeathItemDrop(player, event);
+
+        HardPractice.getInstance().getServer().getScheduler().runTaskLater(HardPractice.getInstance(), () -> {
             if (!player.isOnline()) {
                 return;
             }
 
-            profile.getMatch().handleDeathItemDrop(player, event);
-            player.spigot().respawn();
-
             EntityDamageEvent.DamageCause cause = player.getLastDamageCause() != null ? player.getLastDamageCause().getCause() : EntityDamageEvent.DamageCause.CUSTOM;
             profile.getMatch().handleDeath(player, cause);
-        });
+        }, 2L);
     }
 
     @EventHandler

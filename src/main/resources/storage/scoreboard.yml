@@ -46,15 +46,10 @@ scoreboard:
     - "&3pvphard.live"
     - "{sidebar}"
   lines:
-    music:
-      - ""
-      - "&3&lMusic"
-      - "&3&l│ &rName: &3{song-name}"
-      - "&3&l│ &rTime: &3{song-duration}"
     lobby:
       - "{sidebar}"
       - "&3&lLobby"
-      - "&3&l│ &rRank: &3%kaoscore_prefix%"
+      - "&3&l│ &rRank: {rank}"
       - ""
       - "&3&l│ &rOnline: &3{online}"
       - "&3&l│ &rPlaying: &3{playing}"

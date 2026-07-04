@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -74,7 +75,7 @@ public class CosmeticListener implements Listener {
         Block block = event.getBlockPlaced();
 
         if (block.getType() == Material.WOOL) {
-            if (!player.hasPermission("kaoscore.lobbyblock")) {
+            if (!player.hasPermission("kaoscore.lobbyblock") && !player.hasPermission("kaoscore.pro")) {
                 event.setCancelled(true);
                 player.sendMessage(CC.translate("&cYou need &d&lPRO&c rank to use this. Purchase in &bstore.pvphard.live&c."));
                 return;
@@ -86,12 +87,25 @@ public class CosmeticListener implements Listener {
                 return;
             }
 
+            // Replenish the item stack so placing is infinite in the lobby
+            HardPractice.getInstance().getServer().getScheduler().runTask(HardPractice.getInstance(), () -> {
+                if (player.isOnline()) {
+                    ItemStack item = player.getItemInHand();
+                    if (item != null && item.getType() == Material.WOOL) {
+                        item.setAmount(1);
+                        player.setItemInHand(item);
+                        player.updateInventory();
+                    }
+                }
+            });
+
             BlockState replaced = event.getBlockReplacedState();
             int entityId = loc.hashCode();
             SavedBlockState state = new SavedBlockState(replaced.getType(), replaced.getRawData(), entityId);
             PLACED_BLOCKS.put(loc, state);
 
             state.animationTask = new BukkitRunnable() {
+                int ticks = 0;
                 int stage = 0;
 
                 @Override
@@ -102,16 +116,24 @@ public class CosmeticListener implements Listener {
                         return;
                     }
 
-                    if (stage > 9) {
-                        removeCosmeticBlock(loc, true);
-                        this.cancel();
-                        return;
+                    // Dynamic wool color rotation (rainbow effect)
+                    byte woolColor = (byte) (ticks % 16);
+                    block.setData(woolColor);
+
+                    // Advance cracking animation stages every 10 ticks (5 runs * 2 ticks)
+                    if (ticks % 5 == 0) {
+                        if (stage > 9) {
+                            removeCosmeticBlock(loc, true);
+                            this.cancel();
+                            return;
+                        }
+                        sendBreakPacket(loc, entityId, stage);
+                        stage++;
                     }
 
-                    sendBreakPacket(loc, entityId, stage);
-                    stage++;
+                    ticks++;
                 }
-            }.runTaskTimer(HardPractice.getInstance(), 12L, 12L);
+            }.runTaskTimer(HardPractice.getInstance(), 2L, 2L);
         }
     }
 

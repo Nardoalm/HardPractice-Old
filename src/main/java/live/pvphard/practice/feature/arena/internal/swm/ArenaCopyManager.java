@@ -12,4 +12,6 @@ public interface ArenaCopyManager {
     boolean deleteTemporaryArena(StandAloneArena arena);
 
     void shutdown();
+
+    default void preloadTemplates(java.util.List<StandAloneArena> arenas) {}
 }

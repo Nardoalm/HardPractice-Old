@@ -45,7 +45,9 @@ public class FFAMatch extends Match {
 
     @Override
     public void handleRespawn(Player player) {
-        player.spigot().respawn();
+        if (player.isDead()) {
+            player.spigot().respawn();
+        }
 
         //this.addSpectator(player);
 

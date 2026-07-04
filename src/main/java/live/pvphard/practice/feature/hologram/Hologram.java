@@ -4,6 +4,7 @@ import lombok.Getter;
 import live.pvphard.practice.common.text.CC;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
 import java.util.ArrayList;
@@ -22,6 +23,10 @@ public class Hologram {
     }
 
     public void update(List<String> textLines) {
+        if (this.lines.isEmpty()) {
+            this.cleanupEntitiesAtLocation();
+        }
+
         while (lines.size() > textLines.size()) {
             ArmorStand removed = lines.remove(lines.size() - 1);
             if (removed != null) {
@@ -50,6 +55,29 @@ public class Hologram {
                 lines.add(as);
             }
             currentLoc.subtract(0, LINE_SPACING, 0);
+        }
+    }
+
+    private void cleanupEntitiesAtLocation() {
+        if (this.location == null || this.location.getWorld() == null) return;
+        double minY = this.location.getY() - (LINE_SPACING * 12);
+        double maxY = this.location.getY() + 0.5;
+        Location center = this.location.clone();
+        center.setY((minY + maxY) / 2.0);
+        
+        double radiusY = (maxY - minY) / 2.0;
+        
+        try {
+            for (Entity entity : this.location.getWorld().getNearbyEntities(center, 1.5, radiusY, 1.5)) {
+                if (entity instanceof ArmorStand) {
+                    ArmorStand as = (ArmorStand) entity;
+                    if (!as.isVisible() && !as.hasGravity()) {
+                        as.remove();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

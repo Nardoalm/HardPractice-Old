@@ -46,6 +46,7 @@ public class DeathReflectionServiceImpl implements Reflection {
      * @param viewers Viewers that should receive the animation packets.
      */
     public void animateDeath(Player player, Collection<Player> viewers) {
+        if (true) return;
         if (player == null) {
             return;
         }

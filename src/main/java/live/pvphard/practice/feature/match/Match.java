@@ -171,22 +171,33 @@ public abstract class Match {
                 return;
             }
 
-            if (spawnLocation != null) {
-                ListenerUtil.teleportAndClearSpawn(player, spawnLocation);
+            Runnable setupTask = () -> {
+                if (!player.isOnline()) return;
+
+                if (spawnLocation != null) {
+                    ListenerUtil.teleportAndClearSpawn(player, spawnLocation);
+                }
+
+                if (kaosCoreBridge != null) {
+                    kaosCoreBridge.removeVanish(player);
+                }
+
+                this.updatePlayerProfileForMatch(player);
+                this.setupPlayer(player);
+
+                visibilityService.updateVisibility(player);
+                knockbackAdapter.getKnockbackImplementation().applyKnockback(player, getKit().getKnockbackProfile());
+
+                this.registerHealthObjectiveForPlayer(player);
+                this.registerCampProtectionTask(player);
+            };
+
+            if (spawnLocation != null && this.arena instanceof StandAloneArena && !((StandAloneArena) this.arena).isManagedBySlimeWorldManager()) {
+                // Delay teleport and setup by 15 ticks (750ms) to allow schematic to paste
+                Bukkit.getScheduler().runTaskLater(this.plugin, setupTask, 15L);
+            } else {
+                setupTask.run();
             }
-
-            if (kaosCoreBridge != null) {
-                kaosCoreBridge.removeVanish(player);
-            }
-
-            this.updatePlayerProfileForMatch(player);
-            this.setupPlayer(player);
-
-            visibilityService.updateVisibility(player);
-            knockbackAdapter.getKnockbackImplementation().applyKnockback(player, getKit().getKnockbackProfile());
-
-            this.registerHealthObjectiveForPlayer(player);
-            this.registerCampProtectionTask(player);
         });
     }
 

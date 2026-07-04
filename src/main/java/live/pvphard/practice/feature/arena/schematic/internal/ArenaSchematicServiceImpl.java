@@ -58,10 +58,8 @@ public class ArenaSchematicServiceImpl implements ArenaSchematicService {
     public void generateMissingSchematics(List<Arena> arenas) {
         for (Arena arena : arenas) {
             File schematicFile = getSchematicFile(arena);
-            if (!schematicFile.exists()) {
-                Logger.info("Schematic for " + arena.getName() + " not found, creating...");
-                save(arena, schematicFile);
-            }
+            Logger.info("Updating schematic for arena: " + arena.getName());
+            save(arena, schematicFile);
         }
     }
 
@@ -80,6 +78,8 @@ public class ArenaSchematicServiceImpl implements ArenaSchematicService {
             Logger.error("Impossivel salvar schematic para arena '" + arena.getName() + "': O mundo não foi carregado corretamente.");
             return;
         }
+
+        this.forceLoadOriginalArenaChunks(bukkitWorld, min, max);
 
         try {
             CuboidSelection selection = new CuboidSelection(bukkitWorld, min, max);
@@ -109,21 +109,45 @@ public class ArenaSchematicServiceImpl implements ArenaSchematicService {
         }
     }
 
+    private void forceLoadOriginalArenaChunks(World world, Location min, Location max) {
+        if (world == null || min == null || max == null) return;
+        int minX = Math.min(min.getBlockX(), max.getBlockX()) >> 4;
+        int maxX = Math.max(min.getBlockX(), max.getBlockX()) >> 4;
+        int minZ = Math.min(min.getBlockZ(), max.getBlockZ()) >> 4;
+        int maxZ = Math.max(min.getBlockZ(), max.getBlockZ()) >> 4;
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                if (!world.isChunkLoaded(x, z)) {
+                    world.loadChunk(x, z, true);
+                }
+            }
+        }
+    }
+
     @Override
     public void updateSchematic(Arena arena) {
         File schematicFile = getSchematicFile(arena.getName());
         this.save(arena, schematicFile);
     }
 
+    @Override
     public void paste(Location location, File schematicFile) {
+        this.paste(location, schematicFile, null);
+    }
+
+    @Override
+    public void paste(Location location, File schematicFile, Runnable onComplete) {
         if (!schematicFile.exists()) {
             Logger.error("Cannot paste schematic, file does not exist: " + schematicFile.getPath());
+            if (onComplete != null) onComplete.run();
             return;
         }
 
         World bukkitWorld = location.getWorld();
         if (bukkitWorld == null) {
             Logger.error("Cannot paste schematic, target world is null.");
+            if (onComplete != null) onComplete.run();
             return;
         }
 
@@ -133,19 +157,22 @@ public class ArenaSchematicServiceImpl implements ArenaSchematicService {
             session.setFastMode(true);
 
             Schematic schema = FaweAPI.load(schematicFile);
-            schema.paste(session, toVector, false);
+            schema.paste(session, toVector, true);
+
+            if (onComplete != null) {
+                session.addNotifyTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        com.boydti.fawe.util.TaskManager.IMP.task(onComplete);
+                    }
+                });
+            }
 
             session.flushQueue();
 
-            com.boydti.fawe.util.TaskManager.IMP.task(new Runnable() {
-                @Override
-                public void run() {
-                    session.flushQueue();
-                }
-            });
-
         } catch (Exception exception) {
             Logger.logException("Falha ao colar a schematic em " + location, exception);
+            if (onComplete != null) onComplete.run();
         }
     }
 

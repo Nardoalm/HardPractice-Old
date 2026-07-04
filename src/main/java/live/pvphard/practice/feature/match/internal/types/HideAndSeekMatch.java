@@ -188,7 +188,9 @@ public class HideAndSeekMatch extends DefaultMatch {
 
     @Override
     public void handleRespawn(Player player) {
-        player.spigot().respawn();
+        if (player.isDead()) {
+            player.spigot().respawn();
+        }
         PlayerUtil.reset(player, true, false);
 
         if (gameEndTask == null) {

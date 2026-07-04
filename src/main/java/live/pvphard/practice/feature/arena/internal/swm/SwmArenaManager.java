@@ -149,21 +149,88 @@ public class SwmArenaManager implements ArenaCopyManager {
         wc.type(WorldType.FLAT);
         wc.generatorSettings("2;0;1");
 
-        World w = wc.createWorld();
-        this.arenaSchematicService.paste(new Location(w, 0, 100, 0), schem);
+        try {
+            World w = wc.createWorld();
+            this.arenaSchematicService.paste(new Location(w, 0, 100, 0), schem, () -> {
+                w.save();
+                Bukkit.unloadWorld(w, true);
 
-        w.save(); // Salva a schematic injetada NO DISCO com segurança
-        Bukkit.unloadWorld(w, true);
+                try {
+                    this.slimePlugin.importWorld(new File(Bukkit.getWorldContainer(), importName), name, this.slimeLoader);
+                    templateWorldCache.put(name, this.slimePlugin.loadWorld(this.slimeLoader, name, true, createTemplatePropertyMap()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                FileUtil.deleteWorldFolder(new File(Bukkit.getWorldContainer(), importName));
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void preloadTemplates(java.util.List<StandAloneArena> arenas) {
+        if (!enabled) return;
+        importNextArena(arenas.iterator(), () -> {
+            plugin.getLogger().info("All SWM template worlds preloaded successfully.");
+        });
+    }
+
+    private void importNextArena(java.util.Iterator<StandAloneArena> iterator, Runnable onComplete) {
+        if (!iterator.hasNext()) {
+            if (onComplete != null) onComplete.run();
+            return;
+        }
+        StandAloneArena arena = iterator.next();
+        String templateName = "kaos_template_" + sanitizeName(arena.getName());
 
         try {
-            this.slimePlugin.importWorld(new File(Bukkit.getWorldContainer(), importName), name, this.slimeLoader);
-            // Coloca no cache imediato para evitar refazer a leitura atoa
-            templateWorldCache.put(name, this.slimePlugin.loadWorld(this.slimeLoader, name, true, createTemplatePropertyMap()));
+            if (this.slimeLoader.worldExists(templateName)) {
+                if (!templateWorldCache.containsKey(templateName)) {
+                    SlimeWorld sw = this.slimePlugin.loadWorld(this.slimeLoader, templateName, true, createTemplatePropertyMap());
+                    templateWorldCache.put(templateName, sw);
+                }
+                importNextArena(iterator, onComplete);
+                return;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        FileUtil.deleteWorldFolder(new File(Bukkit.getWorldContainer(), importName));
+        File schem = this.arenaSchematicService.getSchematicFile(arena);
+        if (!schem.exists()) {
+            importNextArena(iterator, onComplete);
+            return;
+        }
+
+        String importName = "swm_import_" + sanitizeName(arena.getName());
+        WorldCreator wc = new WorldCreator(importName);
+        wc.environment(World.Environment.NORMAL);
+        wc.generateStructures(false);
+        wc.type(WorldType.FLAT);
+        wc.generatorSettings("2;0;1");
+
+        try {
+            World w = wc.createWorld();
+            this.arenaSchematicService.paste(new Location(w, 0, 100, 0), schem, () -> {
+                w.save();
+                Bukkit.unloadWorld(w, true);
+
+                try {
+                    this.slimePlugin.importWorld(new File(Bukkit.getWorldContainer(), importName), templateName, this.slimeLoader);
+                    templateWorldCache.put(templateName, this.slimePlugin.loadWorld(this.slimeLoader, templateName, true, createTemplatePropertyMap()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                FileUtil.deleteWorldFolder(new File(Bukkit.getWorldContainer(), importName));
+                importNextArena(iterator, onComplete);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            importNextArena(iterator, onComplete);
+        }
     }
 
     private SlimePropertyMap createTemplatePropertyMap() {

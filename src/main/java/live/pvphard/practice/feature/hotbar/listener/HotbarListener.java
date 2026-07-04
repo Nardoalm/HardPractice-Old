@@ -45,6 +45,10 @@ public class HotbarListener implements Listener {
             return;
         }
 
+        if (hotbarItem.getName().equalsIgnoreCase("RAINBOW_BLOCKS")) {
+            return;
+        }
+
         HotbarAction actionType = hotbarItem.getActionData().getAction();
         if (actionType == null) {
             return;

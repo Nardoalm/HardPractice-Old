@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 /**
  * @author Remi
@@ -55,6 +56,13 @@ public class ArenaListener implements Listener {
                         .replace("{z}", String.valueOf(getBlockZ))
                 ));
             }
+        }
+    }
+
+    @EventHandler
+    private void onChunkUnload(ChunkUnloadEvent event) {
+        if (event.getWorld().getName().equals("temporary_arena_world")) {
+            event.setCancelled(true);
         }
     }
 }

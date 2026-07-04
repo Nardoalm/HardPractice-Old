@@ -101,20 +101,6 @@ public final class HologramManagerImpl implements HologramManager, Listener {
         }
     }
 
-    @EventHandler
-    public void onChunkLoad(ChunkLoadEvent event) {
-        if (activeHolograms.isEmpty()) return;
-        for (KitLeaderboardHologram holo : activeHolograms) {
-            if (holo.getLocation() != null && holo.getLocation().getWorld().equals(event.getWorld())) {
-                int cx = holo.getLocation().getBlockX() >> 4;
-                int cz = holo.getLocation().getBlockZ() >> 4;
-                if (event.getChunk().getX() == cx && event.getChunk().getZ() == cz) {
-                    holo.update();
-                }
-            }
-        }
-    }
-
     @Override
     public void saveHologram(Location loc, String target, LeaderboardType type) {
         String id = target.toLowerCase() + "_" + type.name().toLowerCase() + "_" + System.currentTimeMillis();

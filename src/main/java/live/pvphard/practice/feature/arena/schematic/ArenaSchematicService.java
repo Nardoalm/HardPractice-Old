@@ -45,6 +45,15 @@ public interface ArenaSchematicService extends Service {
     void paste(Location location, File schematicFile);
 
     /**
+     * Pastes a schematic into the world at a specific location, then runs a callback.
+     *
+     * @param location      The location to paste the schematic.
+     * @param schematicFile The file containing the schematic data.
+     * @param onComplete    The callback to run when the paste completes.
+     */
+    void paste(Location location, File schematicFile, Runnable onComplete);
+
+    /**
      * Deletes the physical blocks of a temporary arena from the world.
      *
      * @param arena The temporary StandAloneArena to delete.

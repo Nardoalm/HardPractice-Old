@@ -75,7 +75,13 @@ public final class ArenaServiceImpl implements ArenaService {
         this.arenaCopyManager = this.createArenaCopyManager();
         this.arenaCopyManager.initialize();
 
-        if (!this.arenaCopyManager.isEnabled()) {
+        if (this.arenaCopyManager.isEnabled()) {
+            List<StandAloneArena> standAloneArenas = this.arenas.stream()
+                    .filter(a -> a instanceof StandAloneArena)
+                    .map(a -> (StandAloneArena) a)
+                    .collect(Collectors.toList());
+            this.arenaCopyManager.preloadTemplates(standAloneArenas);
+        } else {
             this.initializeTemporaryWorld();
         }
 

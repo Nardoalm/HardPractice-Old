@@ -37,7 +37,7 @@ public class SpawnListener implements Listener {
             boolean isWoolBlock = event.getBlockPlaced().getType() == Material.WOOL;
             boolean isWoolItem = itemInHand != null && itemInHand.getType() == Material.WOOL;
 
-            if ((isWoolBlock || isWoolItem) && player.hasPermission("kaoscore.pro")) {
+            if ((isWoolBlock || isWoolItem) && (player.hasPermission("kaoscore.pro") || player.hasPermission("kaoscore.lobbyblock"))) {
                 event.setCancelled(false);
                 return;
             }

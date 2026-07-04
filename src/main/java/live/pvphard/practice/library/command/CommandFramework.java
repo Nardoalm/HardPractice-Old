@@ -1,0 +1,32 @@
+package live.pvphard.practice.library.command;
+
+import live.pvphard.practice.bootstrap.lifecycle.Service;
+
+import java.lang.reflect.Method;
+import java.util.Map;
+
+/**
+ * @author Remi
+ * @project hard-practice
+ * @date 2/07/2025
+ */
+public interface CommandFramework extends Service {
+    /**
+     * Manually registers all command methods within a given object instance.
+     * @param commandContainerObject The object instance containing @CommandData methods.
+     */
+    void registerCommands(Object commandContainerObject);
+
+    /**
+     * Manually unregisters all command methods from a given object instance.
+     * @param commandContainerObject The object instance to unregister.
+     */
+    void unregisterCommands(Object commandContainerObject);
+
+    /**
+     * Generates and registers the main help topic for the bootstrap.
+     */
+    void registerHelp();
+
+    Map<String, Map.Entry<Method, Object>> getCommandMap();
+}

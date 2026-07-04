@@ -16,7 +16,6 @@ pom.xml
 .idea/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear

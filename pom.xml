@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>us.alleypvp.practice</groupId>
-    <artifactId>AlleyPractice</artifactId>
-    <version>3.1</version>
+    <groupId>live.pvphard.practice</groupId>
+    <artifactId>HardPractice</artifactId>
+    <version>4.2</version>
     <packaging>jar</packaging>
 
-    <name>AlleyPractice</name>
-    <description>A modern practice core for alleypvp.us</description>
+    <name>HardPractice</name>
+    <description>A modern practice core for pvphard.live</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -74,16 +74,6 @@
                                     </excludes>
                                 </filter>
                             </filters>
-                            <relocations>
-                                <relocation>
-                                    <pattern>org.bstats</pattern>
-                                    <shadedPattern>dev.revere.kaos.shaded.org.bstats</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.mindrot.jbcrypt</pattern>
-                                    <shadedPattern>us.alleypvp.practice.shaded.jbcrypt</shadedPattern>
-                                </relocation>
-                            </relocations>
                         </configuration>
                     </execution>
                 </executions>

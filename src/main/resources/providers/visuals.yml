@@ -16,8 +16,8 @@ action-bars:
 titles:
   join-message:
     enabled: false
-    header: '&b&lAlley Practice'
-    subheader: ''
+    header: '&b&lHard'
+    subheader: '&fWelcome to our server!'
     fade-in: 10
     stay: 40
     fade-out: 10

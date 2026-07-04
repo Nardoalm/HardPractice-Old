@@ -1,0 +1,123 @@
+package live.pvphard.practice.feature.queue.internal;
+
+import live.pvphard.practice.HardPractice;
+import live.pvphard.practice.bootstrap.HardContext;
+import live.pvphard.practice.feature.queue.Queue;
+import live.pvphard.practice.feature.queue.QueueService;
+import live.pvphard.practice.library.menu.Menu;
+import live.pvphard.practice.feature.kit.KitService;
+import live.pvphard.practice.feature.kit.setting.types.mode.KitSettingRanked;
+import live.pvphard.practice.feature.queue.menu.QueuesMenuModern;
+import live.pvphard.practice.core.config.ConfigService;
+import live.pvphard.practice.bootstrap.annotation.Service;
+import live.pvphard.practice.core.profile.ProfileService;
+import live.pvphard.practice.core.profile.Profile;
+import live.pvphard.practice.core.profile.enums.ProfileState;
+import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author Remi
+ * @project Hard
+ * @date 5/21/2024
+ */
+@Getter
+@Service(provides = QueueService.class, priority = 90)
+public class QueueServiceImpl implements QueueService {
+    private final ConfigService configService;
+    private final KitService kitService;
+    private final ProfileService profileService;
+
+    private final List<Queue> queues = new ArrayList<>();
+    private Menu queueMenu;
+    private QueueTask queueTask;
+
+    public QueueServiceImpl(ConfigService configService, KitService kitService, ProfileService profileService) {
+        this.configService = configService;
+        this.kitService = kitService;
+        this.profileService = profileService;
+    }
+
+    @Override
+    public void initialize(HardContext context) {
+        this.queueMenu = new QueuesMenuModern();
+        this.reloadQueues();
+
+        this.queueTask = new QueueTask();
+        context.getPlugin().getServer().getScheduler().runTaskTimer(HardPractice.getInstance(), this.queueTask, 20L, 20L);
+    }
+
+    @Override
+    public void reloadQueues() {
+        this.queues.clear();
+        this.kitService.getKits().forEach(kit -> {
+            if (!kit.isEnabled()) return;
+            this.queues.add(new Queue(kit, false, false));
+            this.queues.add(new Queue(kit, false, true));
+            if (kit.isSettingEnabled(KitSettingRanked.class)) {
+                this.queues.add(new Queue(kit, true, false));
+            }
+        });
+    }
+
+    /**
+     * Get the player count of a specific game type
+     *
+     * @param queue the queue to get the player count of
+     * @return the player count of the game type
+     */
+    public int getPlayerCountOfGameType(String queue) {
+        ProfileState stateForQueue = this.getStateForQueue(queue);
+
+        if (stateForQueue == null) {
+            return 0;
+        }
+
+        return (int) this.profileService.getProfiles().values().stream()
+                .filter(profile -> profile.getState().equals(stateForQueue))
+                .filter(profile -> this.isMatchForQueue(profile, queue))
+                .count();
+    }
+
+    /**
+     * Get the state of a profile for a specific queue
+     *
+     * @param queue the queue to get the state for
+     * @return the state of the profile for the queue
+     */
+    private ProfileState getStateForQueue(String queue) {
+        switch (queue) {
+            case "Unranked":
+            case "Ranked":
+            case "Duos":
+                return ProfileState.PLAYING;
+            case "FFA":
+                return ProfileState.FFA;
+            case "Bots":
+                return ProfileState.FIGHTING_BOT;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Check if a profile's match type matches the queue
+     *
+     * @param profile the profile to check
+     * @param queue   the queue to check the profile's match for
+     * @return true if the profile's match type matches the queue
+     */
+    private boolean isMatchForQueue(Profile profile, String queue) {
+        if (queue.equals("FFA")) {
+            return true;
+        } else if (queue.equals("Ranked")) {
+            return profile.getMatch().isRanked();
+        } else if (queue.equals("Duos")) {
+            return true;
+        }
+
+        return false;
+    }
+}

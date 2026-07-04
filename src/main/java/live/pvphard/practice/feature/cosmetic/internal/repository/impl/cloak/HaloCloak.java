@@ -1,0 +1,54 @@
+package live.pvphard.practice.feature.cosmetic.internal.repository.impl.cloak;
+
+import live.pvphard.practice.common.ParticleEffect;
+import live.pvphard.practice.feature.cosmetic.annotation.CosmeticData;
+import live.pvphard.practice.feature.cosmetic.model.CosmeticType;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+
+import java.util.concurrent.ThreadLocalRandom;
+
+/**
+ * @author Remi
+ * @project hard-practice
+ * @date 4/08/2025
+ */
+@CosmeticData(
+        type = CosmeticType.CLOAK,
+        name = "Halo",
+        description = "A holy halo that appears above your head.",
+        icon = Material.GOLD_HELMET,
+        slot = 12,
+        price = 1500
+)
+public class HaloCloak extends BaseCloak {
+    private int step = 0;
+
+    @Override
+    public void render(Player player) {
+        Location center = player.getLocation().add(0, 2.2, 0);
+        step++;
+
+        double radius = 0.5;
+        int points = 25;
+
+        for (int i = 0; i < points; i++) {
+            double angle = (2 * Math.PI / points) * i;
+            double x = Math.cos(angle) * radius;
+            double z = Math.sin(angle) * radius;
+
+            Location particleLoc = center.clone().add(x, 0, z);
+            ParticleEffect.FLAME.display(0F, 0F, 0F, 0F, 1, particleLoc, 32.0);
+        }
+
+        if (step % 25 == 0) {
+            double randomAngle = ThreadLocalRandom.current().nextDouble(2 * Math.PI);
+            double x = Math.cos(randomAngle) * radius;
+            double z = Math.sin(randomAngle) * radius;
+
+            Location dripLoc = center.clone().add(x, 0, z);
+            ParticleEffect.DRIP_LAVA.display(0F, 0F, 0F, 0F, 1, dripLoc, 32.0);
+        }
+    }
+}

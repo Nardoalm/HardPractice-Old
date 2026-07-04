@@ -245,7 +245,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "v${{ steps.version.outputs.version }}"
-          name: "🎉 Alley v${{ steps.version.outputs.version }} (${{ steps.version.outputs.bump_type }} release)"
+          name: "🎉 Hard v${{ steps.version.outputs.version }} (${{ steps.version.outputs.bump_type }} release)"
           body: ${{ steps.changelog.outputs.changelog }}
           files: |
             target/KaosPractice-${{ steps.version.outputs.version }}.jar
@@ -258,8 +258,8 @@ jobs:
         if: steps.skip_check.outputs.skip_release == 'false'
         uses: actions/upload-artifact@v4
         with:
-          name: AlleyPractice-${{ steps.version.outputs.version }}-${{ steps.version.outputs.bump_type }}
-          path: target/AlleyPractice-${{ steps.version.outputs.version }}.jar
+          name: HardPractice-${{ steps.version.outputs.version }}-${{ steps.version.outputs.bump_type }}
+          path: target/HardPractice-${{ steps.version.outputs.version }}.jar
           if-no-files-found: error
 
       - name: Post-release summary

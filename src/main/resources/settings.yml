@@ -1,5 +1,5 @@
 plugin:
-  # Define se o Alley Practice deve atualizar automaticamente ao iniciar o servidor, quando houver nova versão.
+  # Define se o Hard Practice deve atualizar automaticamente ao iniciar o servidor, quando houver nova versão.
   auto-update: false
 
 arena-management:
@@ -31,7 +31,7 @@ configuration:
     menu-title: '&b&l{kit-name}'
 
 explosive:
-  # Define se você quer usar as mecânicas de explosivos nativas do Alley (Fireball e TNT instantânea).
+  # Define se você quer usar as mecânicas de explosivos nativas do Hard (Fireball e TNT instantânea).
   enabled: true
   values:
     fireball:
@@ -65,13 +65,13 @@ permissions:
   color-code-usage-permission: kaos.chat.color
   donators:
     # Permite que jogadores escolham arena em parties.
-    party-arena-selector: alleypractice.duel.arena.selector
+    party-arena-selector: hardpractice.duel.arena.selector
     # Permite que jogadores escolham arena no menu /duel.
-    duel-arena-selector: alleypractice.duel.arena.selector
+    duel-arena-selector: hardpractice.duel.arena.selector
     # Permite voar no lobby/fila.
-    lobby-flight-bypass: kaoscore.vip.fly
+    lobby-flight-bypass: kaoscore.fly
     # Permite usar emojis no chat (:sad:, etc).
-    emoji-usage-permission: kaoscore.vip.emojis
+    emoji-usage-permission: kaoscore.emoji
 
 practice-api:
   nametag:

@@ -1,7 +1,7 @@
-name: AlleyPractice
+name: HardPractice
 version: '${project.version}'
-main: us.alleypvp.practice.AlleyPractice
-author: Hamza, Remi & Emmy (ysubz edit)
+main: live.pvphard.practice.HardPractice
+author: ysubz and forsaken
 description: '${project.description}'
 softDepend:
   - PlaceholderAPI

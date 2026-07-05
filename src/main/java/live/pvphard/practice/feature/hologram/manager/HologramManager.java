@@ -16,4 +16,6 @@ public interface HologramManager extends Service {
     boolean removeHologram(String target, LeaderboardType type);
 
     List<KitLeaderboardHologram> getActiveHolograms();
+
+    void cleanupAllLoadedChunks();
 }

@@ -21,27 +21,28 @@ public class KaosCoreImpl implements Core {
 
     @Override
     public ChatColor getPlayerColor(Player player) {
-        return this.getTagColor(player);
+        return this.getRankColor(player);
     }
 
     @Override
     public String getRankPrefix(Player player) {
-        return CC.translate(this.kaosCoreBridge.getTagPrefix(player));
+        return CC.translate(this.kaosCoreBridge.getRankPrefix(player));
     }
 
     @Override
     public String getRankName(Player player) {
-        return this.kaosCoreBridge.getTagName(player);
+        return this.kaosCoreBridge.getRankName(player);
     }
 
     @Override
     public String getRankSuffix(Player player) {
-        return CC.translate(this.kaosCoreBridge.getTagSuffix(player));
+        return CC.translate(this.kaosCoreBridge.getRankSuffix(player));
     }
 
     @Override
     public ChatColor getRankColor(Player player) {
-        return this.getTagColor(player);
+        ChatColor color = this.kaosCoreBridge.getRankColor(player);
+        return color != null ? color : ChatColor.WHITE;
     }
 
     @Override

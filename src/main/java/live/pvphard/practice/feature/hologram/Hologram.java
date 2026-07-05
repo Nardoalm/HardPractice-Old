@@ -14,7 +14,9 @@ public class Hologram {
 
     @Getter
     private final Location location;
+    @Getter
     private final List<ArmorStand> lines;
+    private List<String> lastTextLines = new ArrayList<>();
     private static final double LINE_SPACING = 0.28;
 
     public Hologram(Location location) {
@@ -23,9 +25,13 @@ public class Hologram {
     }
 
     public void update(List<String> textLines) {
-        if (this.lines.isEmpty()) {
-            this.cleanupEntitiesAtLocation();
+        this.lastTextLines = new ArrayList<>(textLines);
+
+        if (this.location == null || this.location.getWorld() == null || !this.location.getChunk().isLoaded()) {
+            return;
         }
+
+        this.cleanupStrayEntities();
 
         while (lines.size() > textLines.size()) {
             ArmorStand removed = lines.remove(lines.size() - 1);
@@ -58,8 +64,10 @@ public class Hologram {
         }
     }
 
-    private void cleanupEntitiesAtLocation() {
+    public void cleanupStrayEntities() {
         if (this.location == null || this.location.getWorld() == null) return;
+        if (!this.location.getChunk().isLoaded()) return;
+
         double minY = this.location.getY() - (LINE_SPACING * 12);
         double maxY = this.location.getY() + 0.5;
         Location center = this.location.clone();
@@ -71,7 +79,7 @@ public class Hologram {
             for (Entity entity : this.location.getWorld().getNearbyEntities(center, 1.5, radiusY, 1.5)) {
                 if (entity instanceof ArmorStand) {
                     ArmorStand as = (ArmorStand) entity;
-                    if (!as.isVisible() && !as.hasGravity()) {
+                    if (!as.isVisible() && !as.hasGravity() && !this.lines.contains(as)) {
                         as.remove();
                     }
                 }
@@ -79,6 +87,10 @@ public class Hologram {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void cleanupEntitiesAtLocation() {
+        cleanupStrayEntities();
     }
 
     private ArmorStand createArmorStandElement(Location loc, String text, boolean isBlank) {
@@ -93,8 +105,19 @@ public class Hologram {
         return as;
     }
 
-    public void destroy() {
+    public void despawn() {
         lines.stream().filter(java.util.Objects::nonNull).forEach(ArmorStand::remove);
         lines.clear();
+    }
+
+    public void respawn() {
+        despawn();
+        if (lastTextLines != null && !lastTextLines.isEmpty()) {
+            update(lastTextLines);
+        }
+    }
+
+    public void destroy() {
+        despawn();
     }
 }

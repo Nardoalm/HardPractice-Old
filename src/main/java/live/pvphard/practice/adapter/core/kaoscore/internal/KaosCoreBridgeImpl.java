@@ -3,9 +3,12 @@ package live.pvphard.practice.adapter.core.kaoscore.internal;
 import live.pvphard.practice.HardPractice;
 import live.pvphard.practice.adapter.core.kaoscore.KaosCoreBridge;
 import live.pvphard.practice.bootstrap.annotation.Service;
-import com.knowplugins.ysubz.kaoscore.api.KaosCoreAPI;
-import com.knowplugins.ysubz.kaoscore.clan.Clan;
-import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.bukkit.api.KaosCoreAPI;
+import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.permission.manager.PermissionManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.permission.EffectivePermissions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -275,5 +278,53 @@ public class KaosCoreBridgeImpl implements KaosCoreBridge {
 
     private boolean isUsable(String value) {
         return value != null && !value.trim().isEmpty();
+    }
+
+    private EffectivePermissions getEffectivePermissions(Player player) {
+        if (player == null) {
+            return null;
+        }
+        try {
+            PermissionManager pm = MainManager.getPermissionManager();
+            return pm != null ? pm.getEffective(player.getUniqueId()) : null;
+        } catch (Throwable t) {
+            Bukkit.getLogger().severe("Error resolving effective permissions from KaosCore: " + t.getMessage());
+            t.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public String getRankPrefix(Player player) {
+        EffectivePermissions ep = this.getEffectivePermissions(player);
+        return ep != null && ep.getPrefix() != null ? ep.getPrefix() : "";
+    }
+
+    @Override
+    public String getRankName(Player player) {
+        EffectivePermissions ep = this.getEffectivePermissions(player);
+        if (ep == null || ep.getPrimaryGroup() == null || ep.getPrimaryGroup().isEmpty()) {
+            return "Membro";
+        }
+        String group = ep.getPrimaryGroup();
+        if (group.equalsIgnoreCase("default")) {
+            return "Membro";
+        }
+        return group.substring(0, 1).toUpperCase() + group.substring(1).toLowerCase();
+    }
+
+    @Override
+    public String getRankSuffix(Player player) {
+        EffectivePermissions ep = this.getEffectivePermissions(player);
+        return ep != null && ep.getSuffix() != null ? ep.getSuffix() : "";
+    }
+
+    @Override
+    public ChatColor getRankColor(Player player) {
+        String prefix = this.getRankPrefix(player);
+        if (prefix == null || prefix.isEmpty()) {
+            return ChatColor.WHITE;
+        }
+        return this.parseColor(prefix);
     }
 }

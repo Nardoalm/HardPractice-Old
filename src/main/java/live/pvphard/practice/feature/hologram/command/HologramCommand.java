@@ -39,7 +39,8 @@ public class HologramCommand extends BaseCommand {
             for (KitLeaderboardHologram holo : hologramManager.getActiveHolograms()) {
                 holo.update();
             }
-            player.sendMessage(CC.translate("&aForce updated all active leaderboard holograms."));
+            hologramManager.cleanupAllLoadedChunks();
+            player.sendMessage(CC.translate("&aForce updated and cleaned up all active leaderboard holograms."));
             return;
         }
 

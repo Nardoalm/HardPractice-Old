@@ -84,6 +84,10 @@ public class KitLeaderboardHologram {
         hologram.destroy();
     }
 
+    public Hologram getHologram() {
+        return hologram;
+    }
+
     public Kit getKit() {
         return kit;
     }

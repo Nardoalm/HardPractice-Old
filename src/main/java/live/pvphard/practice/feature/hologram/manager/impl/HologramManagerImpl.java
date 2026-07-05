@@ -17,6 +17,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.ChatColor;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +63,7 @@ public final class HologramManagerImpl implements HologramManager, Listener {
         this.config = YamlConfiguration.loadConfiguration(configFile);
         Bukkit.getPluginManager().registerEvents(this, plugin);
 
-        Bukkit.getScheduler().runTaskLater(plugin, this::loadHolograms, 20L);
+        Bukkit.getScheduler().runTaskLater(plugin, this::loadHolograms, 100L);
     }
 
     @Override
@@ -99,6 +107,8 @@ public final class HologramManagerImpl implements HologramManager, Listener {
             hologram.update();
             activeHolograms.add(hologram);
         }
+
+        cleanupAllLoadedChunks();
     }
 
     @Override
@@ -175,5 +185,102 @@ public final class HologramManagerImpl implements HologramManager, Listener {
     @Override
     public List<KitLeaderboardHologram> getActiveHolograms() {
         return activeHolograms;
+    }
+
+    @Override
+    public void cleanupAllLoadedChunks() {
+        List<ArmorStand> trackedStands = new ArrayList<>();
+        for (KitLeaderboardHologram holo : activeHolograms) {
+            trackedStands.addAll(holo.getHologram().getLines());
+        }
+
+        for (World world : Bukkit.getWorlds()) {
+            for (org.bukkit.Chunk chunk : world.getLoadedChunks()) {
+                for (Entity entity : chunk.getEntities()) {
+                    if (entity instanceof ArmorStand) {
+                        ArmorStand as = (ArmorStand) entity;
+                        if (!as.isVisible() && !as.hasGravity() && !trackedStands.contains(as)) {
+                            as.remove();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onChunkLoad(ChunkLoadEvent event) {
+        List<ArmorStand> trackedStands = new ArrayList<>();
+        for (KitLeaderboardHologram holo : activeHolograms) {
+            trackedStands.addAll(holo.getHologram().getLines());
+        }
+
+        for (Entity entity : event.getChunk().getEntities()) {
+            if (entity instanceof ArmorStand) {
+                ArmorStand as = (ArmorStand) entity;
+                if (!as.isVisible() && !as.hasGravity() && !trackedStands.contains(as)) {
+                    as.remove();
+                }
+            }
+        }
+
+        for (KitLeaderboardHologram holo : activeHolograms) {
+            Location loc = holo.getLocation();
+            if (loc != null && loc.getWorld() != null && loc.getWorld().equals(event.getWorld())) {
+                if (loc.getBlockX() >> 4 == event.getChunk().getX() && loc.getBlockZ() >> 4 == event.getChunk().getZ()) {
+                    holo.getHologram().respawn();
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onChunkUnload(ChunkUnloadEvent event) {
+        for (KitLeaderboardHologram holo : activeHolograms) {
+            Location loc = holo.getLocation();
+            if (loc != null && loc.getWorld() != null && loc.getWorld().equals(event.getWorld())) {
+                if (loc.getBlockX() >> 4 == event.getChunk().getX() && loc.getBlockZ() >> 4 == event.getChunk().getZ()) {
+                    holo.getHologram().despawn();
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event) {
+        this.loadHolograms();
+    }
+
+    @EventHandler
+    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+        if (!(event.getRightClicked() instanceof ArmorStand)) return;
+        ArmorStand clicked = (ArmorStand) event.getRightClicked();
+        
+        for (KitLeaderboardHologram holo : activeHolograms) {
+            if (holo.getHologram().getLines().contains(clicked)) {
+                holo.update();
+                event.getPlayer().sendMessage(ChatColor.GREEN + "Leaderboard updated!");
+                event.setCancelled(true);
+                break;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof ArmorStand)) return;
+        if (!(event.getDamager() instanceof Player)) return;
+        
+        ArmorStand clicked = (ArmorStand) event.getEntity();
+        Player player = (Player) event.getDamager();
+        
+        for (KitLeaderboardHologram holo : activeHolograms) {
+            if (holo.getHologram().getLines().contains(clicked)) {
+                holo.update();
+                player.sendMessage(ChatColor.GREEN + "Leaderboard updated!");
+                event.setCancelled(true);
+                break;
+            }
+        }
     }
 }

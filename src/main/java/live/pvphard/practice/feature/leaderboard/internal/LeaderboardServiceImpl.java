@@ -88,7 +88,8 @@ public class LeaderboardServiceImpl implements LeaderboardService {
             try {
                 String name = doc.getString("name");
                 UUID uuid = UUID.fromString(doc.getString("uuid"));
-                int value = doc.getInteger("value", 0);
+                Object valueObj = doc.get("value");
+                int value = (valueObj instanceof Number) ? ((Number) valueObj).intValue() : 0;
 
                 if (value > 0 || type == LeaderboardType.RANKED) {
                     playerDataList.add(new LeaderboardPlayerData(name, uuid, kit, value));
@@ -252,7 +253,8 @@ public class LeaderboardServiceImpl implements LeaderboardService {
 
                 Object uuidObj = doc.get("uuid");
                 UUID uuid = uuidObj instanceof String ? UUID.fromString((String) uuidObj) : (UUID) uuidObj;
-                int value = doc.getInteger("value", defaultValue);
+                Object valueObj = doc.get("value");
+                int value = (valueObj instanceof Number) ? ((Number) valueObj).intValue() : defaultValue;
 
                 playerDataList.add(new LeaderboardPlayerData(name, uuid, null, value));
             } catch (Exception ignored) {}

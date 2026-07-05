@@ -48,6 +48,7 @@ public class SpawnCommand extends BaseCommand {
                 break;
             case PLAYING:
                 player.sendMessage(HardPractice.getInstance().getService(LocaleService.class).getString(GlobalMessagesLocaleImpl.ERROR_YOU_MUST_BE_IN_LOBBY));
+                break;
             case SPECTATING:
                 profile.getMatch().removeSpectator(player, false);
                 break;

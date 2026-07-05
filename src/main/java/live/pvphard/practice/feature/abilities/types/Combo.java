@@ -97,7 +97,7 @@ public class Combo extends Ability {
 
             player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * hits, 1));
             player.playSound(player.getLocation(), Sound.ZOMBIE_INFECT, 1F, 1F);
-            player.sendMessage(CC.translate("&7Você recebeu Strength II por &4" + hits + " &7segundos."));
+            player.sendMessage(CC.translate("&7You receive Strength II for &4" + hits + " &7 seconds."));
 
             HITS.remove(player.getUniqueId());
             COMBO.remove(player.getUniqueId());
@@ -115,7 +115,7 @@ public class Combo extends Ability {
             Profile profile = profileService.getProfile(player.getUniqueId());
 
             if (profile.getCooldown(Combo.class).onCooldown(player)) {
-                player.sendMessage(CC.translate("&fVocê está em cooldown por &4" + DurationFormatter.getRemaining(profile.getCooldown(Combo.class).getRemainingMillis(player), true)));
+                player.sendMessage(CC.translate("&fYou are in cooldown for &4" + DurationFormatter.getRemaining(profile.getCooldown(Combo.class).getRemainingMillis(player), true)));
                 event.setCancelled(true);
                 player.updateInventory();
             }

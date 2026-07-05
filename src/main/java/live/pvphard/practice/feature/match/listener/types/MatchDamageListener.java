@@ -25,6 +25,7 @@ import live.pvphard.practice.common.reflect.ReflectionService;
 import live.pvphard.practice.common.reflect.internal.types.ActionBarReflectionServiceImpl;
 import live.pvphard.practice.common.text.CC;
 import live.pvphard.practice.common.text.Symbol;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -36,7 +37,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class MatchDamageListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         Player player = (Player) event.getEntity();
@@ -46,7 +47,11 @@ public class MatchDamageListener implements Listener {
             return;
         }
 
-        if (profile.getState() == ProfileState.SPECTATING) event.setCancelled(true);
+        if (profile.getState() == ProfileState.SPECTATING) {
+            event.setCancelled(true);
+            return;
+        }
+
         if (profile.getState() == ProfileState.PLAYING) {
             Match match = profile.getMatch();
             if (match == null) {
@@ -65,6 +70,7 @@ public class MatchDamageListener implements Listener {
             if (matchKit.isSettingEnabled(KitSettingNoFallDamageImpl.class)
                     && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 event.setCancelled(true);
+                return;
             }
 
             if (event.getCause() == EntityDamageEvent.DamageCause.FALL
@@ -72,6 +78,7 @@ public class MatchDamageListener implements Listener {
                     || matchKit.isSettingEnabled(KitSettingSumo.class)
                     || matchKit.isSettingEnabled(KitSettingSpleef.class))) {
                 event.setCancelled(true);
+                return;
             }
 
             if (match.getState() != MatchState.RUNNING) {
@@ -83,14 +90,28 @@ public class MatchDamageListener implements Listener {
                     || matchKit.isSettingEnabled(KitSettingSumo.class)
                     || matchKit.isSettingEnabled(KitSettingSpleef.class)
                     || matchKit.isSettingEnabled(KitSettingNoDamageImpl.class)) {
-                event.setDamage(0);
-                player.setHealth(player.getMaxHealth());
-                player.updateInventory();
+
+                event.setCancelled(true);
+                Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
+                    player.setHealth(player.getMaxHealth());
+                    player.updateInventory();
+                });
+                return;
+            }
+
+            if (event.getFinalDamage() >= player.getHealth()) {
+                event.setCancelled(true);
+
+                EntityDamageEvent.DamageCause cause = event.getCause();
+                Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
+                    player.setHealth(player.getMaxHealth());
+                    match.handleDeath(player, cause);
+                });
             }
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
@@ -168,8 +189,11 @@ public class MatchDamageListener implements Listener {
             }
 
             if (!attacker.getUniqueId().equals(damaged.getUniqueId())) {
-                attackerProfile.getMatch().getGamePlayer(attacker).getData().handleAttack();
-                damagedProfile.getMatch().getGamePlayer(damaged).getData().resetCombo();
+
+                Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
+                    attackerProfile.getMatch().getGamePlayer(attacker).getData().handleAttack();
+                    damagedProfile.getMatch().getGamePlayer(damaged).getData().resetCombo();
+                });
 
                 GameParticipant<MatchGamePlayer> participant = match.getParticipant(attacker);
                 GameParticipant<MatchGamePlayer> opponent = match.getParticipant(damaged);
@@ -197,14 +221,12 @@ public class MatchDamageListener implements Listener {
                         int requiredHits = lowestPlayerCount * 100;
 
                         if (participant.getTeamHits() >= requiredHits) {
-                            HardPractice.getInstance().getServer().getScheduler().runTask(HardPractice.getInstance(), () -> {
+                            Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
                                 opponent.getPlayers().forEach(matchGamePlayer -> {
                                     Player loser = matchGamePlayer.getTeamPlayer();
-                                    if (loser == null) {
-                                        return;
+                                    if (loser != null) {
+                                        match.handleDeath(loser, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
                                     }
-
-                                    match.handleDeath(loser, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
                                 });
                             });
                         }
@@ -237,11 +259,13 @@ public class MatchDamageListener implements Listener {
                 Player player = (Player) event.getEntity();
                 Player attacker = (Player) event.getDamager();
 
-                HardPractice.getInstance().getService(CombatService.class).setLastAttacker(player, attacker);
+                Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
+                    HardPractice.getInstance().getService(CombatService.class).setLastAttacker(player, attacker);
 
-                if (profile.getMatch().getKit().isSettingEnabled(KitSettingHealthBar.class)) {
-                    HardPractice.getInstance().getService(ReflectionService.class).getReflectionService(ActionBarReflectionServiceImpl.class).visualizeTargetHealth(attacker, player);
-                }
+                    if (profile.getMatch().getKit().isSettingEnabled(KitSettingHealthBar.class)) {
+                        HardPractice.getInstance().getService(ReflectionService.class).getReflectionService(ActionBarReflectionServiceImpl.class).visualizeTargetHealth(attacker, player);
+                    }
+                });
             }
         }
     }

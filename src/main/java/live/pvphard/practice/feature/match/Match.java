@@ -819,9 +819,9 @@ public abstract class Match {
         Location hoverLocation = deathLocation.clone().add(0, 2, 0);
         ListenerUtil.teleportAndClearSpawn(player, hoverLocation);
 
-        player.setVelocity(new Vector(0, 0.4, 0));
         player.setAllowFlight(true);
         player.setFlying(true);
+        player.setVelocity(new Vector(0, 0.4, 0));
 
         org.bukkit.Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
             if (!onlinePlayer.getUniqueId().equals(player.getUniqueId())) {

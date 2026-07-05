@@ -417,7 +417,7 @@ public class EventServiceImpl implements EventService {
         }
 
         ItemStack itemStack = event.getItem();
-        if (itemStack == null || itemStack.getType() != Material.REDSTONE || !itemStack.hasItemMeta()) {
+        if (itemStack == null || itemStack.getType() != Material.INK_SACK || !itemStack.hasItemMeta() || itemStack.getType() != Material.REDSTONE) {
             return;
         }
 

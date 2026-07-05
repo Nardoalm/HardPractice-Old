@@ -60,7 +60,7 @@ public class PartyEventMenu extends Menu {
         ));
 
         buttons.put(15, new PartyEventButton(
-                Material.REDSTONE, 0,
+                Material.INK_SACK, 14,
                 "&cBest of 3 Sumo",
                 Arrays.asList(
                         CC.MENU_BAR,

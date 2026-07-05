@@ -61,7 +61,8 @@ public class MatchListener implements Listener {
         if (profile.getState() == ProfileState.PLAYING && profile.getMatch().getState() == MatchState.RUNNING) {
             if (matchKit.isSettingEnabled(KitSettingSumo.class) || matchKit.isSettingEnabled(KitSettingSpleef.class)) {
                 if (player.getLocation().getBlock().getType() == Material.WATER || player.getLocation().getBlock().getType() == Material.STATIONARY_WATER) {
-                    player.setHealth(0);
+                    match.handleDeath(player, EntityDamageEvent.DamageCause.DROWNING);
+                    return;
                 }
             }
 
@@ -152,17 +153,15 @@ public class MatchListener implements Listener {
         if (profile.getState() != ProfileState.PLAYING || profile.getMatch() == null) return;
 
         event.setDeathMessage(null);
+        event.getDrops().clear();
 
-        profile.getMatch().handleDeathItemDrop(player, event);
-
-        HardPractice.getInstance().getServer().getScheduler().runTaskLater(HardPractice.getInstance(), () -> {
-            if (!player.isOnline()) {
-                return;
+        HardPractice.getInstance().getServer().getScheduler().runTask(HardPractice.getInstance(), () -> {
+            if (player.isOnline()) {
+                player.spigot().respawn();
+                EntityDamageEvent.DamageCause cause = player.getLastDamageCause() != null ? player.getLastDamageCause().getCause() : EntityDamageEvent.DamageCause.CUSTOM;
+                profile.getMatch().handleDeath(player, cause);
             }
-
-            EntityDamageEvent.DamageCause cause = player.getLastDamageCause() != null ? player.getLastDamageCause().getCause() : EntityDamageEvent.DamageCause.CUSTOM;
-            profile.getMatch().handleDeath(player, cause);
-        }, 2L);
+        });
     }
 
     @EventHandler
@@ -296,10 +295,7 @@ public class MatchListener implements Listener {
                         player.sendMessage(CC.translate("&cYou cannot enter your own portal!"));
 
                         if (match.getKit().isSettingEnabled(KitSettingRespawnTimer.class)) {
-                            player.setHealth(0);
-                            player.setAllowFlight(true);
-                            player.setFlying(true);
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0));
+                            match.handleDeath(player, EntityDamageEvent.DamageCause.SUICIDE);
                         } else {
                             Location spawnLocation = match.getParticipantA().containsPlayer(player.getUniqueId()) ? match.getArena().getPos1() : match.getArena().getPos2();
                             player.teleport(spawnLocation);

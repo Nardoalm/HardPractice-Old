@@ -3,6 +3,7 @@ package live.pvphard.practice.core.profile.data.command.ranked.impl;
 import live.pvphard.practice.common.text.CC;
 import live.pvphard.practice.core.profile.Profile;
 import live.pvphard.practice.core.profile.ProfileService;
+import live.pvphard.practice.core.profile.enums.ProfileState;
 import live.pvphard.practice.feature.hotbar.HotbarService;
 import live.pvphard.practice.library.command.BaseCommand;
 import live.pvphard.practice.library.command.CommandArgs;
@@ -50,6 +51,11 @@ public class RankedMenuCommand extends BaseCommand {
         if (profile.getProfileData().isRankedBanned()) {
             player.sendMessage(CC.translate("&cYou are currently banned from competitive ranked matches."));
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            return;
+        }
+
+        if(profile.getState() == ProfileState.PLAYING_TOURNAMENT || profile.getState() == ProfileState.PLAYING_EVENT || profile.getState() == ProfileState.PLAYING || profile.getState() == ProfileState.FFA || profile.getState() == ProfileState.FIGHTING_BOT || profile.getState() == ProfileState.WAITING){
+            player.sendMessage(CC.translate("&cYou are currently playing, so you cannot open the ranked menu."));
             return;
         }
 

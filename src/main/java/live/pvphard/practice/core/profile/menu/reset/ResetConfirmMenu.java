@@ -84,12 +84,13 @@ public class ResetConfirmMenu extends Menu {
     private static class CancelButton extends Button {
         @Override
         public ItemStack getButtonItem(Player player) {
-            return new ItemBuilder(Material.REDSTONE_BLOCK)
+            return new ItemBuilder(Material.INK_SACK)
                     .name("&cCancel")
                     .lore(
                             "",
                             "&7Click here to cancel the reset."
                     )
+                    .durability(14)
                     .build();
         }
 

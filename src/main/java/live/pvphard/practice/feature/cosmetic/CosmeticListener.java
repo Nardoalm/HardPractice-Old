@@ -30,6 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CosmeticListener implements Listener {
+    private static final byte[] RAINBOW_WOOL_COLORS = {14, 1, 4, 5, 13, 9, 3, 11, 10, 2, 6};
     private static final Map<UUID, Long> lastMoveTimes = new ConcurrentHashMap<>();
     private static final Map<Location, SavedBlockState> PLACED_BLOCKS = new ConcurrentHashMap<>();
 
@@ -60,50 +61,60 @@ public class CosmeticListener implements Listener {
         lastMoveTimes.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         Player player = event.getPlayer();
-
-        if (!PlayerUtil.inLobby(player)) {
+        if (player == null || !PlayerUtil.inLobby(player)) {
             return;
         }
 
         Block block = event.getBlockPlaced();
+        if (block == null || block.getType() != Material.WOOL) {
+            return;
+        }
 
-        if (block.getType() == Material.WOOL) {
-            if (!player.hasPermission("kaoscore.lobbyblock") && !player.hasPermission("kaoscore.pro")) {
-                event.setCancelled(true);
-                player.sendMessage(CC.translate("&cYou need &d&lPRO&c rank to use this. Purchase in &bstore.pvphard.live&c."));
-                return;
+        Location loc = block.getLocation();
+
+        // If there is already a cosmetic block at this location, deny
+        if (PLACED_BLOCKS.containsKey(loc)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // Cancel the vanilla event — we will place the block ourselves next tick
+        // (placing it now would be overridden by Bukkit's automatic client revert packet)
+        event.setCancelled(true);
+
+        // Capture original block state BEFORE the next-tick placement
+        BlockState originalState = loc.getBlock().getState();
+
+        // Reserve the slot immediately to prevent double-placement
+        int entityId = loc.hashCode();
+        SavedBlockState state = new SavedBlockState(originalState.getType(), originalState.getRawData(), entityId);
+        PLACED_BLOCKS.put(loc, state);
+
+        // Delay 1 tick: by then Bukkit has already sent the client revert packet,
+        // so our block.setType() will be the last word and will display correctly
+        HardPractice.getInstance().getServer().getScheduler().runTask(HardPractice.getInstance(), () -> {
+            if (!player.isOnline() || !PLACED_BLOCKS.containsKey(loc)) return;
+
+            // Get current rainbow color
+            long timeMs = System.currentTimeMillis();
+            byte initialColor = RAINBOW_WOOL_COLORS[(int) ((timeMs / 100) % RAINBOW_WOOL_COLORS.length)];
+
+            // Place the block server-side — client will now receive a fresh block-change packet
+            loc.getBlock().setType(Material.WOOL);
+            loc.getBlock().setData(initialColor);
+
+            // Replenish item in hand (infinite placement)
+            ItemStack item = player.getItemInHand();
+            if (item != null && item.getType() == Material.WOOL) {
+                item.setAmount(64);
+                player.setItemInHand(item);
+                player.updateInventory();
             }
 
-            Location loc = block.getLocation();
-            if (PLACED_BLOCKS.containsKey(loc)) {
-                event.setCancelled(true);
-                return;
-            }
-
-            // Replenish the item stack so placing is infinite in the lobby
-            HardPractice.getInstance().getServer().getScheduler().runTask(HardPractice.getInstance(), () -> {
-                if (player.isOnline()) {
-                    ItemStack item = player.getItemInHand();
-                    if (item != null && item.getType() == Material.WOOL) {
-                        item.setAmount(1);
-                        player.setItemInHand(item);
-                        player.updateInventory();
-                    }
-                }
-            });
-
-            BlockState replaced = event.getBlockReplacedState();
-            int entityId = loc.hashCode();
-            SavedBlockState state = new SavedBlockState(replaced.getType(), replaced.getRawData(), entityId);
-            PLACED_BLOCKS.put(loc, state);
-
+            // Start decay + rainbow animation
             state.animationTask = new BukkitRunnable() {
                 int ticks = 0;
                 int stage = 0;
@@ -116,12 +127,13 @@ public class CosmeticListener implements Listener {
                         return;
                     }
 
-                    // Dynamic wool color rotation (rainbow effect)
-                    byte woolColor = (byte) (ticks % 16);
-                    block.setData(woolColor);
+                    // Sync global rainbow color
+                    long now = System.currentTimeMillis();
+                    int colorIndex = (int) ((now / 100) % RAINBOW_WOOL_COLORS.length);
+                    loc.getBlock().setData(RAINBOW_WOOL_COLORS[colorIndex]);
 
-                    // Advance cracking animation stages every 10 ticks (5 runs * 2 ticks)
-                    if (ticks % 5 == 0) {
+                    // Advance cracking animation every 3 runs × 2 ticks = ~3 seconds total
+                    if (ticks % 3 == 0) {
                         if (stage > 9) {
                             removeCosmeticBlock(loc, true);
                             this.cancel();
@@ -134,7 +146,7 @@ public class CosmeticListener implements Listener {
                     ticks++;
                 }
             }.runTaskTimer(HardPractice.getInstance(), 2L, 2L);
-        }
+        });
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

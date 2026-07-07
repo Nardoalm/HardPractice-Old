@@ -74,41 +74,77 @@ public final class HologramManagerImpl implements HologramManager, Listener {
 
     @Override
     public void loadHolograms() {
-        activeHolograms.forEach(KitLeaderboardHologram::destroy);
-        activeHolograms.clear();
+        try {
+            ConfigurationSection section = config.getConfigurationSection("holograms");
+            if (section == null) return;
 
-        ConfigurationSection section = config.getConfigurationSection("holograms");
-        if (section == null) return;
+            for (String key : section.getKeys(false)) {
+                String path = "holograms." + key;
 
-        for (String key : section.getKeys(false)) {
-            String path = "holograms." + key;
+                String worldName = config.getString(path + ".world");
+                World world = Bukkit.getWorld(worldName);
+                if (world == null) continue;
 
-            String worldName = config.getString(path + ".world");
-            World world = Bukkit.getWorld(worldName);
-            if (world == null) continue;
+                double x = config.getDouble(path + ".x");
+                double y = config.getDouble(path + ".y");
+                double z = config.getDouble(path + ".z");
+                Location location = new Location(world, x, y, z);
 
-            double x = config.getDouble(path + ".x");
-            double y = config.getDouble(path + ".y");
-            double z = config.getDouble(path + ".z");
-            Location location = new Location(world, x, y, z);
+                String target = config.getString(path + ".target");
+                LeaderboardType type = LeaderboardType.valueOf(config.getString(path + ".type"));
 
-            String target = config.getString(path + ".target");
-            LeaderboardType type = LeaderboardType.valueOf(config.getString(path + ".type"));
+                // Check if already active at this exact block location
+                boolean alreadyActive = false;
+                for (KitLeaderboardHologram holo : activeHolograms) {
+                    Location l = holo.getLocation();
+                    if (l != null && l.getWorld() != null && l.getWorld().getName().equalsIgnoreCase(worldName)) {
+                        if (l.getBlockX() == location.getBlockX() && l.getBlockY() == location.getBlockY() && l.getBlockZ() == location.getBlockZ()) {
+                            alreadyActive = true;
+                            // Ensure it has valid entities, if not update/respawn them
+                            boolean needsRespawn = holo.getHologram().getLines().isEmpty();
+                            for (ArmorStand as : holo.getHologram().getLines()) {
+                                if (as == null || !as.isValid()) {
+                                    needsRespawn = true;
+                                    break;
+                                }
+                            }
+                            if (needsRespawn) {
+                                holo.update();
+                            }
+                            break;
+                        }
+                    }
+                }
 
-            KitLeaderboardHologram hologram;
-            if (target.equalsIgnoreCase("global")) {
-                hologram = new KitLeaderboardHologram(location, "global", type);
-            } else {
-                Kit kit = plugin.getService(KitService.class).getKit(target);
-                if (kit == null) continue;
-                hologram = new KitLeaderboardHologram(location, kit, type);
+                if (alreadyActive) {
+                    continue;
+                }
+
+                KitLeaderboardHologram hologram;
+                if (target.equalsIgnoreCase("global")) {
+                    hologram = new KitLeaderboardHologram(location, "global", type);
+                } else {
+                    KitService kitService = null;
+                    try {
+                        kitService = plugin.getService(KitService.class);
+                    } catch (Exception ignored) {}
+
+                    if (kitService == null) continue; // Safe skip, will load on next check/trigger
+
+                    Kit kit = kitService.getKit(target);
+                    if (kit == null) continue;
+                    hologram = new KitLeaderboardHologram(location, kit, type);
+                }
+
+                hologram.update();
+                activeHolograms.add(hologram);
             }
 
-            hologram.update();
-            activeHolograms.add(hologram);
+            cleanupAllLoadedChunks();
+        } catch (Exception e) {
+            plugin.getLogger().warning("Failed to load holograms: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        cleanupAllLoadedChunks();
     }
 
     @Override
@@ -210,28 +246,47 @@ public final class HologramManagerImpl implements HologramManager, Listener {
 
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
-        List<ArmorStand> trackedStands = new ArrayList<>();
-        for (KitLeaderboardHologram holo : activeHolograms) {
-            trackedStands.addAll(holo.getHologram().getLines());
-        }
+        org.bukkit.World world = event.getWorld();
+        int chunkX = event.getChunk().getX();
+        int chunkZ = event.getChunk().getZ();
 
-        for (Entity entity : event.getChunk().getEntities()) {
-            if (entity instanceof ArmorStand) {
-                ArmorStand as = (ArmorStand) entity;
-                if (!as.isVisible() && !as.hasGravity() && !trackedStands.contains(as)) {
-                    as.remove();
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            if (!world.isChunkLoaded(chunkX, chunkZ)) return;
+
+            org.bukkit.Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+
+            List<ArmorStand> trackedStands = new ArrayList<>();
+            for (KitLeaderboardHologram holo : activeHolograms) {
+                trackedStands.addAll(holo.getHologram().getLines());
+            }
+
+            for (Entity entity : chunk.getEntities()) {
+                if (entity instanceof ArmorStand) {
+                    ArmorStand as = (ArmorStand) entity;
+                    if (!as.isVisible() && !as.hasGravity() && !trackedStands.contains(as)) {
+                        as.remove();
+                    }
                 }
             }
-        }
 
-        for (KitLeaderboardHologram holo : activeHolograms) {
-            Location loc = holo.getLocation();
-            if (loc != null && loc.getWorld() != null && loc.getWorld().equals(event.getWorld())) {
-                if (loc.getBlockX() >> 4 == event.getChunk().getX() && loc.getBlockZ() >> 4 == event.getChunk().getZ()) {
-                    holo.getHologram().respawn();
+            for (KitLeaderboardHologram holo : activeHolograms) {
+                Location loc = holo.getLocation();
+                if (loc != null && loc.getWorld() != null && loc.getWorld().equals(world)) {
+                    if (loc.getBlockX() >> 4 == chunkX && loc.getBlockZ() >> 4 == chunkZ) {
+                        boolean needsSpawn = holo.getHologram().getLines().isEmpty();
+                        for (ArmorStand as : holo.getHologram().getLines()) {
+                            if (as == null || !as.isValid()) {
+                                needsSpawn = true;
+                                break;
+                            }
+                        }
+                        if (needsSpawn) {
+                            holo.getHologram().respawn();
+                        }
+                    }
                 }
             }
-        }
+        });
     }
 
     @EventHandler

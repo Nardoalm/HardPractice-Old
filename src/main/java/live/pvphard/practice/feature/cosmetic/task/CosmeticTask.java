@@ -25,7 +25,8 @@ public class CosmeticTask extends BukkitRunnable {
     private final HardPractice plugin;
     private static final long CLOAK_STILL_DELAY = 1500;
 
-    private byte currentWoolColor = 0;
+    private static final byte[] RAINBOW_WOOL_COLORS = {14, 1, 4, 5, 13, 9, 3, 11, 10, 2, 6};
+    private int currentRainbowIndex = 0;
     private int tickCounter = 0;
 
     public CosmeticTask(HardPractice plugin) {
@@ -41,8 +42,9 @@ public class CosmeticTask extends BukkitRunnable {
         tickCounter++;
         boolean updateWool = (tickCounter % 5 == 0);
         if (updateWool) {
-            currentWoolColor = (byte) ((currentWoolColor + 1) % 16);
+            currentRainbowIndex = (currentRainbowIndex + 1) % RAINBOW_WOOL_COLORS.length;
         }
+        byte currentWoolColor = RAINBOW_WOOL_COLORS[currentRainbowIndex];
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!PlayerUtil.inLobby(player)) continue;
@@ -67,10 +69,24 @@ public class CosmeticTask extends BukkitRunnable {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     if (!player.isOnline()) return;
 
-                    ItemStack inSlot = player.getInventory().getItem(3);
-                    if (inSlot != null && inSlot.getType() == Material.WOOL) {
-                        inSlot.setDurability(currentWoolColor);
-                        inSlot.setAmount(64);
+                    boolean changed = false;
+                    int heldSlot = player.getInventory().getHeldItemSlot();
+                    for (int i = 0; i < player.getInventory().getSize(); i++) {
+                        // Skip the currently held slot to avoid the client equip/hand-bobbing animation
+                        if (i == heldSlot) continue;
+
+                        ItemStack item = player.getInventory().getItem(i);
+                        if (item != null && item.getType() == Material.WOOL) {
+                            if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() &&
+                                    item.getItemMeta().getDisplayName().contains("Rainbow Blocks")) {
+                                item.setDurability(currentWoolColor);
+                                item.setAmount(64);
+                                changed = true;
+                            }
+                        }
+                    }
+                    if (changed) {
+                        player.updateInventory();
                     }
                 });
             }

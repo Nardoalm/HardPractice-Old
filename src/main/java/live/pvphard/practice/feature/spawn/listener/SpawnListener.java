@@ -22,13 +22,13 @@ import org.bukkit.inventory.ItemStack;
 
 public class SpawnListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
         Profile profile = profileService.getProfile(player.getUniqueId());
 
-        if (profile.getState().equals(ProfileState.LOBBY) || profile.getState().equals(ProfileState.EDITING) || profile.getState().equals(ProfileState.WAITING)) {
+        if (profile != null && (profile.getState().equals(ProfileState.LOBBY) || profile.getState().equals(ProfileState.EDITING) || profile.getState().equals(ProfileState.WAITING))) {
             if (player.getGameMode() == GameMode.CREATIVE || player.hasPermission("kaoscore.admin")) {
                 return;
             }
@@ -37,7 +37,7 @@ public class SpawnListener implements Listener {
             boolean isWoolBlock = event.getBlockPlaced().getType() == Material.WOOL;
             boolean isWoolItem = itemInHand != null && itemInHand.getType() == Material.WOOL;
 
-            if ((isWoolBlock || isWoolItem) && (player.hasPermission("kaoscore.pro") || player.hasPermission("kaoscore.lobbyblock"))) {
+            if (isWoolBlock || isWoolItem) {
                 event.setCancelled(false);
                 return;
             }

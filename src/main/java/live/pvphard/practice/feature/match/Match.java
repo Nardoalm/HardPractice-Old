@@ -794,7 +794,7 @@ public abstract class Match {
         this.spectators.remove(player.getUniqueId());
 
         if (notify) {
-            this.notifyAll("&b" + profile.getFancyName() + " &tfis no longer spectating the match.");
+            this.notifyAll("&b" + profile.getFancyName() + " &cis no longer spectating the match.");
         }
     }
 

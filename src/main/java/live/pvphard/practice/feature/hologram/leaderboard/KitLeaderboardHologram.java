@@ -17,14 +17,12 @@ public class KitLeaderboardHologram {
     private final Kit kit;
     private final String customType;
     private final LeaderboardType type;
-    private final LeaderboardService leaderboardService;
 
     public KitLeaderboardHologram(Location location, Kit kit, LeaderboardType type) {
         this.hologram = new Hologram(location);
         this.kit = kit;
         this.customType = null;
         this.type = type;
-        this.leaderboardService = HardPractice.getInstance().getService(LeaderboardService.class);
     }
 
     public KitLeaderboardHologram(Location location, String customType, LeaderboardType type) {
@@ -32,11 +30,25 @@ public class KitLeaderboardHologram {
         this.kit = null;
         this.customType = customType;
         this.type = type;
-        this.leaderboardService = HardPractice.getInstance().getService(LeaderboardService.class);
     }
 
     public void update() {
         List<String> lines = new ArrayList<>();
+        LeaderboardService leaderboardService = null;
+        try {
+            leaderboardService = HardPractice.getInstance().getService(LeaderboardService.class);
+        } catch (Exception ignored) {}
+
+        if (leaderboardService == null) {
+            lines.add("&b&lTOP " + formatType(type).toUpperCase());
+            lines.add("&7Leaderboard");
+            lines.add("");
+            lines.add("&cLeaderboard offline.");
+            lines.add("");
+            lines.add("&bClick to update");
+            hologram.update(lines);
+            return;
+        }
 
         if (customType != null && customType.equalsIgnoreCase("global")) {
             lines.add("&b&lTOP 10 GLOBAL " + formatType(type).toUpperCase());

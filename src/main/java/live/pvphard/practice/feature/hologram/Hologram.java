@@ -27,8 +27,14 @@ public class Hologram {
     public void update(List<String> textLines) {
         this.lastTextLines = new ArrayList<>(textLines);
 
-        if (this.location == null || this.location.getWorld() == null || !this.location.getChunk().isLoaded()) {
+        if (this.location == null || this.location.getWorld() == null) {
             return;
+        }
+
+        int cx = this.location.getBlockX() >> 4;
+        int cz = this.location.getBlockZ() >> 4;
+        if (!this.location.getWorld().isChunkLoaded(cx, cz)) {
+            this.location.getWorld().loadChunk(cx, cz);
         }
 
         this.cleanupStrayEntities();

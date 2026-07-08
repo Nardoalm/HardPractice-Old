@@ -23,7 +23,7 @@ public class RequeueCommand extends BaseCommand {
     @CommandData(
             name = "requeue",
             usage = "requeue",
-            description = "Entra novamente na ultima fila jogada."
+            description = "Re-enter the last played match queue."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -32,18 +32,18 @@ public class RequeueCommand extends BaseCommand {
         Profile profile = profileService.getProfile(player.getUniqueId());
  
         if (profile.getState() != ProfileState.LOBBY) {
-            player.sendMessage(CC.translate("&cVocê só pode usar este comando no lobby."));
+            player.sendMessage(CC.translate("&cYou can only use this command in the lobby."));
             return;
         }
  
         if (profile.getParty() != null && !profile.getParty().isLeader(player)) {
-            player.sendMessage(CC.translate("&cVocê precisa ser o líder da party para entrar na fila."));
+            player.sendMessage(CC.translate("&cYou must be the party leader to enter the queue."));
             return;
         }
  
         Kit lastKit = profile.getLastPlayedKit();
         if (lastKit == null) {
-            player.sendMessage(CC.translate("&cVocê não jogou nenhuma partida recentemente nesta sessão."));
+            player.sendMessage(CC.translate("&cYou have not played any matches recently in this session."));
             return;
         }
  
@@ -57,7 +57,7 @@ public class RequeueCommand extends BaseCommand {
                 .orElse(null);
  
         if (matchingQueue == null) {
-            player.sendMessage(CC.translate("&cNão foi possível encontrar a fila correspondente para a última partida jogada."));
+            player.sendMessage(CC.translate("&cCould not find the corresponding queue for the last played match."));
             return;
         }
  

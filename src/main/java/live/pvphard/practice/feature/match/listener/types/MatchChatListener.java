@@ -20,7 +20,7 @@ public class MatchChatListener implements Listener {
     private void onCommandPreProcess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
 
-        if (player.hasPermission("kaos.match.commands.bypass")) {
+        if (player.isOp()) {
             return;
         }
 

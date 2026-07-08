@@ -88,23 +88,24 @@ public class MatchDamageListener implements Listener {
 
             if (matchKit.isSettingEnabled(KitSettingBoxing.class)
                     || matchKit.isSettingEnabled(KitSettingSumo.class)
-                    || matchKit.isSettingEnabled(KitSettingSpleef.class)
-                    || matchKit.isSettingEnabled(KitSettingNoDamageImpl.class)) {
+                    || matchKit.isSettingEnabled(KitSettingSpleef.class)) {
 
+                event.setDamage(0);
+                player.setHealth(player.getMaxHealth());
+                return;
+            }
+
+            if (matchKit.isSettingEnabled(KitSettingNoDamageImpl.class)) {
                 event.setCancelled(true);
-                Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
-                    player.setHealth(player.getMaxHealth());
-                    player.updateInventory();
-                });
                 return;
             }
 
             if (event.getFinalDamage() >= player.getHealth()) {
                 event.setCancelled(true);
+                player.setHealth(player.getMaxHealth());
 
                 EntityDamageEvent.DamageCause cause = event.getCause();
                 Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
-                    player.setHealth(player.getMaxHealth());
                     match.handleDeath(player, cause);
                 });
             }
@@ -241,18 +242,15 @@ public class MatchDamageListener implements Listener {
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
             Profile profile = HardPractice.getInstance().getService(ProfileService.class).getProfile(event.getEntity().getUniqueId());
             if (profile == null) {
-                event.setCancelled(true);
                 return;
             }
 
             if (profile.getState() == ProfileState.SPECTATING) {
-                event.setCancelled(true);
                 return;
             }
 
             if (profile.getState() == ProfileState.PLAYING) {
                 if (profile.getMatch() == null || profile.getMatch().getState() != MatchState.RUNNING) {
-                    event.setCancelled(true);
                     return;
                 }
 

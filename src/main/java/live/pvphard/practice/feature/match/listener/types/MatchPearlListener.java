@@ -49,7 +49,7 @@ public class MatchPearlListener implements Listener {
         ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
         Profile profile = profileService.getProfile(player.getUniqueId());
 
-        if (!isValidGameState(player, event)) {
+        if (profile == null || !isValidGameState(player, event)) {
             return;
         }
 
@@ -70,11 +70,8 @@ public class MatchPearlListener implements Listener {
         }
 
         setPearlMetadata(enderPearl, player, playerBlock, playerBlockAbove);
+        applyCooldown(player);
     }
-
-    // REMOVIDO: O onPearlLand (ProjectileHitEvent) com player.teleport().
-    // É isso que causava os kicks/disconnects de "Illegal Stance".
-    // O Spigot já faz o teleporte de forma nativa e chama o PlayerTeleportEvent logo em seguida.
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
@@ -83,18 +80,25 @@ public class MatchPearlListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        Location destination = event.getTo().clone();
+        Location destination = event.getTo();
+
+        destination.setYaw(player.getLocation().getYaw());
+        destination.setPitch(player.getLocation().getPitch());
 
         if (shouldCancelTeleport(destination, player, event)) {
             event.setCancelled(true);
             return;
         }
 
-        adjustTeleportLocation(destination, event);
+        ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
+        Profile profile = profileService.getProfile(player.getUniqueId());
 
-        // Cooldown deve ser aplicado principalmente no lançamento,
-        // mas caso a lógica do seu server exija no teleporte, ela permanece segura aqui.
-        applyCooldown(player);
+        if (profile != null && profile.getState() == ProfileState.PLAYING
+                && profile.getMatch().getKit().isSettingEnabled(KitSettingRaiding.class)) {
+            adjustTeleportLocation(destination);
+        }
+
+        event.setTo(destination);
     }
 
     private boolean isValidGameState(Player player, ProjectileLaunchEvent event) {
@@ -419,20 +423,13 @@ public class MatchPearlListener implements Listener {
                 (getConfig().getBoolean("TalibanPearl.Stairs") && isStair(block));
     }
 
-    private void adjustTeleportLocation(Location destination, PlayerTeleportEvent event) {
+    private void adjustTeleportLocation(Location destination) {
         Block block = destination.getBlock();
 
-        // Alteramos apenas o eixo Y para lajes e escadas.
-        // Remover a forçação brusca de X e Z evita que o jogador seja jogado para fora da arena
-        // ou glitcheado contra o centro de uma parede.
         if (isStair(block) && block.getRelative(BlockFace.UP).getType().isSolid()) {
             destination.setY(destination.getY() - 0.5);
-            event.setTo(destination);
-        }
-
-        if (isSlab(block) && block.getRelative(BlockFace.UP).getType().isSolid()) {
+        } else if (isSlab(block) && block.getRelative(BlockFace.UP).getType().isSolid()) {
             destination.setY(destination.getY() - 0.5);
-            event.setTo(destination);
         }
     }
 
@@ -444,19 +441,15 @@ public class MatchPearlListener implements Listener {
 
         switch (direction) {
             case "N":
-            case "NW":
                 offsetZ = -0.7;
                 break;
             case "W":
-            case "SW":
                 offsetX = -0.7;
                 break;
             case "S":
-            case "SE":
                 offsetZ = 0.7;
                 break;
             case "E":
-            case "NE":
                 offsetX = 0.7;
                 break;
         }
@@ -476,19 +469,15 @@ public class MatchPearlListener implements Listener {
 
         switch (direction) {
             case "N":
-            case "NW":
                 offsetZ = -0.7;
                 break;
             case "W":
-            case "SW":
                 offsetX = -0.7;
                 break;
             case "S":
-            case "SE":
                 offsetZ = 0.7;
                 break;
             case "E":
-            case "NE":
                 offsetX = 0.7;
                 break;
         }
@@ -508,15 +497,10 @@ public class MatchPearlListener implements Listener {
         double rotation = (yaw - 90) % 360;
         if (rotation < 0) rotation += 360.0;
 
-        if (rotation < 22.5) return "W";
-        else if (rotation < 67.5) return "NW";
-        else if (rotation < 112.5) return "N";
-        else if (rotation < 157.5) return "NE";
-        else if (rotation < 202.5) return "E";
-        else if (rotation < 247.5) return "SE";
-        else if (rotation < 292.5) return "S";
-        else if (rotation < 337.5) return "SW";
-        else return "W";
+        if (rotation < 45 || rotation >= 315) return "W";
+        else if (rotation < 135) return "N";
+        else if (rotation < 225) return "E";
+        else return "S";
     }
 
     private String getPlayerDirection(Player player) {
@@ -524,22 +508,14 @@ public class MatchPearlListener implements Listener {
         switch (shortDirection) {
             case "N":
                 return "NORTH";
-            case "NW":
-                return "NORTH_WEST";
             case "W":
                 return "WEST";
-            case "SW":
-                return "SOUTH_WEST";
             case "S":
                 return "SOUTH";
-            case "SE":
-                return "SOUTH_EAST";
             case "E":
                 return "EAST";
-            case "NE":
-                return "NORTH_EAST";
             default:
-                return null;
+                return "NORTH";
         }
     }
 

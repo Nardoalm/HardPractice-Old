@@ -36,6 +36,7 @@ public class CosmeticsMenu extends Menu {
         buttons.put(13, new CosmeticCategoryButton(CosmeticType.SUIT, Material.GOLD_CHESTPLATE));
         buttons.put(14, new CosmeticCategoryButton(CosmeticType.PROJECTILE_TRAIL, Material.ARROW));
         buttons.put(15, new CosmeticCategoryButton(CosmeticType.KILL_MESSAGE, Material.BOOK_AND_QUILL));
+        buttons.put(16, new CosmeticCategoryButton(CosmeticType.TRAIL, Material.DIAMOND_BLOCK));
 
         this.addBorder(buttons, 15, 3);
 

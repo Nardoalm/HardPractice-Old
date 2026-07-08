@@ -186,7 +186,7 @@
         <dependency>
             <groupId>com.knowplugins</groupId>
             <artifactId>KaosCore</artifactId>
-            <version>7.4</version>
+            <version>14.1</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/KaosCore-7.4.jar</systemPath>
         </dependency>

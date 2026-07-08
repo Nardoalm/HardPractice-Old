@@ -21,7 +21,7 @@ public class KitViewCommand extends BaseCommand {
             aliases = "kit.info",
             isAdminOnly = true,
             usage = "kit view <kitName>",
-            description = "Ver informações sobre um kit."
+            description = "View information about a kit."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -40,17 +40,17 @@ public class KitViewCommand extends BaseCommand {
         }
 
         player.sendMessage("");
-        player.sendMessage(CC.translate("&b&lKit " + kit.getName() + " &f(" + (kit.isEnabled() ? "&aAtivado" : "&cDesativado") + "&f)"));
-        player.sendMessage(CC.translate(" &f◆ &bNome de Exibição: &f" + kit.getDisplayName()));
+        player.sendMessage(CC.translate("&b&lKit " + kit.getName() + " &f(" + (kit.isEnabled() ? "&aEnabled" : "&cDisabled") + "&f)"));
+        player.sendMessage(CC.translate(" &f◆ &bDisplay Name: &f" + kit.getDisplayName()));
         player.sendMessage(CC.translate(" &f◆ &bName: &f" + kit.getName()));
         player.sendMessage(CC.translate(" &f◆ &bIcon: &f" + kit.getIcon().name().toLowerCase() + " &7(" + kit.getDurability() + ")"));
-        player.sendMessage(CC.translate(" &f◆ &bAviso: &f" + kit.getDisclaimer()));
-        player.sendMessage(CC.translate(" &f◆ &bDescrição: &f" + kit.getDescription()));
-        player.sendMessage(CC.translate(" &f◆ &bFFA: &f" + (kit.isFfaEnabled() ? "&aAtivado" : "&cDesativado")));
+        player.sendMessage(CC.translate(" &f◆ &bDisclaimer: &f" + kit.getDisclaimer()));
+        player.sendMessage(CC.translate(" &f◆ &bDescription: &f" + kit.getDescription()));
+        player.sendMessage(CC.translate(" &f◆ &bFFA: &f" + (kit.isFfaEnabled() ? "&aEnabled" : "&cDisabled")));
         player.spigot().sendMessage(ClickableUtil.createComponent(
-                "  &a(Clique aqui para ver as configurações do kit)",
+                "  &a(Click here to view kit settings)",
                 "/kit viewsettings " + kit.getName(),
-                "&7Clique para ver as configurações do kit &b" + kit.getName())
+                "&7Click to view settings for kit &b" + kit.getName())
         );
         player.sendMessage("");
     }

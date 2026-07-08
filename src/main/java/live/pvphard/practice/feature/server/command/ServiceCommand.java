@@ -18,7 +18,7 @@ public class ServiceCommand extends BaseCommand {
             name = "service",
             isAdminOnly = true,
             usage = "service",
-            description = "Comando de serviço."
+            description = "Service command."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -28,7 +28,7 @@ public class ServiceCommand extends BaseCommand {
                 "",
                 "&b&lService Commands",
                 " &f◆ &b/service menu &7| &fOpens the service menu.",
-                " &f◆ &b/service allowqueue &8(&7true/false&8) &7| &fPermite/bloqueia filas.",
+                " &f◆ &b/service allowqueue &8(&7true/false&8) &7| &fAllows/blocks queues.",
                 " &f◆ &b/service togglecrafting &7| &fEnable/Disable crafting for an item.",
                 ""
         ).forEach(line -> player.sendMessage(CC.translate(line)));

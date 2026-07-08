@@ -52,13 +52,13 @@ public class Combo extends Ability {
             Profile profile = profileService.getProfile(player.getUniqueId());
 
             if (profile.getCooldown(Combo.class).onCooldown(player)) {
-                player.sendMessage(CC.translate("&fVocê está no cooldown de &b&lCombo &7por &4" + DurationFormatter.getRemaining(profile.getCooldown(Combo.class).getRemainingMillis(player), true, true)));
+                player.sendMessage(CC.translate("&fYou are on cooldown for &b&lCombo &7for &4" + DurationFormatter.getRemaining(profile.getCooldown(Combo.class).getRemainingMillis(player), true, true)));
                 player.updateInventory();
                 return;
             }
 
             if(profile.getGlobalCooldown(GlobalCooldown.PARTNER_ITEM).onCooldown(player)){
-                player.sendMessage(CC.translate("&fVocê está no cooldown de &b&lPartner Item &fpor &b" + DurationFormatter.getRemaining(profile.getGlobalCooldown(GlobalCooldown.PARTNER_ITEM).getRemainingMillis(player), true, true)));
+                player.sendMessage(CC.translate("&fYou are on cooldown for &b&lPartner Item &ffor &b" + DurationFormatter.getRemaining(profile.getGlobalCooldown(GlobalCooldown.PARTNER_ITEM).getRemainingMillis(player), true, true)));
                 player.updateInventory();
                 return;
             }
@@ -115,7 +115,7 @@ public class Combo extends Ability {
             Profile profile = profileService.getProfile(player.getUniqueId());
 
             if (profile.getCooldown(Combo.class).onCooldown(player)) {
-                player.sendMessage(CC.translate("&fYou are in cooldown for &4" + DurationFormatter.getRemaining(profile.getCooldown(Combo.class).getRemainingMillis(player), true)));
+                player.sendMessage(CC.translate("&fYou are on cooldown for &4" + DurationFormatter.getRemaining(profile.getCooldown(Combo.class).getRemainingMillis(player), true)));
                 event.setCancelled(true);
                 player.updateInventory();
             }

@@ -28,6 +28,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.material.Gate;
 import org.bukkit.material.Stairs;
@@ -36,6 +38,48 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.Optional;
 
 public class MatchPearlListener implements Listener {
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        org.bukkit.inventory.ItemStack item = event.getItem();
+        if (item == null || item.getType() != Material.ENDER_PEARL) {
+            return;
+        }
+
+        ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
+        Profile profile = profileService.getProfile(player.getUniqueId());
+        if (profile == null) return;
+
+        // Block pearl usage if player is not in an active match
+        if (profile.getState() != ProfileState.PLAYING) {
+            event.setCancelled(true);
+            player.updateInventory();
+            return;
+        }
+
+        if (profile.getMatch() == null || profile.getMatch().getState() != MatchState.RUNNING) {
+            event.setCancelled(true);
+            player.updateInventory();
+            return;
+        }
+
+        // Block pearl usage if cooldown is active (stops visual throwing, click sounds, and chat flooding)
+        CooldownService cooldownService = HardPractice.getInstance().getService(CooldownService.class);
+        Optional<Cooldown> optionalCooldown = Optional.ofNullable(
+                cooldownService.getCooldown(player.getUniqueId(), CooldownType.ENDER_PEARL)
+        );
+
+        if (optionalCooldown.isPresent() && optionalCooldown.get().isActive()) {
+            event.setCancelled(true);
+            player.updateInventory();
+            player.sendMessage(CC.translate("&cYou must wait " + optionalCooldown.get().remainingTime() + " seconds before using another ender pearl."));
+        }
+    }
 
     @EventHandler
     public void onPearlLaunch(ProjectileLaunchEvent event) {
@@ -82,6 +126,16 @@ public class MatchPearlListener implements Listener {
         Player player = event.getPlayer();
         Location destination = event.getTo();
 
+        ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
+        Profile profile = profileService.getProfile(player.getUniqueId());
+
+        // Cancel teleports if player is no longer in a match or if the match has already ended
+        if (profile == null || profile.getState() != ProfileState.PLAYING || 
+                profile.getMatch() == null || profile.getMatch().getState() != MatchState.RUNNING) {
+            event.setCancelled(true);
+            return;
+        }
+
         destination.setYaw(player.getLocation().getYaw());
         destination.setPitch(player.getLocation().getPitch());
 
@@ -90,11 +144,21 @@ public class MatchPearlListener implements Listener {
             return;
         }
 
-        ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
-        Profile profile = profileService.getProfile(player.getUniqueId());
+        // Normalize Y coordinate to align perfectly with the ground, avoiding the half-block drop.
+        // Only do this if the destination block is not solid (to prevent wall glitching).
+        if (!destination.getBlock().getType().isSolid()) {
+            double y = destination.getY();
+            Block blockBelow = destination.clone().subtract(0, 0.1, 0).getBlock();
+            if (blockBelow.getType().isSolid()) {
+                if (isSlab(blockBelow) && blockBelow.getData() < 8) {
+                    destination.setY(Math.floor(y) + 0.5);
+                } else {
+                    destination.setY(Math.floor(y));
+                }
+            }
+        }
 
-        if (profile != null && profile.getState() == ProfileState.PLAYING
-                && profile.getMatch().getKit().isSettingEnabled(KitSettingRaiding.class)) {
+        if (profile.getMatch().getKit().isSettingEnabled(KitSettingRaiding.class)) {
             adjustTeleportLocation(destination);
         }
 
@@ -614,7 +678,13 @@ public class MatchPearlListener implements Listener {
 
         Cooldown cooldown = optionalCooldown.orElseGet(() -> {
             Cooldown newCooldown = new Cooldown(CooldownType.ENDER_PEARL,
-                    () -> player.sendMessage(HardPractice.getInstance().getService(LocaleService.class).getString(GlobalMessagesLocaleImpl.COOLDOWN_CAN_NOW_USE_PEARLS_AGAIN)));
+                    () -> {
+                        ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
+                        Profile profile = profileService.getProfile(player.getUniqueId());
+                        if (profile != null && profile.getState() == ProfileState.PLAYING) {
+                            player.sendMessage(HardPractice.getInstance().getService(LocaleService.class).getString(GlobalMessagesLocaleImpl.COOLDOWN_CAN_NOW_USE_PEARLS_AGAIN));
+                        }
+                    });
             cooldownService.addCooldown(player.getUniqueId(), CooldownType.ENDER_PEARL, newCooldown);
             return newCooldown;
         });

@@ -18,7 +18,7 @@ public class DivisionSetIconCommand extends BaseCommand {
             name = "division.seticon",
             isAdminOnly = true,
             usage = "division seticon <name>",
-            description = "Define o ícone de uma divisão para o item em sua mão."
+            description = "Sets the icon of a division to the item in your hand."
     )
     @Override
     public void onCommand(CommandArgs command) {

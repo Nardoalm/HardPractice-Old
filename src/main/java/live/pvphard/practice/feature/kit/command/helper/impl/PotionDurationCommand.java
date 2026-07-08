@@ -23,7 +23,7 @@ public class PotionDurationCommand extends BaseCommand {
             name = "potionduration",
             isAdminOnly = true,
             usage = "potionduration <duration/infinite>",
-            description = "Define a duração da poção que você está segurando."
+            description = "Sets the duration of the potion you are holding."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -37,20 +37,20 @@ public class PotionDurationCommand extends BaseCommand {
 
         ItemStack itemInHand = player.getItemInHand();
         if (itemInHand == null || itemInHand.getType() != Material.POTION) {
-            player.sendMessage(CC.translate("&cVocê precisa estar segurando uma poção."));
+            player.sendMessage(CC.translate("&cYou must be holding a potion."));
             return;
         }
 
         PotionMeta potionMeta = (PotionMeta) itemInHand.getItemMeta();
         if (potionMeta == null) {
-            player.sendMessage(CC.translate("&cA poção não possui efeitos para modificar."));
+            player.sendMessage(CC.translate("&cThe potion does not have any effects to modify."));
             return;
         }
 
         if (args[0].equalsIgnoreCase("infinite")) {
             PotionEffectType effectType = PotionUtil.getPotionEffectType(itemInHand);
             if (effectType == null) {
-                player.sendMessage(CC.translate("&cA poção não possui efeitos para modificar."));
+                player.sendMessage(CC.translate("&cThe potion does not have any effects to modify."));
                 return;
             }
 
@@ -59,7 +59,7 @@ public class PotionDurationCommand extends BaseCommand {
             potionMeta.addCustomEffect(newEffect, true);
             itemInHand.setItemMeta(potionMeta);
 
-            player.sendMessage(CC.translate("&aDuração da poção alterada para &binfinita&a."));
+            player.sendMessage(CC.translate("&aPotion duration changed to &binfinite&a."));
             return;
         }
 
@@ -72,13 +72,13 @@ public class PotionDurationCommand extends BaseCommand {
         }
 
         if (duration < 1) {
-            player.sendMessage(CC.translate("&cDuração inválida."));
+            player.sendMessage(CC.translate("&cInvalid duration."));
             return;
         }
 
         PotionEffectType effectType = PotionUtil.getPotionEffectType(itemInHand);
         if (effectType == null) {
-            player.sendMessage(CC.translate("&cA poção não possui efeitos para modificar."));
+            player.sendMessage(CC.translate("&cThe potion does not have any effects to modify."));
             return;
         }
 
@@ -87,7 +87,7 @@ public class PotionDurationCommand extends BaseCommand {
         potionMeta.addCustomEffect(newEffect, true);
         itemInHand.setItemMeta(potionMeta);
 
-        String seconds = duration == 1 ? "segundo" : "segundos";
-        player.sendMessage(CC.translate("&aDuração da poção alterada para &b" + duration + " &a" + seconds + "."));
+        String seconds = duration == 1 ? "second" : "seconds";
+        player.sendMessage(CC.translate("&aPotion duration changed to &b" + duration + " &a" + seconds + "."));
     }
 }

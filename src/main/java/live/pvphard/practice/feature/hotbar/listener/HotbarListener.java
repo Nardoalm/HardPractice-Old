@@ -49,6 +49,10 @@ public class HotbarListener implements Listener {
             return;
         }
 
+        if (hotbarItem.getActionData() == null) {
+            return;
+        }
+
         HotbarAction actionType = hotbarItem.getActionData().getAction();
         if (actionType == null) {
             return;

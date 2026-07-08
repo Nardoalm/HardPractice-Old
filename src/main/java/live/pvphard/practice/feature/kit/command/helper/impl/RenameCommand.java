@@ -23,7 +23,7 @@ public class RenameCommand extends BaseCommand {
             name = "rename",
             isAdminOnly = true,
             usage = "rename <name>",
-            description = "Renomeia o item na sua mão"
+            description = "Renames the item in your hand"
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -44,7 +44,7 @@ public class RenameCommand extends BaseCommand {
 
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null) {
-            player.sendMessage(CC.translate("&cFalha ao renomear o item."));
+            player.sendMessage(CC.translate("&cFailed to rename the item."));
             return;
         }
 

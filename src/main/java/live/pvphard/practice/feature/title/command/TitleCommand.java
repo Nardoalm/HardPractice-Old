@@ -17,7 +17,7 @@ public class TitleCommand extends BaseCommand {
             name = "title",
             aliases = {"titles"},
             usage = "title",
-            description = "Abre o menu de títulos."
+            description = "Opens the titles menu."
     )
     @Override
     public void onCommand(CommandArgs command) {

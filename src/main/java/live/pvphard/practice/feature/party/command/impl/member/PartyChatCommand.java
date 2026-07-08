@@ -25,7 +25,7 @@ public class PartyChatCommand extends BaseCommand {
             name = "party.chat",
             aliases = {"p.chat", "pc"},
             usage = "party chat [message]",
-            description = "Envia mensagem no chat da party."
+            description = "Sends a message in the party chat."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -35,7 +35,7 @@ public class PartyChatCommand extends BaseCommand {
         ProfileService profileService = this.plugin.getService(ProfileService.class);
         Profile profile = profileService.getProfile(player.getUniqueId());
         if (profile == null || profile.getProfileData() == null || profile.getProfileData().getSettingData() == null) {
-            player.sendMessage(CC.translate("&cNão foi possível alterar o canal da party agora."));
+            player.sendMessage(CC.translate("&cCould not change party chat channel right now."));
             return;
         }
         String message = Arrays.stream(args).collect(Collectors.joining(" ")).trim();
@@ -49,10 +49,10 @@ public class PartyChatCommand extends BaseCommand {
 
             if (ChatChannel.PARTY.toString().equalsIgnoreCase(profile.getProfileData().getSettingData().getChatChannel())) {
                 profile.getProfileData().getSettingData().setChatChannel(ChatChannel.GLOBAL.toString());
-                player.sendMessage(CC.translate("&eSeu chat foi alterado para &fGlobal&e."));
+                player.sendMessage(CC.translate("&eYour chat was switched to &fGlobal&e."));
             } else {
                 profile.getProfileData().getSettingData().setChatChannel(ChatChannel.PARTY.toString());
-                player.sendMessage(CC.translate("&aSeu chat foi alterado para &bParty&a."));
+                player.sendMessage(CC.translate("&aYour chat was switched to &bParty&a."));
             }
             return;
         }

@@ -62,7 +62,7 @@ public class MatchStartCommand extends BaseCommand {
             aliases = {"mstart"},
             cooldown = 1,
             usage = "match start <player1> <player2> <kit> <arena>",
-            description = "Inicia uma partida entre dois jogadores com um kit e arena específicos"
+            description = "Starts a match between two players with a specific kit and arena"
     )
     @Override
     public void onCommand(CommandArgs command) {

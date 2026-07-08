@@ -26,7 +26,7 @@ public class KitAddPotionCommand extends BaseCommand {
             aliases = {"kit.potion"},
             isAdminOnly = true,
             usage = "kit addpotion <kitName>",
-            description = "Adiciona efeitos de poção a um kit com base na poção que você está segurando."
+            description = "Adds potion effects to a kit based on the potion you are holding."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -47,19 +47,19 @@ public class KitAddPotionCommand extends BaseCommand {
 
         ItemStack itemInHand = player.getInventory().getItemInHand();
         if (itemInHand == null || itemInHand.getType() != Material.POTION) {
-            player.sendMessage(CC.translate("&cVocê precisa segurar uma poção para definir efeitos deste kit!"));
+            player.sendMessage(CC.translate("&cYou need to hold a potion to set effects for this kit!"));
             return;
         }
 
         if (!(itemInHand.getItemMeta() instanceof PotionMeta)) {
-            player.sendMessage(CC.translate("&cPoção inválida!"));
+            player.sendMessage(CC.translate("&cInvalid potion!"));
             return;
         }
 
         PotionMeta potionMeta = (PotionMeta) itemInHand.getItemMeta();
         List<PotionEffect> effects = potionMeta.getCustomEffects();
         if (effects.isEmpty()) {
-            player.sendMessage(CC.translate("&cA poção que você está segurando não possui efeitos customizados!"));
+            player.sendMessage(CC.translate("&cThe potion you are holding has no custom effects!"));
             return;
         }
 

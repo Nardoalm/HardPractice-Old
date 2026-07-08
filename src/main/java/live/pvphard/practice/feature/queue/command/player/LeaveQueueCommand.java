@@ -18,7 +18,7 @@ public class LeaveQueueCommand extends BaseCommand {
     @CommandData(
             name = "leavequeue",
             usage = "leavequeue",
-            description = "Sai da fila atual."
+            description = "Leaves the current queue."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -26,17 +26,17 @@ public class LeaveQueueCommand extends BaseCommand {
         ProfileService profileService = this.plugin.getService(ProfileService.class);
         Profile profile = profileService.getProfile(player.getUniqueId());
         if (!profile.getState().equals(ProfileState.WAITING)) {
-            player.sendMessage(CC.translate("&cVocê não está em nenhuma fila."));
+            player.sendMessage(CC.translate("&cYou are not in any queue."));
             return;
         }
 
         if (profile.getParty() != null && !profile.getParty().isLeader(player)) {
-            player.sendMessage(CC.translate("&cVocê precisa ser o líder da party para sair da fila."));
+            player.sendMessage(CC.translate("&cYou must be the party leader to leave the queue."));
             return;
         }
 
         if (profile.getQueueProfile() == null || profile.getQueueProfile().getQueue() == null) {
-            player.sendMessage(CC.translate("&cVocê não está em nenhuma fila."));
+            player.sendMessage(CC.translate("&cYou are not in any queue."));
             return;
         }
 

@@ -20,7 +20,7 @@ public class KitViewSettingsCommand extends BaseCommand {
             isAdminOnly = true,
             inGameOnly = false,
             usage = "kit viewsettings <kitName>",
-            description = "Mostra as configurações de um kit."
+            description = "Shows the settings of a kit."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -39,8 +39,8 @@ public class KitViewSettingsCommand extends BaseCommand {
         }
 
         sender.sendMessage("");
-        sender.sendMessage(CC.translate("&b&lConfigurações do Kit " + kit.getName()));
-        kit.getKitSettings().forEach(setting -> sender.sendMessage(CC.translate(" &f◆ &b" + setting.getName() + " &f(" + (setting.isEnabled() ? "&aAtivado" : "&cDesativado") + "&f)")));
+        sender.sendMessage(CC.translate("&b&lKit Settings " + kit.getName()));
+        kit.getKitSettings().forEach(setting -> sender.sendMessage(CC.translate(" &f◆ &b" + setting.getName() + " &f(" + (setting.isEnabled() ? "&aEnabled" : "&cDisabled") + "&f)")));
         sender.sendMessage("");
     }
 }

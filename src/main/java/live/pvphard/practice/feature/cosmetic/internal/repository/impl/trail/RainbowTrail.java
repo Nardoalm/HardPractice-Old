@@ -13,7 +13,7 @@ import org.bukkit.Material;
         price = 1000
 )
 public class RainbowTrail extends Trail {
-    private static final byte[] WOOL_COLORS = {14, 1, 4, 5, 13, 9, 3, 11, 10, 2, 6};
+    private static final byte[] WOOL_COLORS = {14, 1, 4, 5, 9, 3, 11, 10, 2, 6};
 
     @Override
     public Material getBlockMaterial() {

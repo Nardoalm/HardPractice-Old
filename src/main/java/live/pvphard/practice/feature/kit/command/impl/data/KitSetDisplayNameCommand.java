@@ -22,7 +22,7 @@ public class KitSetDisplayNameCommand extends BaseCommand {
             aliases = "kit.setdisplayname",
             isAdminOnly = true,
             usage = "kit displayname <kitName> <displayName>",
-            description = "Define o nome de exibição de um kit."
+            description = "Sets the display name of a kit."
     )
     @Override
     public void onCommand(CommandArgs command) {

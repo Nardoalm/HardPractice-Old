@@ -21,7 +21,7 @@ public class ViewErrorCommand extends BaseCommand {
             isAdminOnly = true,
             inGameOnly = false,
             usage = "viewerror <error>",
-            description = "Vê um erro registrado pelo ID."
+            description = "Views a registered error by its ID."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -29,7 +29,7 @@ public class ViewErrorCommand extends BaseCommand {
         String[] args = command.getArgs();
 
         if (sender instanceof Player) {
-            sender.sendMessage(CC.translate("&cEste comando só pode ser usado no console."));
+            sender.sendMessage(CC.translate("&cThis command can only be used from the console."));
             return;
         }
 
@@ -42,7 +42,7 @@ public class ViewErrorCommand extends BaseCommand {
             UUID errorId = UUID.fromString(args[0]);
             Logger.viewException(errorId);
         } catch (IllegalArgumentException e) {
-            sender.sendMessage(CC.translate("&cID de erro inválido!"));
+            sender.sendMessage(CC.translate("&cInvalid error ID!"));
         }
     }
 }

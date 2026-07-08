@@ -12,7 +12,7 @@ public class EventStopCommand extends BaseCommand {
             name = "event.stop",
             aliases = {"events.stop"},
             usage = "event stop",
-            description = "Encerra o evento ativo."
+            description = "Stops the active event."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -20,10 +20,10 @@ public class EventStopCommand extends BaseCommand {
         EventService eventService = this.plugin.getService(EventService.class);
 
         if (!eventService.canManageActiveEvent(player)) {
-            player.sendMessage(CC.translate("&cVocê não pode encerrar o evento atual."));
+            player.sendMessage(CC.translate("&cYou cannot stop the current event."));
             return;
         }
 
-        eventService.stopActiveEvent("&cO evento foi encerrado por " + player.getName() + "&c.");
+        eventService.stopActiveEvent("&cThe event was stopped by " + player.getName() + "&c.");
     }
 }

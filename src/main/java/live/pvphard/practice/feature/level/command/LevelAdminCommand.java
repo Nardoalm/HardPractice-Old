@@ -41,21 +41,21 @@ public class LevelAdminCommand extends BaseCommand {
             isAdminOnly = true,
             inGameOnly = false,
             usage = "leveladmin",
-            description = "Comando administrativo para gerenciar níveis"
+            description = "Administrative command to manage levels"
     )
     @Override
     public void onCommand(CommandArgs command) {
         Arrays.asList(
                 "",
-                "&b&lAjuda dos Comandos Administrativos de Nível:",
-                " &f◆ &b/leveladmin create &8(&7levelName&8) &8(&7minElo&8) &8(&7maxElo&8) &7| Cria um novo nível",
-                " &f◆ &b/leveladmin delete &8(&7levelName&8) &7| Exclui um nível",
-                " &f◆ &b/leveladmin list &7| Lista todos os níveis",
-                " &f◆ &b/leveladmin view &8(&7levelName&8) &7| Mostra as informações de um nível",
-                " &f◆ &b/leveladmin setminelo &8(&7levelName&8) &8(&7minElo&8) &7| Define o Elo mínimo de um nível",
-                " &f◆ &b/leveladmin setmaxelo &8(&7levelName&8) &8(&7maxElo&8) &7| Define o Elo máximo de um nível",
-                " &f◆ &b/leveladmin setdisplayname &8(&7levelName&8) &8(&7displayName&8) &7| Define o nome de exibição de um nível",
-                " &f◆ &b/leveladmin seticon &8(&7levelName&8) &7| Define o material de um nível",
+                "&b&lLevel Admin Command Help:",
+                " &f◆ &b/leveladmin create &8(&7levelName&8) &8(&7minElo&8) &8(&7maxElo&8) &7| Create a new level",
+                " &f◆ &b/leveladmin delete &8(&7levelName&8) &7| Delete a level",
+                " &f◆ &b/leveladmin list &7| List all levels",
+                " &f◆ &b/leveladmin view &8(&7levelName&8) &7| Show information about a level",
+                " &f◆ &b/leveladmin setminelo &8(&7levelName&8) &8(&7minElo&8) &7| Set the minimum Elo for a level",
+                " &f◆ &b/leveladmin setmaxelo &8(&7levelName&8) &8(&7maxElo&8) &7| Set the maximum Elo for a level",
+                " &f◆ &b/leveladmin setdisplayname &8(&7levelName&8) &8(&7displayName&8) &7| Set the display name of a level",
+                " &f◆ &b/leveladmin seticon &8(&7levelName&8) &7| Set the icon material of a level",
                 ""
         ).forEach(line -> command.getSender().sendMessage(CC.translate(line)));
     }

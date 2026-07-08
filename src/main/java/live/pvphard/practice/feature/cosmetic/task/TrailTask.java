@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class TrailTask extends BukkitRunnable {
-    private static final long DECAY_DURATION_MS = 1500L; // 1.5 seconds decay
+    private static final long DECAY_DURATION_MS = 800L; // 0.8 seconds decay
 
     @Override
     public void run() {

@@ -25,7 +25,7 @@ public class CosmeticListCommand extends BaseCommand {
             name = "cosmetic.list",
             isAdminOnly = true,
             usage = "cosmetic list",
-            description = "Lista todos os cosméticos registrados."
+            description = "Lists all registered cosmetics."
     )
     @Override
     public void onCommand(CommandArgs command) {

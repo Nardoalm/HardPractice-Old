@@ -23,7 +23,7 @@ public class KitCreateCommand extends BaseCommand {
             name = "kit.create",
             isAdminOnly = true,
             usage = "kit create <kitName>",
-            description = "Cria um kit com seu inventário e armadura atuais."
+            description = "Creates a kit with your current inventory and armor."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -57,7 +57,7 @@ public class KitCreateCommand extends BaseCommand {
         player.sendMessage(message);
         this.plugin.getService(ReflectionService.class).getReflectionService(ActionBarReflectionServiceImpl.class).sendMessage(player, message, 5);
         player.sendMessage("");
-        player.sendMessage(CC.translate("&7Não se esqueça de recarregar as filas &c&lAPÓS HABILITAR &7o kit &8(/kit toggle) &7usando &c&l/queue reload&7."));
+        player.sendMessage(CC.translate("&7Don't forget to reload queues &c&lAFTER ENABLING &7the kit &8(/kit toggle) &7using &c&l/queue reload&7."));
         player.sendMessage("");
     }
 }

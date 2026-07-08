@@ -64,10 +64,9 @@ public class TrailListener implements Listener {
         Profile profile = profileService.getProfile(player.getUniqueId());
         if (profile == null || profile.getProfileData() == null) return;
 
-        // Allow trails only in Lobby, Waiting, or FFA states (not in active build matches where physical blocks matter)
-        if (profile.getState() != ProfileState.LOBBY &&
-                profile.getState() != ProfileState.WAITING &&
-                profile.getState() != ProfileState.FFA) {
+        // Allow trails except in SPECTATING or EDITING states (permits them in match arenas, tournaments, events, etc.)
+        if (profile.getState() == ProfileState.SPECTATING ||
+                profile.getState() == ProfileState.EDITING) {
             return;
         }
 
@@ -124,20 +123,47 @@ public class TrailListener implements Listener {
     private boolean isValidBlock(Block block) {
         if (block == null) return false;
         Material type = block.getType();
-        return type.isSolid() &&
-                type != Material.AIR &&
-                type != Material.WATER &&
-                type != Material.STATIONARY_WATER &&
-                type != Material.LAVA &&
-                type != Material.STATIONARY_LAVA &&
-                type != Material.CHEST &&
-                type != Material.TRAPPED_CHEST &&
-                type != Material.SIGN_POST &&
-                type != Material.WALL_SIGN &&
-                type != Material.WOOD_PLATE &&
-                type != Material.STONE_PLATE &&
-                type != Material.IRON_PLATE &&
-                type != Material.GOLD_PLATE;
+        if (!type.isSolid() ||
+                type == Material.AIR ||
+                type == Material.WATER ||
+                type == Material.STATIONARY_WATER ||
+                type == Material.LAVA ||
+                type == Material.STATIONARY_LAVA ||
+                type == Material.CHEST ||
+                type == Material.TRAPPED_CHEST ||
+                type == Material.SIGN_POST ||
+                type == Material.WALL_SIGN ||
+                type == Material.WOOD_PLATE ||
+                type == Material.STONE_PLATE ||
+                type == Material.IRON_PLATE ||
+                type == Material.GOLD_PLATE) {
+            return false;
+        }
+
+        // Avoid destroying plants supported above the block
+        Block blockAbove = block.getRelative(org.bukkit.block.BlockFace.UP);
+        Material typeAbove = blockAbove.getType();
+        if (typeAbove != Material.AIR) {
+            if (typeAbove == Material.LONG_GRASS ||
+                    typeAbove == Material.YELLOW_FLOWER ||
+                    typeAbove == Material.RED_ROSE ||
+                    typeAbove == Material.DOUBLE_PLANT ||
+                    typeAbove == Material.SAPLING ||
+                    typeAbove == Material.DEAD_BUSH ||
+                    typeAbove == Material.SUGAR_CANE_BLOCK ||
+                    typeAbove == Material.CACTUS ||
+                    typeAbove == Material.BROWN_MUSHROOM ||
+                    typeAbove == Material.RED_MUSHROOM ||
+                    typeAbove == Material.CROPS ||
+                    typeAbove == Material.CARROT ||
+                    typeAbove == Material.POTATO ||
+                    typeAbove == Material.PUMPKIN_STEM ||
+                    typeAbove == Material.MELON_STEM) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static void purgeAllTrails() {

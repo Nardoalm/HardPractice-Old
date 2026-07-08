@@ -22,7 +22,7 @@ public class MatchInfoCommand extends BaseCommand {
             isAdminOnly = true,
             inGameOnly = false,
             usage = "match info <player>",
-            description = "Obtém informações da partida atual de um jogador."
+            description = "Gets information about a player's current match."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -51,15 +51,15 @@ public class MatchInfoCommand extends BaseCommand {
 
         //TODO: Add more match info
 
-        sender.sendMessage(CC.translate("&c&lInformações da Partida"));
-        sender.sendMessage(CC.translate(" &f&l● &fJogadores:"));
+        sender.sendMessage(CC.translate("&c&lMatch Information"));
+        sender.sendMessage(CC.translate(" &f&l● &fPlayers:"));
         profile.getMatch().getParticipants().forEach(gameParticipant -> gameParticipant.getPlayers().forEach(gamePlayer ->
                 sender.sendMessage(CC.translate("   &f* &c" + gamePlayer.getUsername())))
         );
 
-        sender.sendMessage(CC.translate(" &f&l● &fEspectadores:"));
+        sender.sendMessage(CC.translate(" &f&l● &fSpectators:"));
         if (profile.getMatch().getSpectators().isEmpty()) {
-            sender.sendMessage(CC.translate("   &f* &cNenhum"));
+            sender.sendMessage(CC.translate("   &f* &cNone"));
         } else {
             profile.getMatch().getSpectators().forEach(spectator ->
                     sender.sendMessage(CC.translate("   &f* &c" + Bukkit.getOfflinePlayer(spectator).getName()))
@@ -67,7 +67,7 @@ public class MatchInfoCommand extends BaseCommand {
         }
         sender.sendMessage(CC.translate(" &f&l● &fKit: &c" + profile.getMatch().getKit().getName()));
         sender.sendMessage(CC.translate(" &f&l● &fArena: &c" + profile.getMatch().getArena().getName()));
-        sender.sendMessage(CC.translate(" &f&l● &fEstado: &c" + profile.getMatch().getState()));
+        sender.sendMessage(CC.translate(" &f&l● &fState: &c" + profile.getMatch().getState()));
         sender.sendMessage("");
     }
 }

@@ -18,7 +18,7 @@ public class KitListCommand extends BaseCommand {
             aliases = {"kits"},
             isAdminOnly = true,
             usage = "kit list",
-            description = "Envia uma lista de todos os kits."
+            description = "Sends a list of all kits."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -26,11 +26,11 @@ public class KitListCommand extends BaseCommand {
         KitService kitService = this.plugin.getService(KitService.class);
 
         sender.sendMessage("");
-        sender.sendMessage(CC.translate("     &b&lLista de Kits &f(" + kitService.getKits().size() + "&f)"));
+        sender.sendMessage(CC.translate("     &b&lKit List &f(" + kitService.getKits().size() + "&f)"));
         if (kitService.getKits().isEmpty()) {
-            sender.sendMessage(CC.translate("      &f◆ &cNenhum kit disponível."));
+            sender.sendMessage(CC.translate("      &f◆ &cNo kits available."));
         }
-        kitService.getKits().forEach(kit -> sender.sendMessage(CC.translate("      &f◆ &b" + kit.getDisplayName() + " &f(" + (kit.isEnabled() ? "&aAtivado" : "&cDesativado") + "&f)")));
+        kitService.getKits().forEach(kit -> sender.sendMessage(CC.translate("      &f◆ &b" + kit.getDisplayName() + " &f(" + (kit.isEnabled() ? "&aEnabled" : "&cDisabled") + "&f)")));
         sender.sendMessage("");
     }
 }

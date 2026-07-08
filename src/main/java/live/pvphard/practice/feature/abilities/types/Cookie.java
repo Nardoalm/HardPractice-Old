@@ -38,13 +38,13 @@ public class Cookie extends Ability {
             Profile profile = profileService.getProfile(player.getUniqueId());
 
             if (profile.getCooldown(Cookie.class).onCooldown(player)) {
-                player.sendMessage(CC.translate("&fVocê está no cooldown de &b&lCookie &7por &4" + DurationFormatter.getRemaining(profile.getCooldown(Cookie.class).getRemainingMillis(player), true, true)));
+                player.sendMessage(CC.translate("&fYou are on cooldown for &b&lCookie &7for &4" + DurationFormatter.getRemaining(profile.getCooldown(Cookie.class).getRemainingMillis(player), true, true)));
                 player.updateInventory();
                 return;
             }
 
             if(profile.getGlobalCooldown(GlobalCooldown.PARTNER_ITEM).onCooldown(player)){
-                player.sendMessage(CC.translate("&fVocê está no cooldown de &b&lPartner Item &fpor &b" + DurationFormatter.getRemaining(profile.getGlobalCooldown(GlobalCooldown.PARTNER_ITEM).getRemainingMillis(player), true, true)));
+                player.sendMessage(CC.translate("&fYou are on cooldown for &b&lPartner Item &ffor &b" + DurationFormatter.getRemaining(profile.getGlobalCooldown(GlobalCooldown.PARTNER_ITEM).getRemainingMillis(player), true, true)));
                 player.updateInventory();
                 return;
             }
@@ -75,7 +75,7 @@ public class Cookie extends Ability {
             }
             if (isAbility(player.getItemInHand())) {
                 if (this.hasCooldown(player)) {
-                    player.sendMessage(CC.translate("&fVocê está em cooldown por &4" + DurationFormatter.getRemaining(profile.getCooldown(Cookie.class).getRemainingMillis(player), true)));
+                    player.sendMessage(CC.translate("&fYou are on cooldown for &4" + DurationFormatter.getRemaining(profile.getCooldown(Cookie.class).getRemainingMillis(player), true)));
                     event.setCancelled(true);
                     player.updateInventory();
                 }

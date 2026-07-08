@@ -24,7 +24,7 @@ public class CosmeticGetSelectedCommand extends BaseCommand {
             aliases = {"cosmetic.get"},
             isAdminOnly = true,
             usage = "cosmetic get <player>",
-            description = "Obtém os cosméticos selecionados de um jogador."
+            description = "Gets the selected cosmetics of a player."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -43,7 +43,7 @@ public class CosmeticGetSelectedCommand extends BaseCommand {
         }
 
         Profile profile = this.plugin.getService(ProfileService.class).getProfile(target.getUniqueId());
-        player.sendMessage(CC.translate("     &b&lCosméticos selecionados de " + target.getName()));
+        player.sendMessage(CC.translate("     &b&lSelected cosmetics of " + target.getName()));
 
         ProfileCosmeticData cosmeticData = profile.getProfileData().getCosmeticData();
 

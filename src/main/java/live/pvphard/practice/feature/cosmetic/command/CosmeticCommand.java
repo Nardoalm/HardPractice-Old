@@ -16,17 +16,17 @@ public class CosmeticCommand extends BaseCommand {
             name = "cosmetic",
             isAdminOnly = true,
             usage = "cosmetic <list|get|set> <player> <cosmetic>",
-            description = "Gerencie cosméticos."
+            description = "Manage cosmetics."
     )
     @Override
     public void onCommand(CommandArgs command) {
         Player player = command.getPlayer();
 
         player.sendMessage(" ");
-        player.sendMessage(CC.translate("&b&lAjuda dos Comandos de Cosméticos:"));
-        player.sendMessage(CC.translate(" &f◆ &b/cosmetic list &7| Lista todos os cosméticos"));
-        player.sendMessage(CC.translate(" &f◆ &b/cosmetic get &8(&7player&8)  &7| Mostra os cosméticos selecionados"));
-        player.sendMessage(CC.translate(" &f◆ &b/cosmetic set &8(&7player&8) &8(&7cosmetic&8)  &7| Define o cosmético ativo"));
+        player.sendMessage(CC.translate("&b&lCosmetics Command Help:"));
+        player.sendMessage(CC.translate(" &f◆ &b/cosmetic list &7| List all cosmetics"));
+        player.sendMessage(CC.translate(" &f◆ &b/cosmetic get &8(&7player&8)  &7| Shows selected cosmetics"));
+        player.sendMessage(CC.translate(" &f◆ &b/cosmetic set &8(&7player&8) &8(&7cosmetic&8)  &7| Sets active cosmetic"));
         player.sendMessage("");
 
     }

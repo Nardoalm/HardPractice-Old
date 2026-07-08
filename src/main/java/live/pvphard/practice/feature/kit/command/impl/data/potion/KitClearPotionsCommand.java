@@ -19,7 +19,7 @@ public class KitClearPotionsCommand extends BaseCommand {
             name = "kit.clearpotions",
             isAdminOnly = true,
             usage = "kit clearpotions <kitName>",
-            description = "Remover todos os efeitos de poção de um kit."
+            description = "Remove all potion effects from a kit."
     )
     @Override
     public void onCommand(CommandArgs command) {

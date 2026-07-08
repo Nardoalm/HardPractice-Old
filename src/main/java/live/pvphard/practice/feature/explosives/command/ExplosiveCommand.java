@@ -24,7 +24,7 @@ public class ExplosiveCommand extends BaseCommand {
             isAdminOnly = true,
             inGameOnly = false,
             usage = "explosive <setting> <value>",
-            description = "Define várias configurações de explosivos."
+            description = "Sets various explosives settings."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -85,13 +85,13 @@ public class ExplosiveCommand extends BaseCommand {
     private void sendHelpMessage(CommandSender sender) {
         List<String> helpMessage = Arrays.asList(
                 "",
-                "&b&lAjuda dos Comandos de Explosivos:",
-                " &f◆ &b/explosive explosion <value> &8- &7Define o alcance de remoção dos blocos da explosão.",
-                " &f◆ &b/explosive range <value> &8- &7Define o alcance da explosão que afeta jogadores.",
-                " &f◆ &b/explosive horizontal <value> &8- &7Define o knockback horizontal.",
-                " &f◆ &b/explosive vertical <value> &8- &7Define o knockback vertical.",
-                " &f◆ &b/explosive speed <value> &8- &7Define a velocidade de lançamento da fireball.",
-                " &f◆ &b/explosive fuse <value> &8- &7Define os ticks do pavio da TNT.",
+                "&b&lExplosives Command Help:",
+                " &f◆ &b/explosive explosion <value> &8- &7Sets the block damage range of the explosion.",
+                " &f◆ &b/explosive range <value> &8- &7Sets the explosion range that affects players.",
+                " &f◆ &b/explosive horizontal <value> &8- &7Sets the horizontal knockback.",
+                " &f◆ &b/explosive vertical <value> &8- &7Sets the vertical knockback.",
+                " &f◆ &b/explosive speed <value> &8- &7Sets the fireball throw speed.",
+                " &f◆ &b/explosive fuse <value> &8- &7Sets the TNT fuse ticks.",
                 ""
         );
 

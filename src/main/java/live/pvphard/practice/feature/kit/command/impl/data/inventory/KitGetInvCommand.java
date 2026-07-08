@@ -22,7 +22,7 @@ public class KitGetInvCommand extends BaseCommand {
             aliases = "kit.getinv",
             isAdminOnly = true,
             usage = "kit getinventory <kitName>",
-            description = "Obtém o inventário de um kit"
+            description = "Gets the inventory of a kit"
     )
     @Override
     public void onCommand(CommandArgs command) {

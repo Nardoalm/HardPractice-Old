@@ -21,7 +21,7 @@ public class EnchantCommand extends BaseCommand {
             name = "enchant",
             isAdminOnly = true,
             usage = "enchant <enchantment> <level>",
-            description = "Encanta o item na sua mão com o encantamento e nível especificados"
+            description = "Enchants the item in your hand with the specified enchantment and level"
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -35,8 +35,8 @@ public class EnchantCommand extends BaseCommand {
 
         Enchantment enchantment = EnchantUtil.getEnchantment(args[0]);
         if (enchantment == null) {
-            player.sendMessage(CC.translate("&cNome de encantamento inválido!"));
-            player.sendMessage(CC.translate("&cEncantamentos válidos: &7" + EnchantUtil.getSortedEnchantments().toUpperCase()));
+            player.sendMessage(CC.translate("&cInvalid enchantment name!"));
+            player.sendMessage(CC.translate("&cValid enchantments: &7" + EnchantUtil.getSortedEnchantments().toUpperCase()));
             return;
         }
 

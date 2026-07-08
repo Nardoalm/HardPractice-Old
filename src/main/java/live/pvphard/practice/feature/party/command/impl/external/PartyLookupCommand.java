@@ -41,7 +41,7 @@ public class PartyLookupCommand extends BaseCommand {
 
         Party party = this.plugin.getService(PartyService.class).getParty(target);
         if (party == null) {
-            player.sendMessage(CC.translate("&cEste jogador não está em uma party."));
+            player.sendMessage(CC.translate("&cThis player is not in a party."));
             return;
         }
 

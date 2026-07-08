@@ -20,7 +20,7 @@ public class KitRemovePotionCommand extends BaseCommand {
             name = "kit.removepotion",
             isAdminOnly = true,
             usage = "kit removepotion <kitName>",
-            description = "Remover um efeito de poção de um kit."
+            description = "Remove a potion effect from a kit."
     )
     @Override
     public void onCommand(CommandArgs command) {

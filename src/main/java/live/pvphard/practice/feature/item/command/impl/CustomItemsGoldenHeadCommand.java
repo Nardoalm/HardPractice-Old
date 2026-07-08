@@ -18,7 +18,7 @@ public class CustomItemsGoldenHeadCommand extends BaseCommand {
             name = "customitems.goldenhead",
             aliases = {"kaositems.goldenhead", "specialitems.goldenhead"},
             usage = "customitems goldenhead <amount>",
-            description = "Dá ao jogador uma quantidade específica de golden heads customizadas",
+            description = "Gives the player a specific amount of custom golden heads",
             isAdminOnly = true
     )
     @Override

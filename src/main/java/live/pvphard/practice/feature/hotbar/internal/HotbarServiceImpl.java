@@ -113,21 +113,18 @@ public class HotbarServiceImpl implements HotbarService {
             }
 
             String command = itemSection.getString("command");
-            HotbarAction action = command.isEmpty() ? HotbarAction.OPEN_MENU : HotbarAction.RUN_COMMAND;
-            HotbarActionData actionData = new HotbarActionData(action);
+            String menuName = itemSection.getString("menu");
+            HotbarActionData actionData = null;
 
-            if (action == HotbarAction.RUN_COMMAND) {
+            if (command != null && !command.isEmpty()) {
+                actionData = new HotbarActionData(HotbarAction.RUN_COMMAND);
                 actionData.setCommand(command);
-            } else {
-                String menuName = itemSection.getString("menu");
-                if (menuName != null && !menuName.isEmpty()) {
-                    try {
-                        actionData.setMenuName(menuName);
-                    } catch (Exception exception) {
-                        Logger.error("Falha ao definir o menu do item de hotbar: " + key + ". O menu " + menuName + " não existe ou não está configurado corretamente.");
-                    }
-                } else {
-                    Logger.error("Menu name is missing for hotbar item: " + key);
+            } else if (menuName != null && !menuName.isEmpty()) {
+                actionData = new HotbarActionData(HotbarAction.OPEN_MENU);
+                try {
+                    actionData.setMenuName(menuName);
+                } catch (Exception exception) {
+                    Logger.error("Falha ao definir o menu do item de hotbar: " + key + ". O menu " + menuName + " não existe ou não está configurado corretamente.");
                 }
             }
 

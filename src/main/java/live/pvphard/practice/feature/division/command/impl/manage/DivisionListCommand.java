@@ -17,7 +17,7 @@ public class DivisionListCommand extends BaseCommand {
             name = "division.list",
             isAdminOnly = true,
             usage = "division list",
-            description = "Envia uma lista de todos os divisions."
+            description = "Sends a list of all divisions."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -27,7 +27,7 @@ public class DivisionListCommand extends BaseCommand {
         player.sendMessage("");
         player.sendMessage(CC.translate("     &b&lDivision List &f(" + divisionService.getDivisions().size() + "&f)"));
         if (divisionService.getDivisions().isEmpty()) {
-            player.sendMessage(CC.translate("      &f◆ &cNenhuma divisão disponível."));
+            player.sendMessage(CC.translate("      &f◆ &cNo divisions available."));
         }
         divisionService.getDivisions()
                 .forEach(division -> player.sendMessage(CC.translate("      &f◆ &b" + division.getDisplayName() + " &f(" + division.getTiers().get(0).getRequiredWins() + " wins)")));

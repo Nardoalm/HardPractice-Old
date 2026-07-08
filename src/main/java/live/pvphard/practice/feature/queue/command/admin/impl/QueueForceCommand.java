@@ -27,7 +27,7 @@ public class QueueForceCommand extends BaseCommand {
             aliases = {"forcequeue"},
             isAdminOnly = true,
             usage = "queue force <player> <kit> <ranked>",
-            description = "Força um jogador para uma fila."
+            description = "Forces a player into a queue."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -51,7 +51,7 @@ public class QueueForceCommand extends BaseCommand {
 
         Kit kit = this.plugin.getService(KitService.class).getKit(kitType);
         if (kit == null) {
-            player.sendMessage(CC.translate("&cKit não encontrado."));
+            player.sendMessage(CC.translate("&cKit not found."));
             return;
         }
 

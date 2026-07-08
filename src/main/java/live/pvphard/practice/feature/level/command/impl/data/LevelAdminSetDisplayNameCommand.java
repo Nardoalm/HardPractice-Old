@@ -20,7 +20,7 @@ public class LevelAdminSetDisplayNameCommand extends BaseCommand {
             name = "leveladmin.setdisplayname",
             isAdminOnly = true,
             usage = "leveladmin setdisplayname <levelName> <displayName>",
-            description = "Define o nome de exibição de um nível",
+            description = "Sets the display name of a level",
             inGameOnly = false
     )
     @Override

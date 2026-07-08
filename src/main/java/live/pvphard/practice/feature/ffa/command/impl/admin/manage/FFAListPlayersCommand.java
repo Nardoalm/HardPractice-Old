@@ -19,7 +19,7 @@ public class FFAListPlayersCommand extends BaseCommand {
             name = "ffa.listplayers",
             isAdminOnly = true,
             usage = "ffa listplayers <kit>",
-            description = "Lista todos os jogadores de uma partida de FFA."
+            description = "Lists all players in an FFA match."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -41,7 +41,7 @@ public class FFAListPlayersCommand extends BaseCommand {
         player.sendMessage("");
         player.sendMessage(CC.translate("     &b&l" + match.getKit().getDisplayName() + " Player List &f(" + match.getPlayers().size() + "&f)"));
         if (match.getPlayers().isEmpty()) {
-            player.sendMessage(CC.translate("      &f◆ &cNenhum jogador disponível."));
+            player.sendMessage(CC.translate("      &f◆ &cNo players available."));
         }
         match.getPlayers().forEach(participant -> player.sendMessage(CC.translate("      &f◆ &b" + participant.getName())));
         player.sendMessage("");

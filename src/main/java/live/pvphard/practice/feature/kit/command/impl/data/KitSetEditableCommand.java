@@ -20,7 +20,7 @@ public class KitSetEditableCommand extends BaseCommand {
             isAdminOnly = true,
             inGameOnly = false,
             usage = "kit seteditable <name> <true/false>",
-            description = "Define se um kit é editável ou não."
+            description = "Sets whether a kit is editable or not."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -44,7 +44,7 @@ public class KitSetEditableCommand extends BaseCommand {
         try {
             editable = Boolean.parseBoolean(args[1]);
         } catch (Exception exception) {
-            sender.sendMessage(CC.translate("&cValor inválido para editable! Use true ou false."));
+            sender.sendMessage(CC.translate("&cInvalid value for editable! Use true or false."));
             return;
         }
 

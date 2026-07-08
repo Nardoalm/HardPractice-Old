@@ -22,7 +22,7 @@ public class LevelAdminViewCommand extends BaseCommand {
             isAdminOnly = true,
             inGameOnly = false,
             usage = "leveladmin view <levelName>",
-            description = "Mostra informações do nível"
+            description = "Shows information about a level"
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -44,13 +44,13 @@ public class LevelAdminViewCommand extends BaseCommand {
 
         Arrays.asList(
                 "",
-                "&b&lInformações do Nível:",
-                " &f◆ &bNome: &e" + level.getName(),
-                " &f◆ &bNome de Exibição: &e" + level.getDisplayName(),
-                " &f◆ &bElo Mínimo: &e" + level.getMinElo(),
-                " &f◆ &bElo Máximo: &e" + level.getMaxElo(),
+                "&b&lLevel Information:",
+                " &f◆ &bName: &e" + level.getName(),
+                " &f◆ &bDisplay Name: &e" + level.getDisplayName(),
+                " &f◆ &bMinimum Elo: &e" + level.getMinElo(),
+                " &f◆ &bMaximum Elo: &e" + level.getMaxElo(),
                 " &f◆ &bMaterial: &e" + level.getMaterial().name(),
-                " &f◆ &bDurabilidade: &e" + level.getDurability(),
+                " &f◆ &bDurability: &e" + level.getDurability(),
                 ""
         ).forEach(line -> sender.sendMessage(CC.translate(line)));
     }

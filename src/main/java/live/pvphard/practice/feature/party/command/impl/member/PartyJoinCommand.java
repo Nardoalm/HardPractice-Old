@@ -19,7 +19,7 @@ public class PartyJoinCommand extends BaseCommand {
             name = "party.join",
             aliases = {"p.join"},
             usage = "party join <player>",
-            description = "Entra na party de um jogador."
+            description = "Joins a player's party."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -33,18 +33,18 @@ public class PartyJoinCommand extends BaseCommand {
 
         Player target = player.getServer().getPlayer(args[0]);
         if (target == null) {
-            player.sendMessage(CC.translate("&cEsse jogador não está online."));
+            player.sendMessage(CC.translate("&cThat player is not online."));
             return;
         }
 
         Party party = this.plugin.getService(PartyService.class).getPartyByLeader(target);
         if (party == null) {
-            player.sendMessage(CC.translate("&cEsse jogador não está em uma party."));
+            player.sendMessage(CC.translate("&cThat player is not in a party."));
             return;
         }
 
         if (party.getState() != PartyState.PUBLIC) {
-            player.sendMessage(CC.translate("&cEssa party não está aberta ao público."));
+            player.sendMessage(CC.translate("&cThat party is not open to the public."));
             return;
         }
 

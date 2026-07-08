@@ -42,7 +42,7 @@ public class KitCommand extends BaseCommand {
             isAdminOnly = true,
             inGameOnly = false,
             usage = "kit help <page>",
-            description = "Mostra todos os comandos de kit."
+            description = "Shows all kit commands."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -67,7 +67,7 @@ public class KitCommand extends BaseCommand {
         }
 
         sender.sendMessage("");
-        sender.sendMessage(CC.translate("&b&lComandos de Kit &8(&7Página &f" + page + "&7/&f" + this.pages.length + "&8)"));
+        sender.sendMessage(CC.translate("&b&lKit Commands &8(&7Page &f" + page + "&7/&f" + this.pages.length + "&8)"));
         for (String string : this.pages[page - 1]) {
             sender.sendMessage(CC.translate(string));
         }
@@ -82,46 +82,46 @@ public class KitCommand extends BaseCommand {
 
     private final String[][] pages = {
             {
-                    " &f◆ &b/kit list &7| Ver todos os kits",
-                    " &f◆ &b/kit create &8(&7kitName&8) &7| Criar um kit",
-                    " &f◆ &b/kit delete &8(&7kitName&8) &7| Excluir um kit",
-                    " &f◆ &b/kit toggle &8(&7kitName&8) &7| Alternar um kit",
-                    " &f◆ &b/kit view &8(&7kitName&8) &7| Ver um kit",
+                    " &f◆ &b/kit list &7| View all kits",
+                    " &f◆ &b/kit create &8(&7kitName&8) &7| Create a kit",
+                    " &f◆ &b/kit delete &8(&7kitName&8) &7| Delete a kit",
+                    " &f◆ &b/kit toggle &8(&7kitName&8) &7| Toggle a kit",
+                    " &f◆ &b/kit view &8(&7kitName&8) &7| View a kit",
                     "",
-                    "&fUse &b/kithelper &fpara outros comandos úteis."
+                    "&fUse &b/kithelper &ffor other useful commands."
             },
             {
-                    " &f◆ &b/kit settings &7| Ver todas as configurações de kit",
-                    " &f◆ &b/kit viewsettings &8(&7kitName&8) &7| Ver as configurações de um kit",
-                    " &f◆ &b/kit setsetting &8(&7kitName&8) &8(&7setting&8) &8(&7enabled&8) &7| Definir configuração do kit"
+                    " &f◆ &b/kit settings &7| View all kit settings",
+                    " &f◆ &b/kit viewsettings &8(&7kitName&8) &7| View settings of a kit",
+                    " &f◆ &b/kit setsetting &8(&7kitName&8) &8(&7setting&8) &8(&7enabled&8) &7| Set a kit setting"
             },
             {
-                    " &f◆ &b/kit setcategory &8(&7kitName&8) &8(&7category&8) &7| Definir categoria do kit",
-                    " &f◆ &b/kit setdescription &8(&7kitName&8) &8(&7description&8) &7| Definir descrição do kit",
-                    " &f◆ &b/kit setdisclaimer &8(&7kitName&8) &8(&7disclaimer&8) &7| Definir aviso do kit",
-                    " &f◆ &b/kit setdisplayname &8(&7kitName&8) &8(&7displayname&8) &7| Definir nome de exibição",
-                    " &f◆ &b/kit setmenutitle &8(&7kitName&8) &8(&7title&8) &7| Definir título do menu",
-                    " &f◆ &b/kit seteditable &8(&7kitName&8) &8(&7true/false&8) &7| Definir se o kit é editável",
-                    " &f◆ &b/kit setprofile &8(&7kitName&8) &8(&7profileName&8) &7| Definir perfil de kb do kit",
-                    " &f◆ &b/kit seticon &8(&7kitName&8) &7| Definir ícone do kit"
+                    " &f◆ &b/kit setcategory &8(&7kitName&8) &8(&7category&8) &7| Set kit category",
+                    " &f◆ &b/kit setdescription &8(&7kitName&8) &8(&7description&8) &7| Set kit description",
+                    " &f◆ &b/kit setdisclaimer &8(&7kitName&8) &8(&7disclaimer&8) &7| Set kit disclaimer",
+                    " &f◆ &b/kit setdisplayname &8(&7kitName&8) &8(&7displayname&8) &7| Set display name",
+                    " &f◆ &b/kit setmenutitle &8(&7kitName&8) &8(&7title&8) &7| Set menu title",
+                    " &f◆ &b/kit seteditable &8(&7kitName&8) &8(&7true/false&8) &7| Set if the kit is editable",
+                    " &f◆ &b/kit setprofile &8(&7kitName&8) &8(&7profileName&8) &7| Set kit kb profile",
+                    " &f◆ &b/kit seticon &8(&7kitName&8) &7| Set kit icon"
             },
             {
-                    " &f◆ &b/kit setinv &8(&7kitName&8) &7| Definir inventário do kit",
-                    " &f◆ &b/kit getinv &8(&7kitName&8) &7| Pegar inventário do kit"
+                    " &f◆ &b/kit setinv &8(&7kitName&8) &7| Set kit inventory",
+                    " &f◆ &b/kit getinv &8(&7kitName&8) &7| Get kit inventory"
             },
             {
-                    " &f◆ &b/kit addpotion &8(&7kitName&8) &7| Definir efeitos de poção do kit",
-                    " &f◆ &b/kit removepotion &8(&7kitName&8) &7| Remover efeito de poção do kit",
-                    " &f◆ &b/kit clearpotions &8(&7kitName&8) &7| Limpar efeitos de poção do kit"
+                    " &f◆ &b/kit addpotion &8(&7kitName&8) &7| Set kit potion effects",
+                    " &f◆ &b/kit removepotion &8(&7kitName&8) &7| Remove a kit potion effect",
+                    " &f◆ &b/kit clearpotions &8(&7kitName&8) &7| Clear all kit potion effects"
             },
             {
-                    " &f◆ &b/kit setraidingrolekit &8(&7kitName&8) &8(&7role&8) &8(&7roleKitName&8) &7| Definir kit de função de raiding",
-                    " &f◆ &b/kit removeraidingrolekit &8(&7kitName&8) &8(&7role&8) &8(&7roleKitName&8) &7| Remover kit de função de raiding"
+                    " &f◆ &b/kit setraidingrolekit &8(&7kitName&8) &8(&7role&8) &8(&7roleKitName&8) &7| Set raiding role kit",
+                    " &f◆ &b/kit removeraidingrolekit &8(&7kitName&8) &8(&7role&8) &8(&7roleKitName&8) &7| Remove raiding role kit"
             },
             {
-                    " &f◆ &b/kit resetlayouts &8(&7kitName&8) &7| Resetar todos os layouts do perfil",
-                    " &f◆ &b/kit saveall &7| Salvar todos os kits",
-                    " &f◆ &b/kit save &8(&7kitName&8) &7| Salvar um kit"
+                    " &f◆ &b/kit resetlayouts &8(&7kitName&8) &7| Reset all profile layouts",
+                    " &f◆ &b/kit saveall &7| Save all kits",
+                    " &f◆ &b/kit save &8(&7kitName&8) &7| Save a kit"
             }
     };
 }

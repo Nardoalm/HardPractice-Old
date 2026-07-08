@@ -17,7 +17,7 @@ public class FFAListCommand extends BaseCommand {
             name = "ffa.list",
             isAdminOnly = true,
             usage = "ffa list",
-            description = "Envia uma lista de todas as partidas de FFA."
+            description = "Sends a list of all FFA matches."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -27,7 +27,7 @@ public class FFAListCommand extends BaseCommand {
         player.sendMessage("");
         player.sendMessage(CC.translate("     &b&lFFA Match List &f(" + ffaService.getMatches().size() + "&f)"));
         if (ffaService.getMatches().isEmpty()) {
-            player.sendMessage(CC.translate("      &f◆ &cNenhuma partida disponível."));
+            player.sendMessage(CC.translate("      &f◆ &cNo matches available."));
         }
         ffaService.getMatches().forEach(match -> player.sendMessage(CC.translate("      &f◆ &b" + match.getKit().getDisplayName() + " &f(" + (match.getPlayers().size() + "/" + match.getMaxPlayers()) + "&f)")));
         player.sendMessage("");

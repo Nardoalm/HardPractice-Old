@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 public class GlowCommand extends BaseCommand {
     @CommandData(
             name = "glow",
-            description = "Alterna o brilho de encantamento no item da sua mão",
+            description = "Toggles enchantment glow on the item in your hand",
             usage = "glow <true|false>",
             isAdminOnly = true
     )

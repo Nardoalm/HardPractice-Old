@@ -20,7 +20,7 @@ public class MatchCancelCommand extends BaseCommand {
             name = "match.cancel",
             isAdminOnly = true,
             usage = "match cancel <player>",
-            description = "Cancela à força a partida de um jogador."
+            description = "Force-cancels a player match."
     )
     @Override
     public void onCommand(CommandArgs command) {

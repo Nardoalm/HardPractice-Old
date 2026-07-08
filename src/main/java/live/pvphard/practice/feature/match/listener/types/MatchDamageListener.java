@@ -27,6 +27,7 @@ import live.pvphard.practice.common.text.CC;
 import live.pvphard.practice.common.text.Symbol;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -124,6 +125,10 @@ public class MatchDamageListener implements Listener {
             attacker = (Player) event.getDamager();
         } else if (event.getDamager() instanceof Projectile) {
             Projectile projectile = (Projectile) event.getDamager();
+            if (projectile instanceof EnderPearl) {
+                event.setCancelled(true);
+                return;
+            }
             if (projectile.getShooter() instanceof Player) {
                 attacker = (Player) projectile.getShooter();
             } else {

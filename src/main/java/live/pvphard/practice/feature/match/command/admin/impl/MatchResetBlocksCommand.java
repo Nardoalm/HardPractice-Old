@@ -22,7 +22,7 @@ public class MatchResetBlocksCommand extends BaseCommand {
             name = "match.resetblocks",
             isAdminOnly = true,
             usage = "match resetblocks",
-            description = "Reseta todas as alterações de blocos da sua partida atual."
+            description = "Resets all block changes in your current match."
     )
     @Override
     public void onCommand(CommandArgs command) {

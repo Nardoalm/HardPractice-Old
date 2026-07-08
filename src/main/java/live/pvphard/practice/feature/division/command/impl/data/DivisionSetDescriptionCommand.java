@@ -20,7 +20,7 @@ public class DivisionSetDescriptionCommand extends BaseCommand {
             name = "division.setdescription",
             isAdminOnly = true,
             usage = "division setdescription <name> <description>",
-            description = "Define a descrição de uma divisão."
+            description = "Sets the description of a division."
     )
     @Override
     public void onCommand(CommandArgs command) {

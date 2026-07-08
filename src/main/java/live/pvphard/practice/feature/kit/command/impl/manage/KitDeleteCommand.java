@@ -22,7 +22,7 @@ public class KitDeleteCommand extends BaseCommand {
             name = "kit.delete",
             isAdminOnly = true,
             usage = "kit delete <kitName>",
-            description = "Exclui um kit do servidor"
+            description = "Deletes a kit from the server"
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -55,8 +55,8 @@ public class KitDeleteCommand extends BaseCommand {
         player.sendMessage(message);
         this.plugin.getService(ReflectionService.class).getReflectionService(ActionBarReflectionServiceImpl.class).sendMessage(player, message, 5);
         player.sendMessage("");
-        player.sendMessage(CC.translate("&7Não se esqueça de recarregar as filas usando &c&l/queue reload&7."));
-        player.sendMessage(CC.translate("&7Além disso, o kit foi removido de todas as arenas onde estava adicionado."));
+        player.sendMessage(CC.translate("&7Don't forget to reload queues using &c&l/queue reload&7."));
+        player.sendMessage(CC.translate("&7Also, the kit has been removed from all arenas where it was added."));
         player.sendMessage("");
     }
 }

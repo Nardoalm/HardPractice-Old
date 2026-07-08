@@ -16,7 +16,7 @@ public class DivisionsCommand extends BaseCommand {
             name = "divisions",
             aliases = {"division.menu"},
             usage = "divisions",
-            description = "Abre o menu de divisões"
+            description = "Opens the divisions menu."
     )
     @Override
     public void onCommand(CommandArgs command) {

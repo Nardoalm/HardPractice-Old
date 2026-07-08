@@ -21,7 +21,7 @@ public class PartyOpenCommand extends BaseCommand {
             name = "party.open",
             aliases = {"p.open"},
             usage = "party open",
-            description = "Abre sua party ao público."
+            description = "Opens your party to the public."
     )
     @Override
     public void onCommand(CommandArgs command) {

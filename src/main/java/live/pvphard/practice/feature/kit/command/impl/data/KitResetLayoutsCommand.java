@@ -21,7 +21,7 @@ public class KitResetLayoutsCommand extends BaseCommand {
             isAdminOnly = true,
             inGameOnly = false,
             usage = "kit resetlayouts <kitName>",
-            description = "Reseta os layouts de inventário de um kit."
+            description = "Resets the inventory layouts of a kit."
     )
     @Override
     public void onCommand(CommandArgs command) {

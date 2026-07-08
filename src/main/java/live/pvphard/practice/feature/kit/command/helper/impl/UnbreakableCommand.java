@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 public class UnbreakableCommand extends BaseCommand {
     @CommandData(
             name = "unbreakable",
-            description = "Define o estado inquebrável do item na sua mão",
+            description = "Sets the unbreakable status of the item in your hand",
             usage = "unbreakable <true|false>",
             isAdminOnly = true
     )
@@ -43,6 +43,6 @@ public class UnbreakableCommand extends BaseCommand {
         ItemStack unbreakAbleItem = ReflectionUtility.setUnbreakable(item, unbreakable);
         player.setItemInHand(unbreakAbleItem);
 
-        player.sendMessage(CC.translate("&aDefiniu o estado inquebrável do item para &b" + unbreakable + "&a."));
+        player.sendMessage(CC.translate("&aSet the unbreakable status of the item to &b" + unbreakable + "&a."));
     }
 }

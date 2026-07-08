@@ -44,7 +44,7 @@ public class FFACommand extends BaseCommand {
             isAdminOnly = true,
             inGameOnly = false,
             usage = "ffa help <page>",
-            description = "Mostra os comandos de FFA."
+            description = "Shows all FFA commands."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -69,7 +69,7 @@ public class FFACommand extends BaseCommand {
         }
 
         sender.sendMessage("");
-        sender.sendMessage(CC.translate("&b&lComandos de FFA &8(&7Página &f" + page + "&7/&f" + this.pages.length + "&8)"));
+        sender.sendMessage(CC.translate("&b&lFFA Commands &8(&7Page " + page + "&7/" + this.pages.length + "&8)"));
         for (String string : this.pages[page - 1]) {
             sender.sendMessage(CC.translate(string));
         }
@@ -83,21 +83,21 @@ public class FFACommand extends BaseCommand {
 
     private final String[][] pages = {
             {
-                    " &f◆ &b/ffa setup &8(&7ffaName&8) &8(&7arenaName&8) &8(&7maxPlayers&8) &8(&7menuSlot&8) &7| Configura uma nova partida de FFA",
-                    " &f◆ &b/ffa toggle &8(&7ffaName&8) &7| Ativa ou desativa uma arena de FFA",
-                    " &f◆ &b/ffa list &7| Lista as partidas atuais de FFA",
-                    " &f◆ &b/ffa listplayers &8(&7ffaName&8) &7| Lista todos os jogadores do FFA",
+                    " &f◆ &b/ffa setup &8(&7ffaName&8) &8(&7arenaName&8) &8(&7maxPlayers&8) &8(&7menuSlot&8) &7| Configures a new FFA match",
+                    " &f◆ &b/ffa toggle &8(&7ffaName&8) &7| Enables or disables an FFA arena",
+                    " &f◆ &b/ffa list &7| Lists current FFA matches",
+                    " &f◆ &b/ffa listplayers &8(&7ffaName&8) &7| Lists all players in the FFA",
             },
             {
-                    " &f◆ &b/ffa maxplayers &8(&7ffaName&8) &8(&7amount&8) &7| Define o máximo de jogadores",
-                    " &f◆ &b/ffa safezone &8(&7kitName&8) &8(&7pos1/pos2&8) &7| Define os limites da safezone",
-                    " &f◆ &b/ffa setspawn &8(&7ffaName&8) &7| Define o spawn da arena de FFA",
-                    " &f◆ &b/ffa setarena &8(&7ffaName&8) &7| Define a arena da partida de FFA",
-                    " &f◆ &b/ffa setslot &8(&7ffaName&8) &8(&7slotNumber&8) &7| Define o slot do menu"
+                    " &f◆ &b/ffa maxplayers &8(&7ffaName&8) &8(&7amount&8) &7| Sets the maximum players for FFA",
+                    " &f◆ &b/ffa safezone &8(&7kitName&8) &8(&7pos1/pos2&8) &7| Sets the safezone boundaries",
+                    " &f◆ &b/ffa setspawn &8(&7ffaName&8) &7| Sets the FFA arena spawn",
+                    " &f◆ &b/ffa setarena &8(&7ffaName&8) &7| Sets the FFA match arena",
+                    " &f◆ &b/ffa setslot &8(&7ffaName&8) &8(&7slotNumber&8) &7| Sets the menu slot"
             },
             {
-                    " &f◆ &b/ffa add &8(&7playerName&8) &8(&7ffaName&8) &7| Adiciona um jogador",
-                    " &f◆ &b/ffa kick &8(&7playerName&8) &7| Expulsa um jogador"
+                    " &f◆ &b/ffa add &8(&7playerName&8) &8(&7ffaName&8) &7| Adds a player to FFA",
+                    " &f◆ &b/ffa kick &8(&7playerName&8) &7| Kicks a player from FFA"
             }
     };
 }

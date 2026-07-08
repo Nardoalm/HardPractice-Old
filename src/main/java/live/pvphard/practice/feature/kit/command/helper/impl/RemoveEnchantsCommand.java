@@ -18,7 +18,7 @@ public class RemoveEnchantsCommand extends BaseCommand {
             aliases = "enchantsremovement",
             isAdminOnly = true,
             usage = "removeenchants",
-            description = "Remover todos os encantamentos do item que você está segurando."
+            description = "Removes all enchantments from the item you are holding."
     )
     @Override
     public void onCommand(CommandArgs command) {
@@ -30,16 +30,16 @@ public class RemoveEnchantsCommand extends BaseCommand {
         }
 
         if (player.getInventory().getItemInHand().getEnchantments().isEmpty()) {
-            player.sendMessage(CC.translate("&cO item que você está segurando não possui encantamentos."));
+            player.sendMessage(CC.translate("&cThe item you are holding does not have any enchantments."));
             return;
         }
 
-        player.sendMessage(CC.translate("&cEncantamentos: &f" + player.getInventory().getItemInHand().getEnchantments().keySet()));
+        player.sendMessage(CC.translate("&cEnchantments: &f" + player.getInventory().getItemInHand().getEnchantments().keySet()));
 
         player.getInventory().getItemInHand().getEnchantments().keySet().forEach(enchant -> {
             player.getInventory().getItemInHand().removeEnchantment(enchant);
         });
 
-        player.sendMessage(CC.translate("&aRemoveu todos os encantamentos do item &b" + player.getInventory().getItemInHand().getType().name() + "&a."));
+        player.sendMessage(CC.translate("&aRemoved all enchantments from item &b" + player.getInventory().getItemInHand().getType().name() + "&a."));
     }
 }

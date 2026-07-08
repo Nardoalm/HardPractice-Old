@@ -19,7 +19,7 @@ public class LevelAdminDeleteCommand extends BaseCommand {
             isAdminOnly = true,
             inGameOnly = false,
             usage = "leveladmin delete <levelName>",
-            description = "Exclui um nível"
+            description = "Deletes a level"
     )
     @Override
     public void onCommand(CommandArgs command) {

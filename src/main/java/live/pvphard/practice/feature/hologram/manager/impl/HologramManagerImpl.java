@@ -20,6 +20,7 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ArmorStand;
@@ -337,5 +338,19 @@ public final class HologramManagerImpl implements HologramManager, Listener {
                 break;
             }
         }
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (!player.isOnline()) return;
+            for (KitLeaderboardHologram holo : activeHolograms) {
+                Location loc = holo.getLocation();
+                if (loc != null && loc.getWorld() != null && loc.getWorld().equals(player.getWorld())) {
+                    holo.update();
+                }
+            }
+        }, 15L);
     }
 }

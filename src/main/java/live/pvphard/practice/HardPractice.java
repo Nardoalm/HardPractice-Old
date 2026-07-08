@@ -12,6 +12,7 @@ import live.pvphard.practice.feature.cosmetic.task.CosmeticTask;
 import live.pvphard.practice.feature.hologram.manager.HologramManager;
 import live.pvphard.practice.feature.match.task.other.ArrowRemovalTask;
 import live.pvphard.practice.feature.match.task.other.MatchPearlCooldownTask;
+import live.pvphard.practice.feature.leaderboard.internal.LeaderboardUpdateTask;
 import lombok.Getter;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -135,6 +136,7 @@ public class HardPractice extends JavaPlugin {
         tasks.put(MatchPearlCooldownTask.class.getSimpleName(), () -> new MatchPearlCooldownTask().runTaskTimer(this, 2L, 2L));
         tasks.put(ArrowRemovalTask.class.getSimpleName(), () -> new ArrowRemovalTask().runTaskTimer(this, 20L, 20L));
         tasks.put(CosmeticTask.class.getSimpleName(), () -> new CosmeticTask(this).runTaskTimerAsynchronously(this, 0L, 4L));
+        tasks.put(LeaderboardUpdateTask.class.getSimpleName(), () -> new LeaderboardUpdateTask().runTaskTimer(this, 1200L, 1200L));
 
         tasks.forEach(Logger::logTimeTask);
     }

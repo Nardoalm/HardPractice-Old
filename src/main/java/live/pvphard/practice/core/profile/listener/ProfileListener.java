@@ -117,6 +117,17 @@ public class ProfileListener implements Listener {
                 || profile.getState() == ProfileState.EDITING
                 || profile.getState() == ProfileState.SPECTATING) {
             if (player.getGameMode() == GameMode.CREATIVE) return;
+
+            if (profile.getState() == ProfileState.LOBBY && event.getItem() != null && event.getItem().getType() == Material.WOOL) {
+                if (event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof InventoryHolder) {
+                    if (!player.isSneaking()) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+                return;
+            }
+
             event.setCancelled(true);
 
             Block block = event.getClickedBlock();

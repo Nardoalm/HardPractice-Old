@@ -425,7 +425,7 @@ kits:
       Bridge: false
       Ranked: true
       HideAndSeek: false
-      NoDamage: false
+      NoDamage: true
       NoFallDamage: true
       Boxing: false
       Build: true

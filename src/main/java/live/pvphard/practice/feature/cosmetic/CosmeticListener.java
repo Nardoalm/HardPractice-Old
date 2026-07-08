@@ -86,7 +86,7 @@ public class CosmeticListener implements Listener {
         event.setCancelled(true);
 
         // Capture original block state BEFORE the next-tick placement
-        BlockState originalState = loc.getBlock().getState();
+        BlockState originalState = event.getBlockReplacedState();
 
         // Reserve the slot immediately to prevent double-placement
         int entityId = loc.hashCode();
@@ -98,9 +98,8 @@ public class CosmeticListener implements Listener {
         HardPractice.getInstance().getServer().getScheduler().runTask(HardPractice.getInstance(), () -> {
             if (!player.isOnline() || !PLACED_BLOCKS.containsKey(loc)) return;
 
-            // Get current rainbow color
-            long timeMs = System.currentTimeMillis();
-            byte initialColor = RAINBOW_WOOL_COLORS[(int) ((timeMs / 100) % RAINBOW_WOOL_COLORS.length)];
+            // Set first color initially
+            byte initialColor = RAINBOW_WOOL_COLORS[0];
 
             // Place the block server-side — client will now receive a fresh block-change packet
             loc.getBlock().setType(Material.WOOL);
@@ -127,13 +126,12 @@ public class CosmeticListener implements Listener {
                         return;
                     }
 
-                    // Sync global rainbow color
-                    long now = System.currentTimeMillis();
-                    int colorIndex = (int) ((now / 100) % RAINBOW_WOOL_COLORS.length);
+                    // Vary color per block based on its own ticks
+                    int colorIndex = ticks % RAINBOW_WOOL_COLORS.length;
                     loc.getBlock().setData(RAINBOW_WOOL_COLORS[colorIndex]);
 
-                    // Advance cracking animation every 3 runs × 2 ticks = ~3 seconds total
-                    if (ticks % 3 == 0) {
+                    // Advance cracking animation every 2 runs × 2 ticks = ~2 seconds total (1 second faster)
+                    if (ticks % 2 == 0) {
                         if (stage > 9) {
                             removeCosmeticBlock(loc, true);
                             this.cancel();

@@ -88,15 +88,14 @@ public class MatchDamageListener implements Listener {
 
             if (matchKit.isSettingEnabled(KitSettingBoxing.class)
                     || matchKit.isSettingEnabled(KitSettingSumo.class)
-                    || matchKit.isSettingEnabled(KitSettingSpleef.class)) {
+                    || matchKit.isSettingEnabled(KitSettingSpleef.class)
+                    || matchKit.isSettingEnabled(KitSettingNoDamageImpl.class)) {
 
-                event.setDamage(0);
-                player.setHealth(player.getMaxHealth());
-                return;
-            }
-
-            if (matchKit.isSettingEnabled(KitSettingNoDamageImpl.class)) {
-                event.setCancelled(true);
+                event.setDamage(0.0D);
+                Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
+                    player.setHealth(player.getMaxHealth());
+                    player.updateInventory();
+                });
                 return;
             }
 

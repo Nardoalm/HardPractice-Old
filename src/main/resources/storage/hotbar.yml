@@ -190,6 +190,32 @@ hotbar-items:
         enabled: false
         slot: 0
 
+  REQUEUE:
+    display-name: "&aRequeue &7(Right-Click)"
+    lore:
+      - "&7Click to quickly join the queue"
+      - "&7for your last played match."
+    material: WATCH
+    durability: 0
+    command: "requeue"
+    menu: ""
+    types:
+      LOBBY:
+        enabled: true
+        slot: 3
+      PARTY:
+        enabled: false
+        slot: 0
+      QUEUE:
+        enabled: false
+        slot: 0
+      SPECTATOR:
+        enabled: false
+        slot: 0
+      TOURNAMENT:
+        enabled: false
+        slot: 0
+
   DUO_UNRANKED_QUEUE:
     display-name: "&bDuo Unranked Queue &7(Right-Click)"
     lore:

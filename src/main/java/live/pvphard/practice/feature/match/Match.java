@@ -207,6 +207,13 @@ public abstract class Match {
                 .forEach(gamePlayer -> {
                     Player player = this.plugin.getServer().getPlayer(gamePlayer.getUuid());
                     if (player != null) {
+                        ProfileService profileService = this.plugin.getService(ProfileService.class);
+                        Profile profile = profileService.getProfile(player.getUniqueId());
+                        if (profile != null) {
+                            profile.setLastPlayedKit(this.getKit());
+                            profile.setLastPlayedRanked(this.isRanked());
+                            profile.setLastPlayedDuos(this.isTeamMatch());
+                        }
                         finalizePlayer(player);
                     }
                 });

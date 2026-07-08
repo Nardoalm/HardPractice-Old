@@ -23,6 +23,7 @@ import live.pvphard.practice.feature.kit.command.helper.impl.RenameCommand;
 import live.pvphard.practice.feature.queue.command.admin.QueueCommand;
 import live.pvphard.practice.feature.queue.command.player.LeaveQueueCommand;
 import live.pvphard.practice.feature.queue.command.player.QueuesCommand;
+import live.pvphard.practice.feature.queue.command.player.RequeueCommand;
 import live.pvphard.practice.feature.queue.command.player.UnrankedCommand;
 import live.pvphard.practice.feature.spawn.command.SetSpawnCommand;
 import live.pvphard.practice.feature.spawn.command.SpawnCommand;
@@ -149,6 +150,7 @@ public class CommandUtility {
             new CurrentMatchesCommand();
             new LeaveQueueCommand();
             new QueuesCommand();
+            new RequeueCommand();
             new UnrankedCommand();
             new MatchSettingsCommand();
 

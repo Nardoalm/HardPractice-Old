@@ -60,6 +60,10 @@ public class Profile {
     private Match match;
     private Party party;
 
+    private Kit lastPlayedKit;
+    private boolean lastPlayedRanked;
+    private boolean lastPlayedDuos;
+
     private ChatColor nameColor;
 
     public Profile(UUID uuid, String name) {

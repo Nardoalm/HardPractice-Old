@@ -64,9 +64,9 @@ public class TrailListener implements Listener {
         Profile profile = profileService.getProfile(player.getUniqueId());
         if (profile == null || profile.getProfileData() == null) return;
 
-        // Allow trails only in Lobby, Queue, or FFA states (not in active build matches where physical blocks matter)
+        // Allow trails only in Lobby, Waiting, or FFA states (not in active build matches where physical blocks matter)
         if (profile.getState() != ProfileState.LOBBY &&
-                profile.getState() != ProfileState.QUEUE &&
+                profile.getState() != ProfileState.WAITING &&
                 profile.getState() != ProfileState.FFA) {
             return;
         }

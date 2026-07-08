@@ -2,6 +2,7 @@ package live.pvphard.practice.bootstrap.listener.internal;
 
 import live.pvphard.practice.HardPractice;
 import live.pvphard.practice.feature.cosmetic.CosmeticListener;
+import live.pvphard.practice.feature.cosmetic.listener.TrailListener;
 import live.pvphard.practice.feature.match.listener.types.*;
 import live.pvphard.practice.library.menu.MenuListener;
 import live.pvphard.practice.feature.arena.listener.ArenaListener;
@@ -69,7 +70,8 @@ public class ListenerServiceImpl implements ListenerService {
                 new MatchPearlListener(), new MatchDisconnectListener(),
                 new MatchDamageListener(), new MatchChatListener(), new MatchBlockListener(),
 
-                new CosmeticListener()
+                new CosmeticListener(),
+                new TrailListener()
 
         ).forEach(listener -> plugin.getServer().getPluginManager().registerEvents(listener, plugin));
     }

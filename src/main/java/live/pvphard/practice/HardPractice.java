@@ -8,7 +8,9 @@ import live.pvphard.practice.common.logger.Logger;
 import live.pvphard.practice.common.logger.PluginLogger;
 import live.pvphard.practice.core.database.task.RepositoryCleanupTask;
 import live.pvphard.practice.feature.cosmetic.CosmeticListener;
+import live.pvphard.practice.feature.cosmetic.listener.TrailListener;
 import live.pvphard.practice.feature.cosmetic.task.CosmeticTask;
+import live.pvphard.practice.feature.cosmetic.task.TrailTask;
 import live.pvphard.practice.feature.hologram.manager.HologramManager;
 import live.pvphard.practice.feature.match.task.other.ArrowRemovalTask;
 import live.pvphard.practice.feature.match.task.other.MatchPearlCooldownTask;
@@ -92,6 +94,7 @@ public class HardPractice extends JavaPlugin {
         this.unregisterPublicApi();
 
         CosmeticListener.purgeAllBlocks();
+        TrailListener.purgeAllTrails();
 
         if (this.context != null) {
             this.context.shutdown();
@@ -136,6 +139,7 @@ public class HardPractice extends JavaPlugin {
         tasks.put(MatchPearlCooldownTask.class.getSimpleName(), () -> new MatchPearlCooldownTask().runTaskTimer(this, 2L, 2L));
         tasks.put(ArrowRemovalTask.class.getSimpleName(), () -> new ArrowRemovalTask().runTaskTimer(this, 20L, 20L));
         tasks.put(CosmeticTask.class.getSimpleName(), () -> new CosmeticTask(this).runTaskTimerAsynchronously(this, 0L, 4L));
+        tasks.put(TrailTask.class.getSimpleName(), () -> new TrailTask().runTaskTimer(this, 2L, 2L));
         tasks.put(LeaderboardUpdateTask.class.getSimpleName(), () -> new LeaderboardUpdateTask().runTaskTimer(this, 1200L, 1200L));
 
         tasks.forEach(Logger::logTimeTask);

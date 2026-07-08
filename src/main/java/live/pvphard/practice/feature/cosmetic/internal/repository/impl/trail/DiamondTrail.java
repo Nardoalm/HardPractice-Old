@@ -1,0 +1,25 @@
+package live.pvphard.practice.feature.cosmetic.internal.repository.impl.trail;
+
+import live.pvphard.practice.feature.cosmetic.annotation.CosmeticData;
+import live.pvphard.practice.feature.cosmetic.model.CosmeticType;
+import org.bukkit.Material;
+
+@CosmeticData(
+        type = CosmeticType.TRAIL,
+        name = "Diamond Trail",
+        description = "A shiny diamond block trail",
+        icon = Material.DIAMOND_BLOCK,
+        slot = 12,
+        price = 1500
+)
+public class DiamondTrail extends Trail {
+    @Override
+    public Material getBlockMaterial() {
+        return Material.DIAMOND_BLOCK;
+    }
+
+    @Override
+    public byte getBlockData(int ticks) {
+        return 0;
+    }
+}

@@ -28,6 +28,7 @@ public class CosmeticServiceImpl implements CosmeticService {
         this.register(new KillMessageRepository());
         this.register(new SuitRepository());
         this.register(new CloakRepository());
+        this.register(new TrailRepository());
     }
 
     /**

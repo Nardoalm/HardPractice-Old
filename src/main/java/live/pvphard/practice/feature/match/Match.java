@@ -193,7 +193,6 @@ public abstract class Match {
             };
 
             if (spawnLocation != null && this.arena instanceof StandAloneArena && !((StandAloneArena) this.arena).isManagedBySlimeWorldManager()) {
-                // Delay teleport and setup by 15 ticks (750ms) to allow schematic to paste
                 Bukkit.getScheduler().runTaskLater(this.plugin, setupTask, 15L);
             } else {
                 setupTask.run();
@@ -817,11 +816,6 @@ public abstract class Match {
                 new PotionEffect(PotionEffectType.BLINDNESS, 45, 3),
                 new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 3)
         ));
-
-        MatchGamePlayer gamePlayer = this.getGamePlayer(player);
-        if (gamePlayer != null) {
-            gamePlayer.setDead(false);
-        }
 
         Location hoverLocation = deathLocation.clone().add(0, 2, 0);
         ListenerUtil.teleportAndClearSpawn(player, hoverLocation);

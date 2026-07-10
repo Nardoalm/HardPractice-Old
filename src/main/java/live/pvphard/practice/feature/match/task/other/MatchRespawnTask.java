@@ -12,6 +12,7 @@ import live.pvphard.practice.core.profile.ProfileService;
 import live.pvphard.practice.core.profile.enums.ProfileState;
 import live.pvphard.practice.feature.match.Match;
 import live.pvphard.practice.feature.match.MatchState;
+import live.pvphard.practice.feature.match.model.internal.MatchGamePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -49,6 +50,12 @@ public class MatchRespawnTask extends BukkitRunnable {
 
         if (this.count == 0) {
             this.cancel();
+
+            MatchGamePlayer gamePlayer = this.match.getGamePlayer(this.player);
+            if (gamePlayer != null) {
+                gamePlayer.setDead(false);
+            }
+
             this.match.handleRespawn(this.player);
             return;
         }

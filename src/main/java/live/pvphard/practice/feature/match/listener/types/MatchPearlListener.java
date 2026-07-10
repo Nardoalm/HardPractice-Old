@@ -55,7 +55,6 @@ public class MatchPearlListener implements Listener {
         Profile profile = profileService.getProfile(player.getUniqueId());
         if (profile == null) return;
 
-        // Block pearl usage if player is not in an active match
         if (profile.getState() != ProfileState.PLAYING) {
             event.setCancelled(true);
             player.updateInventory();
@@ -68,7 +67,6 @@ public class MatchPearlListener implements Listener {
             return;
         }
 
-        // Block pearl usage if cooldown is active (stops visual throwing, click sounds, and chat flooding)
         CooldownService cooldownService = HardPractice.getInstance().getService(CooldownService.class);
         Optional<Cooldown> optionalCooldown = Optional.ofNullable(
                 cooldownService.getCooldown(player.getUniqueId(), CooldownType.ENDER_PEARL)
@@ -129,8 +127,7 @@ public class MatchPearlListener implements Listener {
         ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
         Profile profile = profileService.getProfile(player.getUniqueId());
 
-        // Cancel teleports if player is no longer in a match or if the match has already ended
-        if (profile == null || profile.getState() != ProfileState.PLAYING || 
+        if (profile == null || profile.getState() != ProfileState.PLAYING ||
                 profile.getMatch() == null || profile.getMatch().getState() != MatchState.RUNNING) {
             event.setCancelled(true);
             return;
@@ -144,8 +141,6 @@ public class MatchPearlListener implements Listener {
             return;
         }
 
-        // Normalize Y coordinate to align perfectly with the ground, avoiding the half-block drop.
-        // Only do this if the destination block is not solid (to prevent wall glitching).
         if (!destination.getBlock().getType().isSolid()) {
             double y = destination.getY();
             Block blockBelow = destination.clone().subtract(0, 0.1, 0).getBlock();
@@ -162,6 +157,7 @@ public class MatchPearlListener implements Listener {
             adjustTeleportLocation(destination);
         }
 
+        player.setFallDistance(0.0F);
         event.setTo(destination);
     }
 

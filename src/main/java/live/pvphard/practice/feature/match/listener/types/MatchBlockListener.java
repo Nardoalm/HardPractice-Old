@@ -39,19 +39,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-/**
- * @author Emmy
- * @project Hard
- * @since 08/02/2025
- */
 public class MatchBlockListener implements Listener {
-    @EventHandler()
-    public void onBlockFromEvent(BlockFromToEvent event) {
-
-    }
 
     @EventHandler
     private void onBlockBreak(BlockBreakEvent event) {
@@ -78,10 +70,11 @@ public class MatchBlockListener implements Listener {
 
                 if (match.getKit().isSettingEnabled(KitSettingBuildImpl.class)) {
                     Block block = event.getBlock();
+                    BlockState blockState = block.getState();
 
                     if (match.getKit().isSettingEnabled(KitSettingRaiding.class)) {
                         if (participant.getLeader().getData().getRole() == BaseRaiderRole.TRAPPER) {
-                            match.addBlockToBrokenBlocksMap(block.getState(), block.getLocation());
+                            match.addBlockToBrokenBlocksMap(blockState, block.getLocation());
                             return;
                         } else {
                             event.setCancelled(true);
@@ -122,6 +115,10 @@ public class MatchBlockListener implements Listener {
 
                         StandAloneArena arena = (StandAloneArena) match.getArena();
                         if (block.getType() != Material.BED_BLOCK) {
+                            if (block.getType() == Material.WOOL && !match.getPlacedBlocks().containsKey(blockState)) {
+                                event.setCancelled(true);
+                                return;
+                            }
                             return;
                         }
 
@@ -143,7 +140,7 @@ public class MatchBlockListener implements Listener {
 
                         block.setType(Material.AIR);
 
-                        match.addBlockToBrokenBlocksMap(block.getState(), block.getLocation());
+                        match.addBlockToBrokenBlocksMap(blockState, block.getLocation());
                         opponent.setBedBroken(true);
                         matchBed.alertBedDestruction(player, opponent);
                         return;
@@ -151,15 +148,17 @@ public class MatchBlockListener implements Listener {
 
                     if (match.getKit().isSettingEnabled(KitSettingBridges.class)) {
                         if (block.getType() == Material.STAINED_CLAY) {
-                            match.addBlockToBrokenBlocksMap(block.getState(), block.getLocation());
+                            match.addBlockToBrokenBlocksMap(blockState, block.getLocation());
+                            return;
+                        }
+                        if (block.getType() == Material.WOOL && !match.getPlacedBlocks().containsKey(blockState)) {
+                            event.setCancelled(true);
                             return;
                         }
                     }
 
-                    BlockState blockState = event.getBlock().getState();
-
                     if (match.getPlacedBlocks().containsKey(blockState)) {
-                        match.removeBlockFromPlacedBlocksMap(blockState, event.getBlock().getLocation());
+                        match.removeBlockFromPlacedBlocksMap(blockState, block.getLocation());
                     } else {
                         event.setCancelled(true);
                     }

@@ -1,5 +1,6 @@
 package live.pvphard.practice.feature.cosmetic.listener;
 
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
 import live.pvphard.practice.HardPractice;
 import live.pvphard.practice.core.profile.Profile;
 import live.pvphard.practice.core.profile.ProfileService;
@@ -8,6 +9,8 @@ import live.pvphard.practice.feature.cosmetic.CosmeticService;
 import live.pvphard.practice.feature.cosmetic.internal.repository.TrailRepository;
 import live.pvphard.practice.feature.cosmetic.internal.repository.impl.trail.Trail;
 import live.pvphard.practice.feature.cosmetic.model.CosmeticType;
+import live.pvphard.practice.feature.match.internal.types.BedMatch;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -43,30 +46,29 @@ public class TrailListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        Location from = event.getFrom();
-        Location to = event.getTo();
-
-        // Only trigger when moving across blocks
-        if (from.getBlockX() == to.getBlockX() &&
-                from.getBlockY() == to.getBlockY() &&
-                from.getBlockZ() == to.getBlockZ()) {
-            return;
-        }
-
         Player player = event.getPlayer();
-        if (!player.isOnGround()) {
-            return;
-        }
 
         ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
         if (profileService == null) return;
 
         Profile profile = profileService.getProfile(player.getUniqueId());
         if (profile == null || profile.getProfileData() == null) return;
+        if (profile.getState() == ProfileState.SPECTATING || profile.getState() == ProfileState.EDITING) return;
 
-        // Allow trails except in SPECTATING or EDITING states (permits them in match arenas, tournaments, events, etc.)
-        if (profile.getState() == ProfileState.SPECTATING ||
-                profile.getState() == ProfileState.EDITING) {
+        if (Bukkit.getPluginManager().isPluginEnabled("KaosCore")) {
+            if (VanishManager.isVanished(player)) return;
+        }
+
+        Location from = event.getFrom();
+        Location to = event.getTo();
+
+        if (from.getBlockX() == to.getBlockX() &&
+                from.getBlockY() == to.getBlockY() &&
+                from.getBlockZ() == to.getBlockZ()) {
+            return;
+        }
+
+        if (!player.isOnGround()) {
             return;
         }
 
@@ -84,24 +86,35 @@ public class TrailListener implements Listener {
         Trail trail = repository.getCosmetic(selectedTrailName);
         if (trail == null) return;
 
-        // Block directly underneath player
         Block block = to.clone().subtract(0, 1, 0).getBlock();
         if (!isValidBlock(block)) return;
 
+        Material originalMaterial = block.getType();
+
+        if (originalMaterial == Material.PISTON_BASE || originalMaterial == Material.PISTON_STICKY_BASE) {
+            return;
+        }
+
+        if (profile.getMatch() != null && profile.getMatch() instanceof BedMatch) {
+            if (originalMaterial == Material.ENDER_STONE ||
+                    originalMaterial == Material.WOOD ||
+                    originalMaterial == Material.BED_BLOCK ||
+                    originalMaterial == Material.BED) {
+                return;
+            }
+        }
+
         Location loc = block.getLocation();
 
-        // Avoid overriding if there's already a trail block here
         if (ACTIVE_TRAILS.containsKey(loc)) {
             return;
         }
 
-        Material originalMaterial = block.getType();
         byte originalData = block.getData();
 
         TrailBlockState state = new TrailBlockState(originalMaterial, originalData, trail, System.currentTimeMillis());
         ACTIVE_TRAILS.put(loc, state);
 
-        // Place the block
         block.setType(trail.getBlockMaterial());
         block.setData(trail.getBlockData(0));
     }
@@ -140,7 +153,6 @@ public class TrailListener implements Listener {
             return false;
         }
 
-        // Avoid destroying plants supported above the block
         Block blockAbove = block.getRelative(org.bukkit.block.BlockFace.UP);
         Material typeAbove = blockAbove.getType();
         if (typeAbove != Material.AIR) {

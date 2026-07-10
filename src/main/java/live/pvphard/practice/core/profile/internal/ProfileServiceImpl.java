@@ -23,11 +23,6 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-/**
- * @author Remi
- * @project Hard
- * @date 5/20/2024
- */
 @Getter
 @Service(provides = ProfileService.class, priority = 180)
 public class ProfileServiceImpl implements ProfileService {
@@ -37,9 +32,6 @@ public class ProfileServiceImpl implements ProfileService {
     private MongoCollection<Document> collection;
     private DatabaseProfile databaseProfile;
 
-    /**
-     * Constructor for DI.
-     */
     public ProfileServiceImpl(MongoService mongoService) {
         this.mongoService = mongoService;
     }
@@ -53,7 +45,10 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public void shutdown(HardContext context) {
         Logger.info("Saving all loaded player profiles...");
-        this.profiles.values().forEach(Profile::save);
+        this.profiles.values().stream()
+                .filter(Objects::nonNull)
+                .filter(profile -> profile.getUuid() != null && profile.getName() != null && !profile.getName().trim().isEmpty())
+                .forEach(Profile::save);
         Logger.info("Profile saving complete.");
     }
 
@@ -61,6 +56,9 @@ public class ProfileServiceImpl implements ProfileService {
     public Profile getProfile(UUID uuid) {
         return this.profiles.computeIfAbsent(uuid, k -> {
             String name = HardPractice.getInstance().getServer().getOfflinePlayer(k).getName();
+            if (name == null || name.trim().isEmpty()) {
+                name = "Unknown";
+            }
             Profile profile = new Profile(k, name);
             profile.load();
             return profile;
@@ -107,10 +105,25 @@ public class ProfileServiceImpl implements ProfileService {
             return;
         }
 
-        //TODO: in DOCUMENT, not only loaded profiles
         this.profiles.values().forEach(profile -> {
-            if (profile == null
-                    || profile.getProfileData() == null
+            if (profile == null) {
+                return;
+            }
+
+            if (profile.getName() == null || profile.getName().trim().isEmpty() || profile.getName().equals("Unknown")) {
+                if (profile.getUuid() != null) {
+                    String resolvedName = Bukkit.getOfflinePlayer(profile.getUuid()).getName();
+                    if (resolvedName != null && !resolvedName.trim().isEmpty()) {
+                        profile.setName(resolvedName);
+                    } else {
+                        return;
+                    }
+                } else {
+                    return;
+                }
+            }
+
+            if (profile.getProfileData() == null
                     || profile.getProfileData().getLayoutData() == null
                     || profile.getProfileData().getLayoutData().getLayouts() == null) {
                 return;

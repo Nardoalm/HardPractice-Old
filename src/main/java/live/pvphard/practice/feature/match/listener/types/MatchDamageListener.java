@@ -44,9 +44,8 @@ public class MatchDamageListener implements Listener {
         Player player = (Player) event.getEntity();
         ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
         Profile profile = profileService.getProfile(player.getUniqueId());
-        if (profile == null) {
-            return;
-        }
+
+        if (profile == null) return;
 
         if (profile.getState() == ProfileState.SPECTATING) {
             event.setCancelled(true);
@@ -94,8 +93,10 @@ public class MatchDamageListener implements Listener {
 
                 event.setDamage(0.0D);
                 Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
-                    player.setHealth(player.getMaxHealth());
-                    player.updateInventory();
+                    if (player.isOnline()) {
+                        player.setHealth(player.getMaxHealth());
+                        player.updateInventory();
+                    }
                 });
                 return;
             }
@@ -142,6 +143,7 @@ public class MatchDamageListener implements Listener {
 
         Profile damagedProfile = profileService.getProfile(damaged.getUniqueId());
         Profile attackerProfile = profileService.getProfile(attacker.getUniqueId());
+
         if (damagedProfile == null || attackerProfile == null) {
             event.setCancelled(true);
             return;
@@ -196,8 +198,8 @@ public class MatchDamageListener implements Listener {
             if (!attacker.getUniqueId().equals(damaged.getUniqueId())) {
 
                 Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
-                    attackerProfile.getMatch().getGamePlayer(attacker).getData().handleAttack();
-                    damagedProfile.getMatch().getGamePlayer(damaged).getData().resetCombo();
+                    attackerGamePlayer.getData().handleAttack();
+                    damagedGamePlayer.getData().resetCombo();
                 });
 
                 GameParticipant<MatchGamePlayer> participant = match.getParticipant(attacker);
@@ -227,8 +229,8 @@ public class MatchDamageListener implements Listener {
 
                         if (participant.getTeamHits() >= requiredHits) {
                             Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
-                                opponent.getPlayers().forEach(matchGamePlayer -> {
-                                    Player loser = matchGamePlayer.getTeamPlayer();
+                                opponent.getPlayers().forEach(gamePlayer -> {
+                                    Player loser = gamePlayer.getTeamPlayer();
                                     if (loser != null) {
                                         match.handleDeath(loser, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
                                     }
@@ -243,32 +245,37 @@ public class MatchDamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onEntityDamageByEntityMonitor(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
-            Profile profile = HardPractice.getInstance().getService(ProfileService.class).getProfile(event.getEntity().getUniqueId());
-            if (profile == null) {
-                return;
-            }
-
-            if (profile.getState() == ProfileState.SPECTATING) {
-                return;
-            }
-
-            if (profile.getState() == ProfileState.PLAYING) {
-                if (profile.getMatch() == null || profile.getMatch().getState() != MatchState.RUNNING) {
-                    return;
-                }
-
-                Player player = (Player) event.getEntity();
-                Player attacker = (Player) event.getDamager();
-
-                Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
-                    HardPractice.getInstance().getService(CombatService.class).setLastAttacker(player, attacker);
-
-                    if (profile.getMatch().getKit().isSettingEnabled(KitSettingHealthBar.class)) {
-                        HardPractice.getInstance().getService(ReflectionService.class).getReflectionService(ActionBarReflectionServiceImpl.class).visualizeTargetHealth(attacker, player);
-                    }
-                });
-            }
+        if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player)) {
+            return;
         }
+
+        Player player = (Player) event.getEntity();
+        Player attacker = (Player) event.getDamager();
+
+        Profile profile = HardPractice.getInstance().getService(ProfileService.class).getProfile(player.getUniqueId());
+
+        if (profile == null || profile.getState() != ProfileState.PLAYING) {
+            return;
+        }
+
+        Match match = profile.getMatch();
+        if (match == null || match.getState() != MatchState.RUNNING) {
+            return;
+        }
+
+        boolean showHealthBar = match.getKit().isSettingEnabled(KitSettingHealthBar.class);
+
+        CombatService combatService = HardPractice.getInstance().getService(CombatService.class);
+        ReflectionService reflectionService = HardPractice.getInstance().getService(ReflectionService.class);
+
+        Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
+            if (!player.isOnline() || !attacker.isOnline()) return;
+
+            combatService.setLastAttacker(player, attacker);
+
+            if (showHealthBar) {
+                reflectionService.getReflectionService(ActionBarReflectionServiceImpl.class).visualizeTargetHealth(attacker, player);
+            }
+        });
     }
 }

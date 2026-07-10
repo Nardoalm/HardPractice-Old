@@ -3,6 +3,7 @@ package live.pvphard.practice.feature.cosmetic;
 import live.pvphard.practice.HardPractice;
 import live.pvphard.practice.common.PlayerUtil;
 import live.pvphard.practice.common.text.CC;
+import live.pvphard.practice.core.profile.ProfileService;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.PacketPlayOutBlockBreakAnimation;
 import org.bukkit.Effect;
@@ -61,10 +62,17 @@ public class CosmeticListener implements Listener {
         lastMoveTimes.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    // ignoreCancelled = true garante que não vamos colocar cosméticos onde outros plugins (ex: WorldGuard) bloqueiam.
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         if (player == null || !PlayerUtil.inLobby(player)) {
+            return;
+        }
+
+        if(!player.hasPermission("kaoscore.block")){
+            player.sendMessage("§cYou do not have permission to use this. Purchase the §d§lPRO§c rank at §bstore.pvphard.live§c.");
+            event.setCancelled(true);
             return;
         }
 
@@ -75,45 +83,34 @@ public class CosmeticListener implements Listener {
 
         Location loc = block.getLocation();
 
-        // If there is already a cosmetic block at this location, deny
         if (PLACED_BLOCKS.containsKey(loc)) {
             event.setCancelled(true);
             return;
         }
 
-        // Cancel the vanilla event — we will place the block ourselves next tick
-        // (placing it now would be overridden by Bukkit's automatic client revert packet)
         event.setCancelled(true);
 
-        // Capture original block state BEFORE the next-tick placement
         BlockState originalState = event.getBlockReplacedState();
 
-        // Reserve the slot immediately to prevent double-placement
         int entityId = loc.hashCode();
         SavedBlockState state = new SavedBlockState(originalState.getType(), originalState.getRawData(), entityId);
         PLACED_BLOCKS.put(loc, state);
 
-        // Delay 1 tick: by then Bukkit has already sent the client revert packet,
-        // so our block.setType() will be the last word and will display correctly
-        HardPractice.getInstance().getServer().getScheduler().runTask(HardPractice.getInstance(), () -> {
-            if (!player.isOnline() || !PLACED_BLOCKS.containsKey(loc)) return;
+        // Prevenção de glitch visual da mão do jogador sem risco de bugar o hotbar
+        HardPractice.getInstance().getServer().getScheduler().runTask(HardPractice.getInstance(), player::updateInventory);
 
-            // Set first color initially
+        HardPractice.getInstance().getServer().getScheduler().runTask(HardPractice.getInstance(), () -> {
+            // Correção da Bomba de Memória: Se o jogador não estiver online, limpa o mapa e aborta.
+            if (!player.isOnline() || !PLACED_BLOCKS.containsKey(loc)) {
+                PLACED_BLOCKS.remove(loc);
+                return;
+            }
+
             byte initialColor = RAINBOW_WOOL_COLORS[0];
 
-            // Place the block server-side — client will now receive a fresh block-change packet
             loc.getBlock().setType(Material.WOOL);
             loc.getBlock().setData(initialColor);
 
-            // Replenish item in hand (infinite placement)
-            ItemStack item = player.getItemInHand();
-            if (item != null && item.getType() == Material.WOOL) {
-                item.setAmount(64);
-                player.setItemInHand(item);
-                player.updateInventory();
-            }
-
-            // Start decay + rainbow animation
             state.animationTask = new BukkitRunnable() {
                 int ticks = 0;
                 int stage = 0;
@@ -126,11 +123,9 @@ public class CosmeticListener implements Listener {
                         return;
                     }
 
-                    // Vary color per block based on its own ticks
-                    int colorIndex = ticks % RAINBOW_WOOL_COLORS.length;
+                    int colorIndex = (ticks / 2) % RAINBOW_WOOL_COLORS.length;
                     loc.getBlock().setData(RAINBOW_WOOL_COLORS[colorIndex]);
 
-                    // Advance cracking animation every 2 runs × 2 ticks = ~2 seconds total (1 second faster)
                     if (ticks % 2 == 0) {
                         if (stage > 9) {
                             removeCosmeticBlock(loc, true);

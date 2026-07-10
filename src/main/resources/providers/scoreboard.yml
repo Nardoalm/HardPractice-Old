@@ -1,8 +1,22 @@
 scoreboard:
   sidebar-format: "&7&m----------------------"
   team-displays:
-    red: "&c&l[R] &fRed"
-    blue: "&9&l[B] &fBlue"
+    black: "&0[B] &fBlack"
+    dark_blue: "&1[M] &fMidnight"
+    dark_green: "&2[F] &fForest"
+    dark_aqua: "&3[T] &fTeal"
+    dark_red: "&4[R] &fRuby"
+    dark_purple: "&5[V] &fViolet"
+    gold: "&6[G] &fGold"
+    gray: "&7[S] &fSilver"
+    dark_gray: "&8[L] &fSlate"
+    blue: "&9[B] &fBlue"
+    green: "&a[G] &fGreen"
+    aqua: "&b[C] &fCyan"
+    red: "&c[R] &fRed"
+    light_purple: "&d[P] &fPink"
+    yellow: "&e[Y] &fYellow"
+    white: "&f[W] &fWhite"
   title:
     text: "&b&lPRACTICE"
     animated: true

@@ -75,8 +75,6 @@ public class MatchListener implements Listener {
                     if (match.getArena().getType() != ArenaType.STANDALONE) return;
                     if (profile.getState() != ProfileState.PLAYING) return;
 
-                    gamePlayer.setDead(true);
-
                     if (match instanceof RoundsMatch && match.getKit().isSettingEnabled(KitSettingStickFight.class)) {
                         RoundsMatch roundsMatch = (RoundsMatch) match;
                         roundsMatch.handleDeath(player, EntityDamageEvent.DamageCause.VOID);

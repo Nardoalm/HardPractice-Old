@@ -320,8 +320,8 @@ hotbar-items:
     display-name: "&cLeave Party &7(Right-Click)"
     lore:
       - "&7Leave your current party."
-    material: REDSTONE
-    durability: 0
+    material: INK_SACK
+    durability: 14
     command: "party leave"
     menu: ""
     types:
@@ -370,8 +370,8 @@ hotbar-items:
     display-name: "&cLeave Queue &7(Right-Click)"
     lore:
       - "&7Leave the current queue."
-    material: REDSTONE
-    durability: 0
+    material: INK_SACK
+    durability: 14
     command: "leavequeue"
     menu: ""
     types:
@@ -420,8 +420,8 @@ hotbar-items:
     display-name: "&cStop Spectating &7(Right-Click)"
     lore:
       - "&7Stop watching the current match."
-    material: REDSTONE
-    durability: 0
+    material: INK_SACK
+    durability: 14
     command: "leavespectator"
     menu: ""
     types:
@@ -445,8 +445,8 @@ hotbar-items:
     display-name: "&cLeave Tournament &7(Right-Click)"
     lore:
       - "&7Leave the current tournament."
-    material: REDSTONE
-    durability: 0
+    material: INK_SACK
+    durability: 14
     command: "tournament leave"
     menu: ""
     types:

@@ -23,7 +23,7 @@ import java.util.UUID;
 
 public final class HardPracticeAPIImpl implements HardPracticeAPI {
     private static final String[] SAFE_TEAM_COLORS = {
-            "&c", "&9", "&a", "&e", "&5", "&b", "&b", "&d", "&4", "&3", "&2", "&1", "&f", "&0"
+            "&c", "&9", "&a", "&e", "&5", "&b", "&d", "&4", "&3", "&2", "&1", "&f", "&0"
     };
 
     private final HardPractice plugin;
@@ -102,8 +102,12 @@ public final class HardPracticeAPIImpl implements HardPracticeAPI {
     public String getTeamId(Player player) {
         Match match = this.getMatchParticipant(player);
         GameParticipant<MatchGamePlayer> participant = this.getParticipant(player, match);
+        if (match == null || participant == null) {
+            return "";
+        }
+
         int participantIndex = this.getParticipantIndex(match, participant);
-        if (match == null || participantIndex < 0) {
+        if (participantIndex < 0) {
             return "";
         }
 
@@ -119,9 +123,18 @@ public final class HardPracticeAPIImpl implements HardPracticeAPI {
     @Override
     public String getTeamColor(Player player) {
         Match match = this.getMatchParticipant(player);
+
+        if (match == null) {
+            if (this.isInEvent(player)) {
+                return "&a";
+            }
+            return "";
+        }
+
         GameParticipant<MatchGamePlayer> participant = this.getParticipant(player, match);
         int participantIndex = this.getParticipantIndex(match, participant);
-        if (match == null || participant == null || participantIndex < 0) {
+
+        if (participant == null || participantIndex < 0) {
             return "";
         }
 
@@ -135,7 +148,7 @@ public final class HardPracticeAPIImpl implements HardPracticeAPI {
 
     @Override
     public boolean shouldOverrideDefaultNametag(Player player) {
-        return this.getMatchParticipant(player) != null;
+        return this.getMatchParticipant(player) != null || this.isInEvent(player);
     }
 
     @Override
@@ -145,7 +158,7 @@ public final class HardPracticeAPIImpl implements HardPracticeAPI {
         }
 
         String teamColor = this.getTeamColor(player);
-        return new PracticeNametagContext(true, "", "", teamColor, this.getMatchPriority());
+        return new PracticeNametagContext(true, teamColor, "", teamColor, this.getMatchPriority());
     }
 
     @Override
@@ -228,7 +241,7 @@ public final class HardPracticeAPIImpl implements HardPracticeAPI {
         }
 
         for (int i = 0; i < participants.size(); i++) {
-            if (participants.get(i) == participant) {
+            if (participants.get(i).equals(participant)) {
                 return i;
             }
         }

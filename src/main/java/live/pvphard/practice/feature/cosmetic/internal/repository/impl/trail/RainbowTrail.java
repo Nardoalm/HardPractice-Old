@@ -22,7 +22,7 @@ public class RainbowTrail extends Trail {
 
     @Override
     public byte getBlockData(int ticks) {
-        int index = ticks % WOOL_COLORS.length;
+        int index = (ticks / 2) % WOOL_COLORS.length;
         if (index < 0) index = 0;
         return WOOL_COLORS[index];
     }

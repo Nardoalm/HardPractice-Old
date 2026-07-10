@@ -12,11 +12,6 @@ import live.pvphard.practice.library.command.annotation.CommandData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * @author Emmy
- * @project Hard
- * @date 28/04/2024 - 22:23
- */
 public class KitSetInvCommand extends BaseCommand {
     @CommandData(
             name = "kit.setinventory",

@@ -2,24 +2,24 @@ package live.pvphard.practice.feature.queue.internal;
 
 import live.pvphard.practice.HardPractice;
 import live.pvphard.practice.common.PlayerDisplayUtil;
+import live.pvphard.practice.common.logger.Logger;
+import live.pvphard.practice.common.reflect.utility.ReflectionUtility;
+import live.pvphard.practice.common.text.CC;
+import live.pvphard.practice.core.profile.Profile;
+import live.pvphard.practice.core.profile.ProfileService;
+import live.pvphard.practice.core.profile.enums.ProfileState;
 import live.pvphard.practice.feature.arena.Arena;
 import live.pvphard.practice.feature.arena.ArenaService;
 import live.pvphard.practice.feature.arena.ArenaType;
-import live.pvphard.practice.feature.queue.QueueService;
-import live.pvphard.practice.feature.queue.Queue;
-import live.pvphard.practice.feature.queue.QueueProfile;
 import live.pvphard.practice.feature.match.MatchService;
-import live.pvphard.practice.feature.match.model.internal.MatchGamePlayer;
 import live.pvphard.practice.feature.match.model.GameParticipant;
 import live.pvphard.practice.feature.match.model.TeamGameParticipant;
-import live.pvphard.practice.feature.party.PartyService;
+import live.pvphard.practice.feature.match.model.internal.MatchGamePlayer;
 import live.pvphard.practice.feature.party.Party;
-import live.pvphard.practice.core.profile.ProfileService;
-import live.pvphard.practice.core.profile.Profile;
-import live.pvphard.practice.core.profile.enums.ProfileState;
-import live.pvphard.practice.common.reflect.utility.ReflectionUtility;
-import live.pvphard.practice.common.logger.Logger;
-import live.pvphard.practice.common.text.CC;
+import live.pvphard.practice.feature.party.PartyService;
+import live.pvphard.practice.feature.queue.Queue;
+import live.pvphard.practice.feature.queue.QueueProfile;
+import live.pvphard.practice.feature.queue.QueueService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public class QueueTask implements Runnable {
+
     /**
      * Main execution method that processes all active queues.
      * Called periodically by the scheduler.
@@ -115,9 +116,9 @@ public class QueueTask implements Runnable {
     private void notifyPlayerOfQueueRemoval(Player player, QueueProfile profile) {
         if (player != null) {
             if (profile.getElapsedTime() >= profile.getQueue().getMaxQueueTime()) {
-                player.sendMessage(CC.translate("&cVocê foi removido da fila por inatividade"));
+                player.sendMessage(CC.translate("&cYou have been removed from the queue for inactivity"));
             } else {
-                player.sendMessage(CC.translate("&cVocê foi removido da fila por estar offline ou por mudança de estado."));
+                player.sendMessage(CC.translate("&cYou have been removed from the queue for being offline or state change."));
             }
         }
     }
@@ -696,7 +697,7 @@ public class QueueTask implements Runnable {
      */
     private boolean isArenaAvailable(Arena arena, List<Player> players, Queue queue) {
         if (arena == null || arena.getType().equals(ArenaType.FFA)) {
-            players.forEach(p -> p.sendMessage(CC.translate("&cNão há arenas disponíveis para este kit")));
+            players.forEach(p -> p.sendMessage(CC.translate("&cNo arenas available for this kit")));
             return false;
         }
         return true;

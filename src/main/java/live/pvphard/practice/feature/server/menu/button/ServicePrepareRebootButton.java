@@ -23,7 +23,7 @@ public class ServicePrepareRebootButton extends Button {
     @Override
     public ItemStack getButtonItem(Player player) {
         return new ItemBuilder(Material.INK_SACK)
-                .durability(14)
+                .durability(1)
                 .name("&c&lPreparar Reinício")
                 .lore(
                         "&fIsso preparará o servidor",

@@ -90,7 +90,7 @@ public class ResetConfirmMenu extends Menu {
                             "",
                             "&7Click here to cancel the reset."
                     )
-                    .durability(14)
+                    .durability(1)
                     .build();
         }
 

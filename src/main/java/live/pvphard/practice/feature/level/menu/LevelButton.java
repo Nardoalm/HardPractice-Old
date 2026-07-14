@@ -47,7 +47,7 @@ public class LevelButton extends Button {
                         " &fElo Atual: &b" + this.profile.getProfileData().getElo(),
                         CC.MENU_BAR
                 )
-                .durability(14)
+                .durability(1)
                 .hideMeta()
                 .build();
     }

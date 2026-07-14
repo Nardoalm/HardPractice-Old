@@ -18,7 +18,7 @@ public class LayoutCancelButton extends Button {
     public ItemStack getButtonItem(Player player) {
         return new ItemBuilder(Material.WOOL)
                 .name("&b&lCancel")
-                .durability(14)
+                .durability(1)
                 .lore(
                         CC.MENU_BAR,
                         "&7Cancels all changes and",

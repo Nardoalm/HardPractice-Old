@@ -12,11 +12,7 @@ import live.pvphard.practice.common.text.CC;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-/**
- * @author Remi
- * @project Hard
- * @since 26/06/2025
- */
+
 @ScoreboardData(kit = KitSettingBoxing.class)
 public class MatchScoreboardBoxing extends BaseMatchScoreboard {
     @Override

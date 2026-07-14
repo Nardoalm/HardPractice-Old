@@ -36,7 +36,7 @@ public class TitleButton extends Button {
                     .lore(
                             this.progress()
                     )
-                    .durability(14)
+                    .durability(1)
                     .hideMeta()
                     .build();
         }

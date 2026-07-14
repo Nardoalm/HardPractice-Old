@@ -6,6 +6,7 @@ import live.pvphard.practice.feature.kit.Kit;
 import live.pvphard.practice.feature.kit.setting.types.mechanic.KitSettingNoDamageImpl;
 import live.pvphard.practice.feature.kit.setting.types.mechanic.KitSettingNoFallDamageImpl;
 import live.pvphard.practice.feature.kit.setting.types.mode.KitSettingBoxing;
+import live.pvphard.practice.feature.kit.setting.types.mode.KitSettingCombo;
 import live.pvphard.practice.feature.kit.setting.types.mode.KitSettingHideAndSeek;
 import live.pvphard.practice.feature.kit.setting.types.mode.KitSettingSpleef;
 import live.pvphard.practice.feature.kit.setting.types.mode.KitSettingSumo;
@@ -196,6 +197,10 @@ public class MatchDamageListener implements Listener {
             }
 
             if (!attacker.getUniqueId().equals(damaged.getUniqueId())) {
+
+                if (match.getKit().isSettingEnabled(KitSettingCombo.class)) {
+                    damaged.setNoDamageTicks(5);
+                }
 
                 Bukkit.getScheduler().runTask(HardPractice.getInstance(), () -> {
                     attackerGamePlayer.getData().handleAttack();

@@ -74,7 +74,11 @@ public class CommandArgs {
         //TODO: maybe this should be configurable through config too?
 
         CommandFramework commandFramework = HardPractice.getInstance().getService(CommandFramework.class);
-        Method method = commandFramework.getCommandMap().get(this.label).getKey();
+        java.util.Map.Entry<Method, Object> entry = commandFramework.getCommandMap().get(this.label.toLowerCase());
+        if (entry == null) {
+            return ChatColor.GOLD + "Usage: " + ChatColor.YELLOW + "/" + label.replace(".", " ");
+        }
+        Method method = entry.getKey();
         CommandData commandData = method.getAnnotation(CommandData.class);
 
         // access annotation data because sub commands will inherit the parent command's usage, which is usually like "help <page>", ruining the entire point of this method

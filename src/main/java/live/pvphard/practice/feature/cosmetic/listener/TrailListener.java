@@ -5,6 +5,7 @@ import live.pvphard.practice.HardPractice;
 import live.pvphard.practice.core.profile.Profile;
 import live.pvphard.practice.core.profile.ProfileService;
 import live.pvphard.practice.core.profile.enums.ProfileState;
+import live.pvphard.practice.feature.cosmetic.CosmeticListener;
 import live.pvphard.practice.feature.cosmetic.CosmeticService;
 import live.pvphard.practice.feature.cosmetic.internal.repository.TrailRepository;
 import live.pvphard.practice.feature.cosmetic.internal.repository.impl.trail.Trail;
@@ -106,7 +107,7 @@ public class TrailListener implements Listener {
 
         Location loc = block.getLocation();
 
-        if (ACTIVE_TRAILS.containsKey(loc)) {
+        if (ACTIVE_TRAILS.containsKey(loc) || CosmeticListener.isPlacedBlock(loc)) {
             return;
         }
 

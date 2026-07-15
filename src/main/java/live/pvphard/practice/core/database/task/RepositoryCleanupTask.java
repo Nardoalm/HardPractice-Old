@@ -39,6 +39,10 @@ public class RepositoryCleanupTask extends BukkitRunnable {
         if (!combatService.getCombatMap().isEmpty()) {
             combatService.getCombatMap().forEach((uuid, combat) -> {
                 Player player = this.plugin.getServer().getPlayer(uuid);
+                // Player may be null if they disconnected while still in the combat map.
+                // isExpired requires a non-null Player, so we skip offline UUIDs here;
+                // the map will be cleaned up naturally on their next login or server stop.
+                if (player == null) return;
                 if (combatService.isExpired(player)) {
                     combatService.removeLastAttacker(player, false);
                 }
@@ -64,7 +68,7 @@ public class RepositoryCleanupTask extends BukkitRunnable {
         snapshotRepository.getSnapshots().entrySet().removeIf(entry -> System.currentTimeMillis() - entry.getValue().getCreatedAt() >= 60_000);
 
         PartyService partyService = HardPractice.getInstance().getService(PartyService.class);
-        if (!partyService.getParties().isEmpty()) {
+        if (!partyService.getPartyRequests().isEmpty()) {
             List<PartyRequest> expiredRequests = new ArrayList<>();
             synchronized (partyService.getPartyRequests()) {
                 partyService.getPartyRequests().removeIf(request -> {

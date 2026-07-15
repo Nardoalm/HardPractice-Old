@@ -80,30 +80,55 @@ public class KitServiceImpl implements KitService {
         for (String name : kitsSection.getKeys(false)) {
             String key = "kits." + name;
 
-            Kit kit = new Kit(
-                    name,
-                    config.getString(key + ".display-name"),
-                    config.getString(key + ".description"),
-                    config.getString(key + ".disclaimer"),
-                    config.getString(key + ".menu-title"),
-                    KitCategory.valueOf(config.getString(key + ".category")),
-                    Material.matchMaterial(config.getString(key + ".icon.material")),
-                    config.getInt(key + ".icon.durability"),
-                    Serializer.deserializeItemStack(config.getString(key + ".items")),
-                    Serializer.deserializeItemStack(config.getString(key + ".armor")),
-                    Serializer.deserializeItemStack(config.getString(key + ".editor-items"))
-            );
+            try {
+                String categoryStr = config.getString(key + ".category");
+                KitCategory category = KitCategory.NORMAL;
+                if (categoryStr != null) {
+                    try {
+                        category = KitCategory.valueOf(categoryStr);
+                    } catch (IllegalArgumentException e) {
+                        Logger.error("Categoria invalida '" + categoryStr + "' para o kit: " + name + ". Usando NORMAL.");
+                    }
+                }
 
-            kit.setEnabled(config.getBoolean(key + ".enabled"));
-            kit.setEditable(config.getBoolean(key + ".editable"));
-            kit.setKnockbackProfile(config.getString(key + ".knockback-profile"));
+                String materialStr = config.getString(key + ".icon.material");
+                Material icon = Material.DIAMOND_SWORD;
+                if (materialStr != null) {
+                    Material matched = Material.matchMaterial(materialStr);
+                    if (matched != null) {
+                        icon = matched;
+                    } else {
+                        Logger.error("Material de icone invalido '" + materialStr + "' para o kit: " + name + ". Usando DIAMOND_SWORD.");
+                    }
+                }
 
-            this.setupFFA(kit, config, key);
-            this.loadKitSettings(config, key, kit);
+                Kit kit = new Kit(
+                        name,
+                        config.getString(key + ".display-name"),
+                        config.getString(key + ".description"),
+                        config.getString(key + ".disclaimer"),
+                        config.getString(key + ".menu-title"),
+                        category,
+                        icon,
+                        config.getInt(key + ".icon.durability"),
+                        Serializer.deserializeItemStack(config.getString(key + ".items")),
+                        Serializer.deserializeItemStack(config.getString(key + ".armor")),
+                        Serializer.deserializeItemStack(config.getString(key + ".editor-items"))
+                );
 
-            this.loadPotionEffects(config, key, kit);
-            this.addMissingKitSettings(kit, config, key);
-            this.kits.add(kit);
+                kit.setEnabled(config.getBoolean(key + ".enabled"));
+                kit.setEditable(config.getBoolean(key + ".editable"));
+                kit.setKnockbackProfile(config.getString(key + ".knockback-profile"));
+
+                this.setupFFA(kit, config, key);
+                this.loadKitSettings(config, key, kit);
+
+                this.loadPotionEffects(config, key, kit);
+                this.addMissingKitSettings(kit, config, key);
+                this.kits.add(kit);
+            } catch (Exception e) {
+                Logger.logException("Falha ao carregar o kit '" + name + "' da configuracao. O kit foi ignorado.", e);
+            }
         }
     }
 

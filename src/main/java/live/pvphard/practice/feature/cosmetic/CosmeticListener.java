@@ -195,4 +195,8 @@ public class CosmeticListener implements Listener {
     public static boolean isPlayerStill(Player player, long delayMillis) {
         return (System.currentTimeMillis() - lastMoveTimes.getOrDefault(player.getUniqueId(), 0L)) > delayMillis;
     }
+
+    public static boolean isPlacedBlock(Location loc) {
+        return PLACED_BLOCKS.containsKey(loc);
+    }
 }

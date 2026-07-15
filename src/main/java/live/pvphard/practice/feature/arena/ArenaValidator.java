@@ -59,7 +59,12 @@ public class ArenaValidator {
         for (String kitName : arena.getKits()) {
             Kit kit = kitService.getKit(kitName);
             if (kit == null) {
-                player.sendMessage(localeService.getString(GlobalMessagesLocaleImpl.ARENA_ASSIGNED_KIT_NULL).replace("{kit-name}", kitName));
+                String message = localeService.getString(GlobalMessagesLocaleImpl.ARENA_ASSIGNED_KIT_NULL);
+                if (message != null) {
+                    player.sendMessage(message.replace("{kit-name}", kitName));
+                } else {
+                    player.sendMessage("§cKit not found: " + kitName);
+                }
                 return false;
             }
 

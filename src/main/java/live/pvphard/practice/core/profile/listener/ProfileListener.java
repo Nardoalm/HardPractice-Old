@@ -83,7 +83,7 @@ public class ProfileListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     private void onPlayerQuitEvent(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);

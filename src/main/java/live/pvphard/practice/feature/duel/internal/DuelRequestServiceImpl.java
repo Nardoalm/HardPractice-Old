@@ -384,38 +384,33 @@ public class DuelRequestServiceImpl implements DuelRequestService {
 
         Profile profile = this.profileService.getProfile(duelRequest.getSender().getUniqueId());
         if (profile.getState() != ProfileState.LOBBY) {
-            duelRequest.getSender().sendMessage(HardPractice.getInstance().getService(LocaleService.class).getString(GlobalMessagesLocaleImpl.ERROR_YOU_MUST_BE_IN_LOBBY));
-            return false;
-        }
-
-        if (duelRequest.getTarget() == null) {
-            duelRequest.getSender().sendMessage(this.localeService.getString(GlobalMessagesLocaleImpl.ERROR_INVALID_PLAYER));
+            duelRequest.getTarget().sendMessage(CC.translate("&cThat player is no longer in the lobby."));
             return false;
         }
 
         Profile targetProfile = this.profileService.getProfile(duelRequest.getTarget().getUniqueId());
         if (targetProfile.getState() != ProfileState.LOBBY) {
-            duelRequest.getSender().sendMessage(CC.translate("&cThat player is not in the lobby."));
+            duelRequest.getTarget().sendMessage(HardPractice.getInstance().getService(LocaleService.class).getString(GlobalMessagesLocaleImpl.ERROR_YOU_MUST_BE_IN_LOBBY));
             return false;
         }
 
         if (targetProfile.getParty() != null && profile.getParty() == null) {
-            duelRequest.getSender().sendMessage(CC.translate("&cYou cannot accept a duel request from a party player if you are not in a party."));
+            duelRequest.getTarget().sendMessage(CC.translate("&cYou cannot accept a duel request from a solo player if you are in a party."));
             return false;
         }
 
         if (targetProfile.getParty() != null && targetProfile.getParty().getMembers().contains(duelRequest.getSender().getUniqueId())) {
-            duelRequest.getSender().sendMessage(CC.translate("&cYou cannot accept a duel request from a member of your own party."));
+            duelRequest.getTarget().sendMessage(CC.translate("&cYou cannot accept a duel request from a member of your own party."));
             return false;
         }
 
         if (targetProfile.getParty() == null && profile.getParty() != null) {
-            duelRequest.getSender().sendMessage(CC.translate("&cYou cannot accept a duel request from a player who is not in a party."));
+            duelRequest.getTarget().sendMessage(CC.translate("&cYou cannot accept a duel request from a party player if you are not in a party."));
             return false;
         }
 
-        if (duelRequest.isParty() && profile.getParty() == null) {
-            duelRequest.getSender().sendMessage(CC.translate("&cYou can only accept party duel requests if you are in a party."));
+        if (duelRequest.isParty() && targetProfile.getParty() == null) {
+            duelRequest.getTarget().sendMessage(CC.translate("&cYou can only accept party duel requests if you are in a party."));
             return false;
         }
         return true;

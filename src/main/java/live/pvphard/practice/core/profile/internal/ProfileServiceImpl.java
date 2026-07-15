@@ -48,7 +48,12 @@ public class ProfileServiceImpl implements ProfileService {
         this.profiles.values().stream()
                 .filter(Objects::nonNull)
                 .filter(profile -> profile.getUuid() != null && profile.getName() != null && !profile.getName().trim().isEmpty())
-                .forEach(Profile::save);
+                .forEach(profile -> {
+                    if (profile.isOnline()) {
+                        profile.updatePlayTime();
+                    }
+                    profile.save();
+                });
         Logger.info("Profile saving complete.");
     }
 

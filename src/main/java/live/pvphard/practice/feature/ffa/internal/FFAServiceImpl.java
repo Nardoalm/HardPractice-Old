@@ -51,13 +51,15 @@ public class FFAServiceImpl implements FFAService {
 
     @Override
     public void shutdown(HardContext context) {
-        this.matches.forEach(match -> match.getPlayers().forEach(ffaPlayer -> {
-            Player player = ffaPlayer.getPlayer();
-            if (player != null) {
-                match.leave(player);
-                player.sendMessage(CC.translate("&cA arena de FFA está sendo fechada devido ao desligamento do servidor."));
-            }
-        }));
+        this.matches.forEach(match -> {
+            new ArrayList<>(match.getPlayers()).forEach(ffaPlayer -> {
+                Player player = ffaPlayer.getPlayer();
+                if (player != null) {
+                    match.leave(player);
+                    player.sendMessage(CC.translate("&cA arena de FFA está sendo fechada devido ao desligamento do servidor."));
+                }
+            });
+        });
         this.matches.clear();
         Logger.info("Cleaned up all FFA matches.");
     }

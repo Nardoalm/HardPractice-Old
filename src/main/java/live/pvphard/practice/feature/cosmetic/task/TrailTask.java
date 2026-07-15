@@ -1,5 +1,6 @@
 package live.pvphard.practice.feature.cosmetic.task;
 
+import live.pvphard.practice.feature.cosmetic.CosmeticListener;
 import live.pvphard.practice.feature.cosmetic.listener.TrailListener;
 import live.pvphard.practice.feature.cosmetic.listener.TrailListener.TrailBlockState;
 import org.bukkit.Location;
@@ -25,6 +26,12 @@ public class TrailTask extends BukkitRunnable {
             Map.Entry<Location, TrailBlockState> entry = iterator.next();
             Location loc = entry.getKey();
             TrailBlockState state = entry.getValue();
+
+            // Do not override or revert active cosmetic blocks (e.g. Rainbow Blocks)
+            if (CosmeticListener.isPlacedBlock(loc)) {
+                iterator.remove();
+                continue;
+            }
 
             Block block = loc.getBlock();
 

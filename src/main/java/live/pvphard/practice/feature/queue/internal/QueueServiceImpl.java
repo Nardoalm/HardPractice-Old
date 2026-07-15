@@ -112,7 +112,11 @@ public class QueueServiceImpl implements QueueService {
     private boolean isMatchForQueue(Profile profile, String queue) {
         if (queue.equals("FFA")) {
             return true;
-        } else if (queue.equals("Ranked")) {
+        }
+        if (profile.getMatch() == null) {
+            return false;
+        }
+        if (queue.equals("Ranked")) {
             return profile.getMatch().isRanked();
         } else if (queue.equals("Duos")) {
             return true;

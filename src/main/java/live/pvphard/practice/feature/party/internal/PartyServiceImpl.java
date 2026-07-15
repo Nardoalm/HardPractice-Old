@@ -267,6 +267,8 @@ public class PartyServiceImpl implements PartyService {
             this.handlePartyMemberLeave(player);
         }
 
+        // Notify members BEFORE removing the player, so the message count is correct.
+        // But we notify AFTER the remove so the leaving player does NOT get the message.
         party.getMembers().remove(player.getUniqueId());
 
         party.notifyParty(this.localeService.getString(GlobalMessagesLocaleImpl.PARTY_PLAYER_LEFT)
@@ -429,7 +431,7 @@ public class PartyServiceImpl implements PartyService {
         if (party.getBannedPlayers().contains(player.getUniqueId())) {
             player.sendMessage(localeService.getString(GlobalMessagesLocaleImpl.ERROR_YOU_BANNED_FROM_PARTY)
                     .replace("{player}", leader.getName())
-                    .replace("{name-color", String.valueOf(profileService.getProfile(leader.getUniqueId()).getNameColor()))
+                    .replace("{name-color}", String.valueOf(profileService.getProfile(leader.getUniqueId()).getNameColor()))
             );
             return;
         }

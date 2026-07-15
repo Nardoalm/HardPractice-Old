@@ -257,7 +257,9 @@ public class Profile {
         if (this.profileData == null) return;
         ProfilePlayTimeData playTimeData = this.profileData.getPlayTimeData();
         if (playTimeData != null) {
-            playTimeData.setTotal(playTimeData.getTotal() + (System.currentTimeMillis() - playTimeData.getLastLogin()));
+            long now = System.currentTimeMillis();
+            playTimeData.setTotal(playTimeData.getTotal() + (now - playTimeData.getLastLogin()));
+            playTimeData.setLastLogin(now);
         }
     }
 }

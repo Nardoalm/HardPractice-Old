@@ -53,16 +53,27 @@ public class ProfileUnrankedKitData {
         DivisionService divisionService = plugin.getService(DivisionService.class);
         if (divisionService == null || divisionService.getDivisions() == null) return;
 
+        String bestDivision = null;
+        String bestTier = null;
+        int bestRequiredWins = -1;
+
         for (Division divisionObj : divisionService.getDivisions()) {
             if (divisionObj.getTiers() == null) continue;
 
             for (DivisionTier tierObj : divisionObj.getTiers()) {
-                if (this.wins >= tierObj.getRequiredWins()) {
-                    // Atualiza para o nível mais alto que o jogador alcançou
-                    this.division = divisionObj.getName();
-                    this.tier = tierObj.getName();
+                // Only consider tiers the player has actually reached, and
+                // keep the one with the highest requiredWins threshold met.
+                if (this.wins >= tierObj.getRequiredWins() && tierObj.getRequiredWins() > bestRequiredWins) {
+                    bestRequiredWins = tierObj.getRequiredWins();
+                    bestDivision = divisionObj.getName();
+                    bestTier = tierObj.getName();
                 }
             }
+        }
+
+        if (bestDivision != null) {
+            this.division = bestDivision;
+            this.tier = bestTier;
         }
     }
 

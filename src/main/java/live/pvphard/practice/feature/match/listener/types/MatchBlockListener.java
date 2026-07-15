@@ -492,10 +492,10 @@ public class MatchBlockListener implements Listener {
         Location checkLocation = startLocation.clone();
 
         while (checkLocation.getY() > 2.0) {
-            Location belowLocation = checkLocation.clone().subtract(0.0, 1.0, 0.0);
+            Location aboveLocation = checkLocation.clone().add(0.0, 1.0, 0.0);
 
             if (checkLocation.getBlock().getType() == Material.AIR &&
-                    belowLocation.getBlock().getType() == Material.AIR) {
+                    aboveLocation.getBlock().getType() == Material.AIR) {
                 return checkLocation;
             }
 

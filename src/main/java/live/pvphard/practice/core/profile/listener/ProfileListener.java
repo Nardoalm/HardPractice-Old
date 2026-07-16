@@ -53,7 +53,7 @@ public class ProfileListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void onJoin(PlayerJoinEvent event) {
         if (!HardPractice.getInstance().isEnabled()) {
-            event.getPlayer().kickPlayer(CC.translate("&cO servidor ainda está carregando, tente novamente em alguns segundos."));
+            event.getPlayer().kickPlayer(CC.translate("&cThe server is loading, try join later."));
             return;
         }
 

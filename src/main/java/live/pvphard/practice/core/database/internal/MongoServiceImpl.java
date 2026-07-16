@@ -13,11 +13,6 @@ import live.pvphard.practice.core.locale.LocaleService;
 import live.pvphard.practice.core.locale.internal.impl.SettingsLocaleImpl;
 import lombok.Getter;
 
-/**
- * @author Emmy
- * @project Hard
- * @date 21/05/2024 - 21:40
- */
 @Getter
 @Service(provides = MongoService.class, priority = 30)
 public class MongoServiceImpl implements MongoService {

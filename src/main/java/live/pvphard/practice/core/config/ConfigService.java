@@ -5,11 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 
-/**
- * @author Remi
- * @project hard-practice
- * @date 2/07/2025
- */
+
 public interface ConfigService extends Service {
     /**
      * Reloads all configurations from disk.

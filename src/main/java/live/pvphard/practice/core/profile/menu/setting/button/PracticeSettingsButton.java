@@ -77,9 +77,9 @@ public class PracticeSettingsButton extends Button {
             case SERVER_TITLES:
                 player.performCommand("toggleservertitles");
                 break;
-            case MATCH_SETTINGS:
+            case LAYOUT_EDITOR:
                 player.closeInventory();
-                player.sendMessage(MessageConstant.IN_DEVELOPMENT);
+                player.performCommand("layout");
                 break;
             case COSMETICS:
                 new CosmeticsMenu().openMenu(player);

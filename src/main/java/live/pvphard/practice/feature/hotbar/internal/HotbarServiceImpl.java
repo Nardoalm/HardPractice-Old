@@ -186,6 +186,12 @@ public class HotbarServiceImpl implements HotbarService {
             player.getInventory().setItem(item.getTypeData().get(type.ordinal()).getSlot(), itemStack);
         }
 
+//        if(player.getInventory().getItem(2) != null){
+//            if(profileService.getProfile(player.getUniqueId()).getLastPlayedKit() != null){
+//                TENTEI COMEÇAR PARA PAARECER O REQUEUE APENAS QUANDO TIVER
+//            }
+//        }
+
         HardPractice.getInstance().getServer().getScheduler().runTaskLater(HardPractice.getInstance(), player::updateInventory, 1L);
     }
 

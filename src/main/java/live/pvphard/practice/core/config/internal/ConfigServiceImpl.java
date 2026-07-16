@@ -15,11 +15,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author Emmy
- * @project Hard
- * @date 19/04/2024 - 17:39
- */
 @Getter
 @Service(provides = ConfigService.class, priority = 20)
 public class ConfigServiceImpl implements ConfigService {

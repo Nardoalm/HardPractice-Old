@@ -17,17 +17,17 @@ public class KaosReloadCommand extends BaseCommand {
     //TODO: reload gui with options: Config files (messages), menus, Caches(kits, arenas, levels, etc..)
 
     @CommandData(
-            name = "kaos.reload",
+            name = "hard.reload",
             isAdminOnly = true,
             inGameOnly = false,
-            usage = "kaos.reload",
-            description = "Recarrega as configuracoes do Hard."
+            usage = "hard.reload",
+            description = "Recarrega as configuracoes do HardPractice."
     )
     @Override
     public void onCommand(CommandArgs command) {
         Player player = command.getPlayer();
-        player.sendMessage(CC.translate("&b&lKaos &frecarregando..."));
+        player.sendMessage(CC.translate("&bHardPrac &frecarregando..."));
         this.plugin.getService(ConfigService.class).reloadConfigs();
-        player.sendMessage(CC.translate("&b&lKaos &a&lrecarregado&f."));
+        player.sendMessage(CC.translate("&bHardPrac &arecarregado&f."));
     }
 }

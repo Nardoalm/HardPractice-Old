@@ -106,12 +106,12 @@ public enum PracticeSettingType {
             )
     ),
 
-    MATCH_SETTINGS(16, "&b&lMatch Settings", Material.BOOK,
+    LAYOUT_EDITOR(16, "&b&lLayout Editor", Material.BOOK,
             settings -> Arrays.asList(
                     CC.MENU_BAR,
-                    "&7Adjust your custom match settings.",
+                    "&7Customize your kit layouts.",
                     "",
-                    "&aClick to view.",
+                    "&aClick to open.",
                     CC.MENU_BAR
             )
     ),

@@ -195,7 +195,7 @@ hotbar-items:
     lore:
       - "&7Click to quickly join the queue"
       - "&7for your last played match."
-    material: WATCH
+    material: PAPER
     durability: 0
     command: "requeue"
     menu: ""
